@@ -1,5 +1,3 @@
-/* @ts-self-types="./raytracer.d.ts" */
-
 export class Raytracer {
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;

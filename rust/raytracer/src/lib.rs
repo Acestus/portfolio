@@ -2,8 +2,8 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::Clamped;
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, ImageData};
 
-const W: u32 = 640;
-const H: u32 = 480;
+const W: u32 = 320;
+const H: u32 = 240;
 
 // --- Vector math ---
 
@@ -140,27 +140,16 @@ fn hit_floor(origin: Vec3, dir: Vec3) -> Option<Hit> {
     let p = origin.add(dir.scale(t));
     let ix = (p.x.floor() as i32).rem_euclid(2);
     let iz = (p.z.floor() as i32).rem_euclid(2);
-    let (color, refl) = if (ix+iz)%2==0 { (Vec3::new(0.08,0.06,0.12), 0.6) } else { (Vec3::new(0.22,0.18,0.3), 0.4) };
+    let (color, refl) = if (ix+iz)%2==0 { (Vec3::new(0.85,0.85,0.82), 0.15) } else { (Vec3::new(0.55,0.55,0.52), 0.1) };
     Some(Hit { t, normal: Vec3::new(0.0,1.0,0.0), color, specular: 30.0, reflective: refl })
 }
 
-// --- Starfield ---
+// --- Daylight sky ---
 
-fn starfield(dir: Vec3) -> Vec3 {
+fn daylight_sky(dir: Vec3) -> Vec3 {
     let d = dir.norm();
-    let u = ((d.z.atan2(d.x) * 400.0).rem_euclid(100000.0)) as u32;
-    let v = ((d.y.asin() * 400.0).rem_euclid(100000.0)) as u32;
-    let mut h = u.wrapping_mul(374761393).wrapping_add(v.wrapping_mul(668265263));
-    h = (h ^ (h >> 13)).wrapping_mul(1274126177);
-    h ^= h >> 16;
-    let val = (h & 0xFFFF) as f64 / 65535.0;
-    if val > 0.997 {
-        let br = ((val - 0.997) / 0.003).powf(0.4) * 0.6;
-        Vec3::new(br * 0.9, br * 0.92, br)
-    } else {
-        let t = 0.5 * (d.y + 1.0);
-        Vec3::new(0.006, 0.003, 0.02).lerp(Vec3::new(0.02, 0.012, 0.055), t)
-    }
+    let t = (d.y * 0.5 + 0.5).max(0.0).min(1.0);
+    Vec3::new(0.75, 0.82, 0.88).lerp(Vec3::new(0.35, 0.55, 0.92), t)
 }
 
 // --- Scene ---
@@ -199,18 +188,18 @@ impl Scene {
 
 // --- Trace ---
 
-const MAX_DEPTH: u32 = 2;
+const MAX_DEPTH: u32 = 1;
 
 fn trace(origin: Vec3, dir: Vec3, scene: &Scene, lights: &[Light], time: f64, depth: u32) -> Vec3 {
     let hit = match scene.closest_hit(origin, dir) {
         Some(h) => h,
-        None => return starfield(dir),
+        None => return daylight_sky(dir),
     };
 
     let p = origin.add(dir.scale(hit.t));
     let n = hit.normal;
 
-    let mut diffuse = Vec3::new(0.03, 0.03, 0.04);
+    let mut diffuse = Vec3::new(0.15, 0.15, 0.18);
     let mut spec = Vec3::new(0.0, 0.0, 0.0);
 
     for light in lights {
@@ -242,8 +231,8 @@ fn trace(origin: Vec3, dir: Vec3, scene: &Scene, lights: &[Light], time: f64, de
     }
 
     // Rim glow
-    let rim = (1.0 - n.dot(dir.scale(-1.0).norm()).max(0.0)).powf(3.0) * 0.2;
-    color = color.add(Vec3::new(0.15, 0.3, 0.8).scale(rim));
+    let rim = (1.0 - n.dot(dir.scale(-1.0).norm()).max(0.0)).powf(3.0) * 0.08;
+    color = color.add(Vec3::new(0.4, 0.5, 0.7).scale(rim));
     color
 }
 
@@ -252,85 +241,102 @@ fn gamma(v: f64) -> u8 { (v.max(0.0).min(1.0).powf(1.0/2.2) * 255.0) as u8 }
 // --- Unicyclist builder ---
 
 fn build_unicyclist(scene: &mut Scene, bx: f64, bz: f64, time: f64, phase: f64, hue: usize) {
+    let s = 3.0; // scale factor
     let pedal_speed = 2.5;
     let pa = time * pedal_speed + phase;
 
-    let wy = FLOOR_Y + 0.55;
+    let wheel_r = 0.45 * s;
+    let tube_r = 0.07 * s;
+    let wy = FLOOR_Y + wheel_r + tube_r;
 
-    // Wheel: ring of small spheres (looks like a torus but cheaper to raytrace)
-    let wheel_r = 0.45;
-    let spoke_r = 0.055;
-    let n_spokes = 12;
-    for i in 0..n_spokes {
-        let a = (i as f64) * std::f64::consts::TAU / (n_spokes as f64) + time * pedal_speed;
-        scene.spheres.push(Sphere {
-            center: Vec3::new(bx + wheel_r * a.cos(), wy + wheel_r * a.sin(), bz),
-            radius: spoke_r, color: Vec3::new(0.8,0.8,0.88), specular: 200.0, reflective: 0.75,
+    // Wheel: capsule segments forming a smooth ring
+    let n_segs: usize = 24;
+    let tau = std::f64::consts::TAU;
+    let spin = time * pedal_speed;
+    for i in 0..n_segs {
+        let a0 = (i as f64) * tau / (n_segs as f64) + spin;
+        let a1 = ((i + 1) as f64) * tau / (n_segs as f64) + spin;
+        scene.capsules.push(Capsule {
+            a: Vec3::new(bx + wheel_r * a0.cos(), wy + wheel_r * a0.sin(), bz),
+            b: Vec3::new(bx + wheel_r * a1.cos(), wy + wheel_r * a1.sin(), bz),
+            radius: tube_r,
+            color: Vec3::new(0.75, 0.75, 0.8), specular: 200.0, reflective: 0.6,
+        });
+    }
+
+    // Spokes
+    let n_spk = 4;
+    for i in 0..n_spk {
+        let a = (i as f64) * tau / (n_spk as f64) + spin;
+        scene.capsules.push(Capsule {
+            a: Vec3::new(bx, wy, bz),
+            b: Vec3::new(bx + wheel_r * a.cos(), wy + wheel_r * a.sin(), bz),
+            radius: 0.02 * s, color: Vec3::new(0.8, 0.8, 0.85), specular: 150.0, reflective: 0.5,
         });
     }
 
     // Hub
-    scene.spheres.push(Sphere { center: Vec3::new(bx, wy, bz), radius: 0.1,
-        color: Vec3::new(0.9,0.9,0.95), specular: 300.0, reflective: 0.85 });
+    scene.spheres.push(Sphere { center: Vec3::new(bx, wy, bz), radius: 0.1 * s,
+        color: Vec3::new(0.85, 0.85, 0.9), specular: 300.0, reflective: 0.7 });
 
     // Seat post
-    let seat_y = wy + 0.9;
-    scene.capsules.push(Capsule { a: Vec3::new(bx, wy+0.15, bz), b: Vec3::new(bx, seat_y, bz),
-        radius: 0.04, color: Vec3::new(0.7,0.7,0.75), specular: 100.0, reflective: 0.6 });
+    let seat_y = wy + 0.9 * s;
+    scene.capsules.push(Capsule { a: Vec3::new(bx, wy + 0.15 * s, bz), b: Vec3::new(bx, seat_y, bz),
+        radius: 0.04 * s, color: Vec3::new(0.7, 0.7, 0.75), specular: 100.0, reflective: 0.5 });
 
     // Seat
     scene.capsules.push(Capsule {
-        a: Vec3::new(bx - 0.1, seat_y + 0.05, bz),
-        b: Vec3::new(bx + 0.1, seat_y + 0.05, bz),
-        radius: 0.06, color: Vec3::new(0.3,0.3,0.35), specular: 50.0, reflective: 0.3 });
+        a: Vec3::new(bx - 0.1 * s, seat_y + 0.05 * s, bz),
+        b: Vec3::new(bx + 0.1 * s, seat_y + 0.05 * s, bz),
+        radius: 0.06 * s, color: Vec3::new(0.3, 0.3, 0.35), specular: 50.0, reflective: 0.3 });
 
     // Body colors
     let colors = [
-        Vec3::new(0.0,0.5,0.9), Vec3::new(0.9,0.2,0.4), Vec3::new(0.0,0.8,0.4),
-        Vec3::new(0.9,0.7,0.0), Vec3::new(0.7,0.3,0.9),
+        Vec3::new(0.0, 0.5, 0.9), Vec3::new(0.9, 0.2, 0.4), Vec3::new(0.0, 0.8, 0.4),
+        Vec3::new(0.9, 0.7, 0.0), Vec3::new(0.7, 0.3, 0.9),
     ];
     let bc = colors[hue % colors.len()];
-    let bob = 0.04 * (time * 3.0 + phase).sin();
+    let bob = 0.04 * s * (time * 3.0 + phase).sin();
 
     // Torso
-    let hip_y = seat_y + 0.25;
-    let sh_y = hip_y + 0.55;
+    let hip_y = seat_y + 0.25 * s;
+    let sh_y = hip_y + 0.55 * s;
     scene.capsules.push(Capsule {
-        a: Vec3::new(bx, hip_y+bob, bz), b: Vec3::new(bx, sh_y+bob, bz),
-        radius: 0.14, color: bc, specular: 80.0, reflective: 0.5 });
+        a: Vec3::new(bx, hip_y + bob, bz), b: Vec3::new(bx, sh_y + bob, bz),
+        radius: 0.14 * s, color: bc, specular: 80.0, reflective: 0.4 });
 
     // Head
-    scene.spheres.push(Sphere { center: Vec3::new(bx, sh_y+0.32+bob, bz),
-        radius: 0.16, color: Vec3::new(0.9,0.75,0.65), specular: 60.0, reflective: 0.3 });
+    scene.spheres.push(Sphere { center: Vec3::new(bx, sh_y + 0.32 * s + bob, bz),
+        radius: 0.16 * s, color: Vec3::new(0.9, 0.75, 0.65), specular: 60.0, reflective: 0.2 });
 
     // Legs — pedaling
-    let cr = 0.25;
+    let cr = 0.25 * s;
     let rf_x = bx + cr * pa.cos();
     let rf_y = wy + cr * pa.sin();
-    let rk_x = bx + 0.12 * pa.cos();
-    let rk_y = (rf_y + hip_y + bob) * 0.5 + 0.1;
+    let rk_x = bx + 0.12 * s * pa.cos();
+    let rk_y = (rf_y + hip_y + bob) * 0.5 + 0.1 * s;
 
-    scene.capsules.push(Capsule { a: Vec3::new(bx-0.06, hip_y+bob, bz+0.08),
-        b: Vec3::new(rk_x, rk_y, bz+0.08), radius: 0.06, color: bc, specular: 60.0, reflective: 0.4 });
-    scene.capsules.push(Capsule { a: Vec3::new(rk_x, rk_y, bz+0.08),
-        b: Vec3::new(rf_x, rf_y, bz+0.08), radius: 0.05, color: bc, specular: 60.0, reflective: 0.4 });
+    scene.capsules.push(Capsule { a: Vec3::new(bx - 0.06 * s, hip_y + bob, bz + 0.08 * s),
+        b: Vec3::new(rk_x, rk_y, bz + 0.08 * s), radius: 0.06 * s, color: bc, specular: 60.0, reflective: 0.3 });
+    scene.capsules.push(Capsule { a: Vec3::new(rk_x, rk_y, bz + 0.08 * s),
+        b: Vec3::new(rf_x, rf_y, bz + 0.08 * s), radius: 0.05 * s, color: bc, specular: 60.0, reflective: 0.3 });
 
     let lf_x = bx - cr * pa.cos();
     let lf_y = wy - cr * pa.sin();
-    let lk_x = bx - 0.12 * pa.cos();
-    let lk_y = (lf_y + hip_y + bob) * 0.5 + 0.1;
+    let lk_x = bx - 0.12 * s * pa.cos();
+    let lk_y = (lf_y + hip_y + bob) * 0.5 + 0.1 * s;
 
-    scene.capsules.push(Capsule { a: Vec3::new(bx+0.06, hip_y+bob, bz-0.08),
-        b: Vec3::new(lk_x, lk_y, bz-0.08), radius: 0.06, color: bc, specular: 60.0, reflective: 0.4 });
-    scene.capsules.push(Capsule { a: Vec3::new(lk_x, lk_y, bz-0.08),
-        b: Vec3::new(lf_x, lf_y, bz-0.08), radius: 0.05, color: bc, specular: 60.0, reflective: 0.4 });
+    scene.capsules.push(Capsule { a: Vec3::new(bx + 0.06 * s, hip_y + bob, bz - 0.08 * s),
+        b: Vec3::new(lk_x, lk_y, bz - 0.08 * s), radius: 0.06 * s, color: bc, specular: 60.0, reflective: 0.3 });
+    scene.capsules.push(Capsule { a: Vec3::new(lk_x, lk_y, bz - 0.08 * s),
+        b: Vec3::new(lf_x, lf_y, bz - 0.08 * s), radius: 0.05 * s, color: bc, specular: 60.0, reflective: 0.3 });
 
     // Arms
-    let sw = 0.06 * (time * 2.0 + phase).sin();
-    scene.capsules.push(Capsule { a: Vec3::new(bx, sh_y-0.05+bob, bz+0.16),
-        b: Vec3::new(bx+0.25+sw, sh_y-0.3+bob, bz+0.1), radius: 0.045, color: bc, specular: 60.0, reflective: 0.4 });
-    scene.capsules.push(Capsule { a: Vec3::new(bx, sh_y-0.05+bob, bz-0.16),
-        b: Vec3::new(bx+0.25+sw, sh_y-0.3+bob, bz-0.1), radius: 0.045, color: bc, specular: 60.0, reflective: 0.4 });
+    let sw = 0.06 * s * (time * 2.0 + phase).sin();
+    scene.capsules.push(Capsule { a: Vec3::new(bx, sh_y - 0.05 * s + bob, bz + 0.16 * s),
+        b: Vec3::new(bx + 0.25 * s + sw, sh_y - 0.3 * s + bob, bz + 0.1 * s), radius: 0.045 * s, color: bc, specular: 60.0, reflective: 0.3 });
+    scene.capsules.push(Capsule { a: Vec3::new(bx, sh_y - 0.05 * s + bob, bz - 0.16 * s),
+        b: Vec3::new(bx + 0.25 * s + sw, sh_y - 0.3 * s + bob, bz - 0.1 * s), radius: 0.045 * s, color: bc, specular: 60.0, reflective: 0.3 });
 }
 
 // --- WASM ---
@@ -353,39 +359,17 @@ impl Raytracer {
         canvas.set_height(H);
 
         let lights = vec![
-            Light { base_pos: Vec3::new(5.0,8.0,0.0), color: Vec3::new(0.6,0.8,1.0), intensity: 1.4, orbit_radius: 5.0, orbit_speed: 0.2 },
-            Light { base_pos: Vec3::new(-4.0,6.0,3.0), color: Vec3::new(1.0,0.4,0.7), intensity: 0.9, orbit_radius: 3.0, orbit_speed: -0.35 },
-            Light { base_pos: Vec3::new(0.0,10.0,-3.0), color: Vec3::new(1.0,0.95,0.7), intensity: 0.7, orbit_radius: 2.0, orbit_speed: 0.5 },
+            Light { base_pos: Vec3::new(8.0, 15.0, 5.0), color: Vec3::new(1.0, 0.97, 0.9), intensity: 2.0, orbit_radius: 0.0, orbit_speed: 0.0 },
+            Light { base_pos: Vec3::new(-5.0, 10.0, -3.0), color: Vec3::new(0.6, 0.7, 1.0), intensity: 0.8, orbit_radius: 0.0, orbit_speed: 0.0 },
         ];
 
         Ok(Raytracer { ctx, buf: vec![0u8; (W*H*4) as usize], lights, camera_speed: 0.1, camera_height_offset: 0.0 })
     }
 
     fn build_scene(&self, time: f64) -> Scene {
-        let mut scene = Scene { spheres: Vec::with_capacity(80), capsules: Vec::with_capacity(60) };
+        let mut scene = Scene { spheres: Vec::with_capacity(20), capsules: Vec::with_capacity(80) };
 
-        // 5 unicyclists in V-formation
-        let riders: [(f64,f64,f64,usize); 5] = [
-            (0.0, 0.0, 0.0, 0),
-            (-1.8, -1.5, 0.8, 1),
-            (1.8, -1.5, -0.8, 2),
-            (-3.2, -3.0, 1.6, 3),
-            (3.2, -3.0, -1.6, 4),
-        ];
-        for &(x, z, phase, hue) in &riders {
-            build_unicyclist(&mut scene, x, z, time, phase, hue);
-        }
-
-        // Floating chrome orbs — Mind's Eye vibes
-        scene.spheres.push(Sphere {
-            center: Vec3::new(6.0*(time*0.15).cos(), 4.0+1.5*(time*0.2).sin(), 6.0*(time*0.15).sin()),
-            radius: 0.6, color: Vec3::new(0.85,0.85,0.9), specular: 300.0, reflective: 0.9 });
-        scene.spheres.push(Sphere {
-            center: Vec3::new(-5.0*(time*0.12+2.0).cos(), 3.0+(time*0.18).cos(), -5.0*(time*0.12+2.0).sin()),
-            radius: 0.4, color: Vec3::new(1.0,0.85,0.0), specular: 250.0, reflective: 0.85 });
-        scene.spheres.push(Sphere {
-            center: Vec3::new(3.0*(time*0.22+1.0).sin(), 5.0+0.8*(time*0.14).cos(), -4.0*(time*0.18).cos()),
-            radius: 0.35, color: Vec3::new(0.9,0.2,0.5), specular: 200.0, reflective: 0.88 });
+        build_unicyclist(&mut scene, 0.0, 0.0, time, 0.0, 0);
 
         scene
     }
@@ -394,10 +378,10 @@ impl Raytracer {
         let scene = self.build_scene(time);
 
         let ca = time * self.camera_speed;
-        let cr = 6.5 + 1.5 * (time * 0.06).sin();
-        let cy = 1.5 + 1.0 * (time * 0.08).sin() + self.camera_height_offset;
+        let cr = 14.0 + 2.0 * (time * 0.06).sin();
+        let cy = 3.5 + 1.5 * (time * 0.08).sin() + self.camera_height_offset;
         let origin = Vec3::new(cr * ca.sin(), cy, cr * ca.cos());
-        let look_at = Vec3::new(0.0, 0.0, 0.0);
+        let look_at = Vec3::new(0.0, 2.0, 0.0);
 
         let forward = look_at.sub(origin).norm();
         let right = forward.cross(Vec3::new(0.0,1.0,0.0)).norm();

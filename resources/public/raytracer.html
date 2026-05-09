@@ -63,7 +63,7 @@
             <button class="ctrl-btn" id="btn-down">↓ Camera Down</button>
             <button class="ctrl-btn" id="btn-reset">⟳ Reset</button>
           </div>
-          <canvas id="canvas" class="game-canvas" style="cursor:grab"></canvas>
+          <canvas id="canvas" class="game-canvas" style="cursor:grab;image-rendering:pixelated"></canvas>
           <div class="info-bar">
             <span id="fps"></span> · Click/drag canvas to orbit · Tap buttons to control camera
           </div>
@@ -129,7 +129,7 @@
         last = now;
         frames++; fpsTime += dt;
         if (fpsTime > 1.0) {
-          fpsEl.textContent = `${(frames/fpsTime).toFixed(1)} fps · 640×480 · 7 spheres · 3 lights`;
+          fpsEl.textContent = `${(frames/fpsTime).toFixed(1)} fps · 320×240 · daylight · 2 lights`;
           frames = 0; fpsTime = 0;
         }
         rt.render_frame(now / 1000);
