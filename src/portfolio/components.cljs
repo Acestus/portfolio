@@ -12,6 +12,7 @@
                {:key :invaders    :label "Invaders"   :href "/invaders.html"}
                {:key :matcher     :label "CAF Puzzle"  :href "/matcher.html"}
                {:key :breakout    :label "Breakout"   :href "/breakout.html"}
+               {:key :helicopter  :label "Choplifter" :href "/helicopter.html"}
                {:key :fabric      :label "Fabric"     :href "/fabric.html"}
                {:key :policy      :label "Policy"     :href "/policy.html"}
                {:key :logs        :label "Logs"       :href "/logs.html"}

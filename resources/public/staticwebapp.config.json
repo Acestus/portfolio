@@ -8,6 +8,7 @@
     { "route": "/invaders",   "rewrite": "/invaders.html" },
     { "route": "/matcher",    "rewrite": "/matcher.html" },
     { "route": "/breakout",   "rewrite": "/breakout.html" },
+    { "route": "/helicopter", "rewrite": "/helicopter.html" },
     { "route": "/fabric",     "rewrite": "/fabric.html" },
     { "route": "/policy",     "rewrite": "/policy.html" },
     { "route": "/logs",       "rewrite": "/logs.html" },

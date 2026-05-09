@@ -8,7 +8,8 @@
     :items [{:title "Cloud Platformer"      :href "/platformer.html" :icon "🏔"  :desc "Navigate cloud infrastructure in 8-bit glory"}
             {:title "Space Invaders"        :href "/invaders.html"   :icon "👾"  :desc "Defend against security misconfigurations"}
             {:title "CAF Naming Puzzle"     :href "/matcher.html"    :icon "🧩"  :desc "Match resources to CAF-compliant names"}
-            {:title "Tech Breakout"         :href "/breakout.html"   :icon "🧱"  :desc "Smash through tech-themed bricks"}]}
+            {:title "Tech Breakout"         :href "/breakout.html"   :icon "🧱"  :desc "Smash through tech-themed bricks"}
+            {:title "Choplifter"           :href "/helicopter.html" :icon "🚁"  :desc "Rescue hostages from enemy territory"}]}
    {:category "📊 Professional"
     :items [{:title "Fabric Pipeline"       :href "/fabric.html"     :icon "💎"  :desc "Medallion architecture — Bronze → Silver → Gold"}
             {:title "Policy Dashboard"      :href "/policy.html"     :icon "🛡"  :desc "Azure Policy governance at scale"}

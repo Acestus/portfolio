@@ -41,6 +41,12 @@
    :asset-path "/js/breakout"
    :modules {:main {:init-fn portfolio.games.breakout/init}}}
 
+  :helicopter
+  {:target :browser
+   :output-dir "resources/public/js/helicopter"
+   :asset-path "/js/helicopter"
+   :modules {:main {:init-fn portfolio.games.helicopter/init}}}
+
   ;; --- Professional Dashboards ---
 
   :fabric

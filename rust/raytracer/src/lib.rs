@@ -8,53 +8,35 @@ const H: u32 = 480;
 // --- Vector math ---
 
 #[derive(Clone, Copy)]
-struct Vec3 {
-    x: f64,
-    y: f64,
-    z: f64,
-}
+struct Vec3 { x: f64, y: f64, z: f64 }
 
 impl Vec3 {
     fn new(x: f64, y: f64, z: f64) -> Self { Vec3 { x, y, z } }
-    fn dot(self, o: Vec3) -> f64 { self.x * o.x + self.y * o.y + self.z * o.z }
+    fn dot(self, o: Vec3) -> f64 { self.x*o.x + self.y*o.y + self.z*o.z }
     fn len(self) -> f64 { self.dot(self).sqrt() }
     fn norm(self) -> Vec3 {
         let l = self.len();
-        if l < 1e-12 { return Vec3::new(0.0, 1.0, 0.0); }
-        Vec3::new(self.x / l, self.y / l, self.z / l)
+        if l < 1e-12 { Vec3::new(0.0,1.0,0.0) } else { Vec3::new(self.x/l, self.y/l, self.z/l) }
     }
-    fn sub(self, o: Vec3) -> Vec3 { Vec3::new(self.x - o.x, self.y - o.y, self.z - o.z) }
-    fn add(self, o: Vec3) -> Vec3 { Vec3::new(self.x + o.x, self.y + o.y, self.z + o.z) }
-    fn scale(self, s: f64) -> Vec3 { Vec3::new(self.x * s, self.y * s, self.z * s) }
+    fn sub(self, o: Vec3) -> Vec3 { Vec3::new(self.x-o.x, self.y-o.y, self.z-o.z) }
+    fn add(self, o: Vec3) -> Vec3 { Vec3::new(self.x+o.x, self.y+o.y, self.z+o.z) }
+    fn scale(self, s: f64) -> Vec3 { Vec3::new(self.x*s, self.y*s, self.z*s) }
     fn reflect(self, n: Vec3) -> Vec3 { self.sub(n.scale(2.0 * self.dot(n))) }
     fn cross(self, o: Vec3) -> Vec3 {
-        Vec3::new(
-            self.y * o.z - self.z * o.y,
-            self.z * o.x - self.x * o.z,
-            self.x * o.y - self.y * o.x,
-        )
+        Vec3::new(self.y*o.z - self.z*o.y, self.z*o.x - self.x*o.z, self.x*o.y - self.y*o.x)
     }
     fn lerp(self, o: Vec3, t: f64) -> Vec3 { self.scale(1.0 - t).add(o.scale(t)) }
 }
 
-// --- Scene objects ---
+// --- Primitives ---
 
 #[derive(Clone, Copy)]
-struct Sphere {
-    center: Vec3,
-    radius: f64,
-    color: Vec3,
-    specular: f64,
-    reflective: f64,
-}
+struct Sphere { center: Vec3, radius: f64, color: Vec3, specular: f64, reflective: f64 }
 
-struct Light {
-    base_pos: Vec3,
-    color: Vec3,
-    intensity: f64,
-    orbit_radius: f64,
-    orbit_speed: f64,
-}
+#[derive(Clone, Copy)]
+struct Capsule { a: Vec3, b: Vec3, radius: f64, color: Vec3, specular: f64, reflective: f64 }
+
+struct Light { base_pos: Vec3, color: Vec3, intensity: f64, orbit_radius: f64, orbit_speed: f64 }
 
 impl Light {
     fn pos_at(&self, t: f64) -> Vec3 {
@@ -66,186 +48,292 @@ impl Light {
     }
 }
 
-// --- Starfield (procedural, seeded hash) ---
+// --- Hit result ---
 
-fn hash_star(x: u32, y: u32) -> f64 {
-    let mut h = x.wrapping_mul(374761393).wrapping_add(y.wrapping_mul(668265263));
-    h = (h ^ (h >> 13)).wrapping_mul(1274126177);
-    h ^= h >> 16;
-    (h & 0xFFFF) as f64 / 65535.0
-}
+#[derive(Clone, Copy)]
+struct Hit { t: f64, normal: Vec3, color: Vec3, specular: f64, reflective: f64 }
 
-fn starfield(dir: Vec3) -> Vec3 {
-    // Spherical UV for consistent stars
-    let u = (dir.z.atan2(dir.x) * 800.0) as u32;
-    let v = (dir.y.asin() * 800.0) as u32;
-    let h = hash_star(u, v);
-    if h > 0.992 {
-        let brightness = ((h - 0.992) / 0.008).powf(0.5);
-        let tint = hash_star(u.wrapping_add(1), v);
-        // Warm or cool star colors
-        if tint > 0.5 {
-            Vec3::new(brightness, brightness * 0.9, brightness * 0.7)
-        } else {
-            Vec3::new(brightness * 0.7, brightness * 0.85, brightness)
-        }
-    } else {
-        // Deep space background — dark purple/blue gradient
-        let t = 0.5 * (dir.y + 1.0);
-        Vec3::new(0.01, 0.005, 0.03).lerp(Vec3::new(0.03, 0.02, 0.08), t)
-    }
-}
+// --- Ray-sphere ---
 
-// --- Checkerboard infinite plane (y = floor_y) ---
-
-fn intersect_floor(origin: Vec3, dir: Vec3, floor_y: f64) -> Option<f64> {
-    if dir.y.abs() < 1e-8 { return None; }
-    let t = (floor_y - origin.y) / dir.y;
-    if t > 0.001 { Some(t) } else { None }
-}
-
-fn floor_color(hit: Vec3) -> (Vec3, f64) {
-    let ix = (hit.x.floor() as i32).rem_euclid(2);
-    let iz = (hit.z.floor() as i32).rem_euclid(2);
-    if (ix + iz) % 2 == 0 {
-        (Vec3::new(0.08, 0.06, 0.12), 0.7) // dark tile, very reflective
-    } else {
-        (Vec3::new(0.25, 0.2, 0.35), 0.5) // lighter tile
-    }
-}
-
-// --- Ray-sphere intersection ---
-
-fn intersect_sphere(origin: Vec3, dir: Vec3, sphere: &Sphere) -> Option<f64> {
-    let oc = origin.sub(sphere.center);
+fn hit_sphere(origin: Vec3, dir: Vec3, s: &Sphere) -> Option<Hit> {
+    let oc = origin.sub(s.center);
     let a = dir.dot(dir);
     let b = 2.0 * oc.dot(dir);
-    let c = oc.dot(oc) - sphere.radius * sphere.radius;
-    let disc = b * b - 4.0 * a * c;
+    let c = oc.dot(oc) - s.radius * s.radius;
+    let disc = b*b - 4.0*a*c;
     if disc < 0.0 { return None; }
     let sq = disc.sqrt();
-    let t1 = (-b - sq) / (2.0 * a);
-    if t1 > 0.001 { return Some(t1); }
-    let t2 = (-b + sq) / (2.0 * a);
-    if t2 > 0.001 { Some(t2) } else { None }
+    let t1 = (-b - sq) / (2.0*a);
+    let t = if t1 > 0.001 { t1 } else {
+        let t2 = (-b + sq) / (2.0*a);
+        if t2 > 0.001 { t2 } else { return None; }
+    };
+    let p = origin.add(dir.scale(t));
+    Some(Hit { t, normal: p.sub(s.center).norm(), color: s.color, specular: s.specular, reflective: s.reflective })
+}
+
+// --- Ray-capsule (sphere-swept segment) ---
+
+fn hit_capsule(origin: Vec3, dir: Vec3, cap: &Capsule) -> Option<Hit> {
+    let ba = cap.b.sub(cap.a);
+    let oa = origin.sub(cap.a);
+    let baba = ba.dot(ba);
+    let bard = ba.dot(dir);
+    let baoa = ba.dot(oa);
+    let rdrd = dir.dot(dir);
+    let rdoa = dir.dot(oa);
+    let oaoa = oa.dot(oa);
+    let r2 = cap.radius * cap.radius;
+
+    let a = rdrd - bard*bard/baba;
+    let b = rdoa - baoa*bard/baba;
+    let c = oaoa - baoa*baoa/baba - r2;
+
+    let mut best_t = f64::MAX;
+    let mut best_n = Vec3::new(0.0,1.0,0.0);
+
+    let disc = b*b - a*c;
+    if disc >= 0.0 {
+        let sq = disc.sqrt();
+        for &sign in &[-1.0_f64, 1.0] {
+            let t = (-b + sign*sq) / a;
+            if t > 0.001 && t < best_t {
+                let y = baoa + t * bard;
+                if y > 0.0 && y < baba {
+                    best_t = t;
+                    let p = origin.add(dir.scale(t));
+                    let proj = cap.a.add(ba.scale(y / baba));
+                    best_n = p.sub(proj).norm();
+                }
+            }
+        }
+    }
+
+    for center in &[cap.a, cap.b] {
+        let oc = origin.sub(*center);
+        let a2 = dir.dot(dir);
+        let b2 = 2.0 * oc.dot(dir);
+        let c2 = oc.dot(oc) - r2;
+        let d2 = b2*b2 - 4.0*a2*c2;
+        if d2 >= 0.0 {
+            let t = (-b2 - d2.sqrt()) / (2.0*a2);
+            if t > 0.001 && t < best_t {
+                best_t = t;
+                best_n = origin.add(dir.scale(t)).sub(*center).norm();
+            }
+        }
+    }
+
+    if best_t < f64::MAX {
+        Some(Hit { t: best_t, normal: best_n, color: cap.color, specular: cap.specular, reflective: cap.reflective })
+    } else { None }
+}
+
+// --- Floor ---
+
+const FLOOR_Y: f64 = -2.0;
+
+fn hit_floor(origin: Vec3, dir: Vec3) -> Option<Hit> {
+    if dir.y.abs() < 1e-8 { return None; }
+    let t = (FLOOR_Y - origin.y) / dir.y;
+    if t < 0.001 { return None; }
+    let p = origin.add(dir.scale(t));
+    let ix = (p.x.floor() as i32).rem_euclid(2);
+    let iz = (p.z.floor() as i32).rem_euclid(2);
+    let (color, refl) = if (ix+iz)%2==0 { (Vec3::new(0.08,0.06,0.12), 0.6) } else { (Vec3::new(0.22,0.18,0.3), 0.4) };
+    Some(Hit { t, normal: Vec3::new(0.0,1.0,0.0), color, specular: 30.0, reflective: refl })
+}
+
+// --- Starfield ---
+
+fn starfield(dir: Vec3) -> Vec3 {
+    let d = dir.norm();
+    let u = ((d.z.atan2(d.x) * 400.0).rem_euclid(100000.0)) as u32;
+    let v = ((d.y.asin() * 400.0).rem_euclid(100000.0)) as u32;
+    let mut h = u.wrapping_mul(374761393).wrapping_add(v.wrapping_mul(668265263));
+    h = (h ^ (h >> 13)).wrapping_mul(1274126177);
+    h ^= h >> 16;
+    let val = (h & 0xFFFF) as f64 / 65535.0;
+    if val > 0.997 {
+        let br = ((val - 0.997) / 0.003).powf(0.4) * 0.6;
+        Vec3::new(br * 0.9, br * 0.92, br)
+    } else {
+        let t = 0.5 * (d.y + 1.0);
+        Vec3::new(0.006, 0.003, 0.02).lerp(Vec3::new(0.02, 0.012, 0.055), t)
+    }
+}
+
+// --- Scene ---
+
+struct Scene { spheres: Vec<Sphere>, capsules: Vec<Capsule> }
+
+impl Scene {
+    fn closest_hit(&self, origin: Vec3, dir: Vec3) -> Option<Hit> {
+        let mut best: Option<Hit> = None;
+        for s in &self.spheres {
+            if let Some(h) = hit_sphere(origin, dir, s) {
+                if best.is_none() || h.t < best.unwrap().t { best = Some(h); }
+            }
+        }
+        for c in &self.capsules {
+            if let Some(h) = hit_capsule(origin, dir, c) {
+                if best.is_none() || h.t < best.unwrap().t { best = Some(h); }
+            }
+        }
+        if let Some(h) = hit_floor(origin, dir) {
+            if best.is_none() || h.t < best.unwrap().t { best = Some(h); }
+        }
+        best
+    }
+
+    fn any_hit(&self, origin: Vec3, dir: Vec3, max_t: f64) -> bool {
+        for s in &self.spheres {
+            if let Some(h) = hit_sphere(origin, dir, s) { if h.t < max_t { return true; } }
+        }
+        for c in &self.capsules {
+            if let Some(h) = hit_capsule(origin, dir, c) { if h.t < max_t { return true; } }
+        }
+        false
+    }
 }
 
 // --- Trace ---
 
-const FLOOR_Y: f64 = -2.0;
-const MAX_DEPTH: u32 = 3;
+const MAX_DEPTH: u32 = 2;
 
-fn trace(
-    origin: Vec3,
-    dir: Vec3,
-    spheres: &[Sphere],
-    lights: &[Light],
-    time: f64,
-    depth: u32,
-) -> Vec3 {
-    let mut closest_t = f64::MAX;
-    let mut hit_idx: Option<usize> = None;
-    let mut hit_floor = false;
-
-    for (i, s) in spheres.iter().enumerate() {
-        if let Some(t) = intersect_sphere(origin, dir, s) {
-            if t < closest_t {
-                closest_t = t;
-                hit_idx = Some(i);
-                hit_floor = false;
-            }
-        }
-    }
-
-    // Floor
-    if let Some(t) = intersect_floor(origin, dir, FLOOR_Y) {
-        if t < closest_t {
-            closest_t = t;
-            hit_idx = None;
-            hit_floor = true;
-        }
-    }
-
-    if !hit_floor && hit_idx.is_none() {
-        return starfield(dir.norm());
-    }
-
-    let hit_point = origin.add(dir.scale(closest_t));
-
-    let (normal, base_color, specular_exp, reflective) = if hit_floor {
-        let (fc, refl) = floor_color(hit_point);
-        (Vec3::new(0.0, 1.0, 0.0), fc, 30.0, refl)
-    } else {
-        let s = &spheres[hit_idx.unwrap()];
-        let n = hit_point.sub(s.center).norm();
-        (n, s.color, s.specular, s.reflective)
+fn trace(origin: Vec3, dir: Vec3, scene: &Scene, lights: &[Light], time: f64, depth: u32) -> Vec3 {
+    let hit = match scene.closest_hit(origin, dir) {
+        Some(h) => h,
+        None => return starfield(dir),
     };
 
-    // Lighting with colored lights
-    let mut diffuse = Vec3::new(0.02, 0.02, 0.03); // dim ambient
+    let p = origin.add(dir.scale(hit.t));
+    let n = hit.normal;
+
+    let mut diffuse = Vec3::new(0.03, 0.03, 0.04);
     let mut spec = Vec3::new(0.0, 0.0, 0.0);
 
     for light in lights {
         let lp = light.pos_at(time);
-        let to_light = lp.sub(hit_point);
-        let light_dist = to_light.len();
-        let to_light_n = to_light.scale(1.0 / light_dist);
+        let to_l = lp.sub(p);
+        let ld = to_l.len();
+        let ln = to_l.scale(1.0/ld);
 
-        // Shadow check
-        let shadow_origin = hit_point.add(normal.scale(0.001));
-        let mut in_shadow = false;
-        for s in spheres {
-            if let Some(st) = intersect_sphere(shadow_origin, to_light_n, s) {
-                if st < light_dist {
-                    in_shadow = true;
-                    break;
-                }
-            }
-        }
+        if scene.any_hit(p.add(n.scale(0.002)), ln, ld) { continue; }
 
-        if !in_shadow {
-            let ndl = normal.dot(to_light_n).max(0.0);
-            let attenuation = light.intensity / (1.0 + light_dist * 0.02);
-            diffuse = diffuse.add(light.color.scale(ndl * attenuation));
+        let ndl = n.dot(ln).max(0.0);
+        let att = light.intensity / (1.0 + ld * 0.012);
+        diffuse = diffuse.add(light.color.scale(ndl * att));
 
-            // Blinn-Phong specular
-            let half = to_light_n.sub(dir.norm()).norm();
-            let ndh = normal.dot(half).max(0.0);
-            spec = spec.add(light.color.scale(ndh.powf(specular_exp) * attenuation));
-        }
+        let half = ln.sub(dir.norm()).norm();
+        let ndh = n.dot(half).max(0.0);
+        spec = spec.add(light.color.scale(ndh.powf(hit.specular) * att));
     }
 
     let mut color = Vec3::new(
-        (base_color.x * diffuse.x + spec.x).min(1.0),
-        (base_color.y * diffuse.y + spec.y).min(1.0),
-        (base_color.z * diffuse.z + spec.z).min(1.0),
+        (hit.color.x * diffuse.x + spec.x).min(1.0),
+        (hit.color.y * diffuse.y + spec.y).min(1.0),
+        (hit.color.z * diffuse.z + spec.z).min(1.0),
     );
 
-    // Reflection
-    if reflective > 0.0 && depth < MAX_DEPTH {
-        let refl_dir = dir.reflect(normal);
-        let refl_origin = hit_point.add(normal.scale(0.001));
-        let refl_color = trace(refl_origin, refl_dir, spheres, lights, time, depth + 1);
-        color = color.scale(1.0 - reflective).add(refl_color.scale(reflective));
+    if hit.reflective > 0.0 && depth < MAX_DEPTH {
+        let rc = trace(p.add(n.scale(0.002)), dir.reflect(n), scene, lights, time, depth+1);
+        color = color.scale(1.0 - hit.reflective).add(rc.scale(hit.reflective));
     }
 
-    // Rim glow on spheres (Mind's Eye edge lighting)
-    if hit_idx.is_some() {
-        let rim = 1.0 - normal.dot(dir.scale(-1.0).norm()).max(0.0);
-        let rim = rim.powf(3.0) * 0.4;
-        color = color.add(Vec3::new(0.2, 0.4, 1.0).scale(rim));
-    }
-
+    // Rim glow
+    let rim = (1.0 - n.dot(dir.scale(-1.0).norm()).max(0.0)).powf(3.0) * 0.2;
+    color = color.add(Vec3::new(0.15, 0.3, 0.8).scale(rim));
     color
 }
 
-// --- Gamma correction ---
+fn gamma(v: f64) -> u8 { (v.max(0.0).min(1.0).powf(1.0/2.2) * 255.0) as u8 }
 
-fn gamma(v: f64) -> u8 {
-    (v.max(0.0).min(1.0).powf(1.0 / 2.2) * 255.0) as u8
+// --- Unicyclist builder ---
+
+fn build_unicyclist(scene: &mut Scene, bx: f64, bz: f64, time: f64, phase: f64, hue: usize) {
+    let pedal_speed = 2.5;
+    let pa = time * pedal_speed + phase;
+
+    let wy = FLOOR_Y + 0.55;
+
+    // Wheel: ring of small spheres (looks like a torus but cheaper to raytrace)
+    let wheel_r = 0.45;
+    let spoke_r = 0.055;
+    let n_spokes = 12;
+    for i in 0..n_spokes {
+        let a = (i as f64) * std::f64::consts::TAU / (n_spokes as f64) + time * pedal_speed;
+        scene.spheres.push(Sphere {
+            center: Vec3::new(bx + wheel_r * a.cos(), wy + wheel_r * a.sin(), bz),
+            radius: spoke_r, color: Vec3::new(0.8,0.8,0.88), specular: 200.0, reflective: 0.75,
+        });
+    }
+
+    // Hub
+    scene.spheres.push(Sphere { center: Vec3::new(bx, wy, bz), radius: 0.1,
+        color: Vec3::new(0.9,0.9,0.95), specular: 300.0, reflective: 0.85 });
+
+    // Seat post
+    let seat_y = wy + 0.9;
+    scene.capsules.push(Capsule { a: Vec3::new(bx, wy+0.15, bz), b: Vec3::new(bx, seat_y, bz),
+        radius: 0.04, color: Vec3::new(0.7,0.7,0.75), specular: 100.0, reflective: 0.6 });
+
+    // Seat
+    scene.capsules.push(Capsule {
+        a: Vec3::new(bx - 0.1, seat_y + 0.05, bz),
+        b: Vec3::new(bx + 0.1, seat_y + 0.05, bz),
+        radius: 0.06, color: Vec3::new(0.3,0.3,0.35), specular: 50.0, reflective: 0.3 });
+
+    // Body colors
+    let colors = [
+        Vec3::new(0.0,0.5,0.9), Vec3::new(0.9,0.2,0.4), Vec3::new(0.0,0.8,0.4),
+        Vec3::new(0.9,0.7,0.0), Vec3::new(0.7,0.3,0.9),
+    ];
+    let bc = colors[hue % colors.len()];
+    let bob = 0.04 * (time * 3.0 + phase).sin();
+
+    // Torso
+    let hip_y = seat_y + 0.25;
+    let sh_y = hip_y + 0.55;
+    scene.capsules.push(Capsule {
+        a: Vec3::new(bx, hip_y+bob, bz), b: Vec3::new(bx, sh_y+bob, bz),
+        radius: 0.14, color: bc, specular: 80.0, reflective: 0.5 });
+
+    // Head
+    scene.spheres.push(Sphere { center: Vec3::new(bx, sh_y+0.32+bob, bz),
+        radius: 0.16, color: Vec3::new(0.9,0.75,0.65), specular: 60.0, reflective: 0.3 });
+
+    // Legs — pedaling
+    let cr = 0.25;
+    let rf_x = bx + cr * pa.cos();
+    let rf_y = wy + cr * pa.sin();
+    let rk_x = bx + 0.12 * pa.cos();
+    let rk_y = (rf_y + hip_y + bob) * 0.5 + 0.1;
+
+    scene.capsules.push(Capsule { a: Vec3::new(bx-0.06, hip_y+bob, bz+0.08),
+        b: Vec3::new(rk_x, rk_y, bz+0.08), radius: 0.06, color: bc, specular: 60.0, reflective: 0.4 });
+    scene.capsules.push(Capsule { a: Vec3::new(rk_x, rk_y, bz+0.08),
+        b: Vec3::new(rf_x, rf_y, bz+0.08), radius: 0.05, color: bc, specular: 60.0, reflective: 0.4 });
+
+    let lf_x = bx - cr * pa.cos();
+    let lf_y = wy - cr * pa.sin();
+    let lk_x = bx - 0.12 * pa.cos();
+    let lk_y = (lf_y + hip_y + bob) * 0.5 + 0.1;
+
+    scene.capsules.push(Capsule { a: Vec3::new(bx+0.06, hip_y+bob, bz-0.08),
+        b: Vec3::new(lk_x, lk_y, bz-0.08), radius: 0.06, color: bc, specular: 60.0, reflective: 0.4 });
+    scene.capsules.push(Capsule { a: Vec3::new(lk_x, lk_y, bz-0.08),
+        b: Vec3::new(lf_x, lf_y, bz-0.08), radius: 0.05, color: bc, specular: 60.0, reflective: 0.4 });
+
+    // Arms
+    let sw = 0.06 * (time * 2.0 + phase).sin();
+    scene.capsules.push(Capsule { a: Vec3::new(bx, sh_y-0.05+bob, bz+0.16),
+        b: Vec3::new(bx+0.25+sw, sh_y-0.3+bob, bz+0.1), radius: 0.045, color: bc, specular: 60.0, reflective: 0.4 });
+    scene.capsules.push(Capsule { a: Vec3::new(bx, sh_y-0.05+bob, bz-0.16),
+        b: Vec3::new(bx+0.25+sw, sh_y-0.3+bob, bz-0.1), radius: 0.045, color: bc, specular: 60.0, reflective: 0.4 });
 }
 
-// --- WASM interface ---
+// --- WASM ---
 
 #[wasm_bindgen]
 pub struct Raytracer {
@@ -260,155 +348,74 @@ pub struct Raytracer {
 impl Raytracer {
     #[wasm_bindgen(constructor)]
     pub fn new(canvas: HtmlCanvasElement) -> Result<Raytracer, JsValue> {
-        let ctx = canvas
-            .get_context("2d")?
-            .unwrap()
-            .dyn_into::<CanvasRenderingContext2d>()?;
+        let ctx = canvas.get_context("2d")?.unwrap().dyn_into::<CanvasRenderingContext2d>()?;
         canvas.set_width(W);
         canvas.set_height(H);
 
-        let buf = vec![0u8; (W * H * 4) as usize];
-
-        // Colored orbiting lights — Mind's Eye dramatic lighting
         let lights = vec![
-            Light { base_pos: Vec3::new(5.0, 6.0, 0.0),  color: Vec3::new(0.6, 0.8, 1.0),  intensity: 1.2, orbit_radius: 4.0, orbit_speed: 0.3 },
-            Light { base_pos: Vec3::new(-3.0, 4.0, 2.0), color: Vec3::new(1.0, 0.4, 0.8),  intensity: 0.8, orbit_radius: 3.0, orbit_speed: -0.5 },
-            Light { base_pos: Vec3::new(0.0, 8.0, -2.0), color: Vec3::new(1.0, 0.95, 0.6), intensity: 0.6, orbit_radius: 2.0, orbit_speed: 0.7 },
+            Light { base_pos: Vec3::new(5.0,8.0,0.0), color: Vec3::new(0.6,0.8,1.0), intensity: 1.4, orbit_radius: 5.0, orbit_speed: 0.2 },
+            Light { base_pos: Vec3::new(-4.0,6.0,3.0), color: Vec3::new(1.0,0.4,0.7), intensity: 0.9, orbit_radius: 3.0, orbit_speed: -0.35 },
+            Light { base_pos: Vec3::new(0.0,10.0,-3.0), color: Vec3::new(1.0,0.95,0.7), intensity: 0.7, orbit_radius: 2.0, orbit_speed: 0.5 },
         ];
 
-        Ok(Raytracer { ctx, buf, lights, camera_speed: 0.12, camera_height_offset: 0.0 })
+        Ok(Raytracer { ctx, buf: vec![0u8; (W*H*4) as usize], lights, camera_speed: 0.1, camera_height_offset: 0.0 })
     }
 
-    /// Build the animated scene for a given time
-    fn build_scene(&self, time: f64) -> Vec<Sphere> {
-        let t = time;
+    fn build_scene(&self, time: f64) -> Scene {
+        let mut scene = Scene { spheres: Vec::with_capacity(80), capsules: Vec::with_capacity(60) };
 
-        // Central chrome orb — slowly pulsing
-        let pulse = 1.0 + 0.15 * (t * 0.8).sin();
-        let main = Sphere {
-            center: Vec3::new(0.0, 0.5 * (t * 0.3).sin(), 0.0),
-            radius: 1.2 * pulse,
-            color: Vec3::new(0.85, 0.85, 0.9), // chrome
-            specular: 300.0,
-            reflective: 0.85,
-        };
+        // 5 unicyclists in V-formation
+        let riders: [(f64,f64,f64,usize); 5] = [
+            (0.0, 0.0, 0.0, 0),
+            (-1.8, -1.5, 0.8, 1),
+            (1.8, -1.5, -0.8, 2),
+            (-3.2, -3.0, 1.6, 3),
+            (3.2, -3.0, -1.6, 4),
+        ];
+        for &(x, z, phase, hue) in &riders {
+            build_unicyclist(&mut scene, x, z, time, phase, hue);
+        }
 
-        // Orbiting satellites — 4 spheres in different orbital planes
-        let sat1 = Sphere {
-            center: Vec3::new(
-                3.0 * (t * 0.4).cos(),
-                1.0 + 0.8 * (t * 0.6).sin(),
-                3.0 * (t * 0.4).sin(),
-            ),
-            radius: 0.5 + 0.1 * (t * 1.2).sin(),
-            color: Vec3::new(0.0, 0.6, 1.0), // cyan-blue
-            specular: 200.0,
-            reflective: 0.7,
-        };
+        // Floating chrome orbs — Mind's Eye vibes
+        scene.spheres.push(Sphere {
+            center: Vec3::new(6.0*(time*0.15).cos(), 4.0+1.5*(time*0.2).sin(), 6.0*(time*0.15).sin()),
+            radius: 0.6, color: Vec3::new(0.85,0.85,0.9), specular: 300.0, reflective: 0.9 });
+        scene.spheres.push(Sphere {
+            center: Vec3::new(-5.0*(time*0.12+2.0).cos(), 3.0+(time*0.18).cos(), -5.0*(time*0.12+2.0).sin()),
+            radius: 0.4, color: Vec3::new(1.0,0.85,0.0), specular: 250.0, reflective: 0.85 });
+        scene.spheres.push(Sphere {
+            center: Vec3::new(3.0*(time*0.22+1.0).sin(), 5.0+0.8*(time*0.14).cos(), -4.0*(time*0.18).cos()),
+            radius: 0.35, color: Vec3::new(0.9,0.2,0.5), specular: 200.0, reflective: 0.88 });
 
-        let sat2 = Sphere {
-            center: Vec3::new(
-                2.5 * (t * 0.55 + 2.0).cos(),
-                -0.5 + 1.2 * (t * 0.35).sin(),
-                2.5 * (t * 0.55 + 2.0).sin(),
-            ),
-            radius: 0.4 + 0.08 * (t * 1.5).cos(),
-            color: Vec3::new(1.0, 0.2, 0.5), // magenta
-            specular: 150.0,
-            reflective: 0.75,
-        };
-
-        let sat3 = Sphere {
-            center: Vec3::new(
-                4.0 * (t * 0.25 + 4.0).cos(),
-                0.3 + 0.5 * (t * 0.9).cos(),
-                4.0 * (t * 0.25 + 4.0).sin(),
-            ),
-            radius: 0.7,
-            color: Vec3::new(1.0, 0.85, 0.0), // gold
-            specular: 250.0,
-            reflective: 0.8,
-        };
-
-        let sat4 = Sphere {
-            center: Vec3::new(
-                1.8 * (t * 0.7 + 1.0).sin(),
-                1.5 + 0.4 * (t * 0.45).cos(),
-                1.8 * (t * 0.7 + 1.0).cos(),
-            ),
-            radius: 0.3,
-            color: Vec3::new(0.2, 1.0, 0.4), // emerald
-            specular: 180.0,
-            reflective: 0.9,
-        };
-
-        // Tiny orbiting moons around the main sphere
-        let moon1 = Sphere {
-            center: Vec3::new(
-                1.8 * (t * 1.2).cos(),
-                0.5 * (t * 0.3).sin() + 0.4 * (t * 1.8).sin(),
-                1.8 * (t * 1.2).sin(),
-            ),
-            radius: 0.15,
-            color: Vec3::new(0.9, 0.9, 1.0),
-            specular: 400.0,
-            reflective: 0.95,
-        };
-
-        let moon2 = Sphere {
-            center: Vec3::new(
-                2.0 * (t * -0.9 + 3.14).cos(),
-                0.5 * (t * 0.3).sin() + 0.6 * (t * 1.1 + 1.0).cos(),
-                2.0 * (t * -0.9 + 3.14).sin(),
-            ),
-            radius: 0.12,
-            color: Vec3::new(1.0, 0.7, 0.9),
-            specular: 400.0,
-            reflective: 0.95,
-        };
-
-        vec![main, sat1, sat2, sat3, sat4, moon1, moon2]
+        scene
     }
 
     pub fn render_frame(&mut self, time: f64) {
-        let spheres = self.build_scene(time);
+        let scene = self.build_scene(time);
 
-        // Sweeping camera — figure-8 path, slowly rising and falling
-        let cam_angle = time * self.camera_speed;
-        let cam_r = 7.0 + 2.0 * (time * 0.08).sin();
-        let cam_y = 2.5 + 1.5 * (time * 0.1).sin() + self.camera_height_offset;
-        let origin = Vec3::new(
-            cam_r * cam_angle.sin(),
-            cam_y,
-            cam_r * cam_angle.cos(),
-        );
-        let look_at = Vec3::new(
-            0.5 * (time * 0.05).sin(),
-            0.3 * (time * 0.07).cos(),
-            0.0,
-        );
+        let ca = time * self.camera_speed;
+        let cr = 6.5 + 1.5 * (time * 0.06).sin();
+        let cy = 1.5 + 1.0 * (time * 0.08).sin() + self.camera_height_offset;
+        let origin = Vec3::new(cr * ca.sin(), cy, cr * ca.cos());
+        let look_at = Vec3::new(0.0, 0.0, 0.0);
 
         let forward = look_at.sub(origin).norm();
-        let world_up = Vec3::new(0.0, 1.0, 0.0);
-        let right = forward.cross(world_up).norm();
+        let right = forward.cross(Vec3::new(0.0,1.0,0.0)).norm();
         let up = right.cross(forward);
-
-        let fov = 1.0;
+        let fov = 0.9;
         let aspect = W as f64 / H as f64;
 
         for y in 0..H {
             for x in 0..W {
-                let px = (2.0 * (x as f64 + 0.5) / W as f64 - 1.0) * aspect * fov;
-                let py = (1.0 - 2.0 * (y as f64 + 0.5) / H as f64) * fov;
-
+                let px = (2.0*(x as f64+0.5)/W as f64 - 1.0)*aspect*fov;
+                let py = (1.0 - 2.0*(y as f64+0.5)/H as f64)*fov;
                 let dir = forward.add(right.scale(px)).add(up.scale(py)).norm();
-                let color = trace(origin, dir, &spheres, &self.lights, time, 0);
-
-                let idx = ((y * W + x) * 4) as usize;
-                self.buf[idx]     = gamma(color.x);
-                self.buf[idx + 1] = gamma(color.y);
-                self.buf[idx + 2] = gamma(color.z);
-                self.buf[idx + 3] = 255;
+                let color = trace(origin, dir, &scene, &self.lights, time, 0);
+                let idx = ((y*W+x)*4) as usize;
+                self.buf[idx]   = gamma(color.x);
+                self.buf[idx+1] = gamma(color.y);
+                self.buf[idx+2] = gamma(color.z);
+                self.buf[idx+3] = 255;
             }
         }
 
@@ -417,13 +424,11 @@ impl Raytracer {
         }
     }
 
-    /// Click to shift camera height — gives the user control
     pub fn nudge_camera(&mut self, direction: f64) {
         self.camera_height_offset += direction * 0.5;
         self.camera_height_offset = self.camera_height_offset.clamp(-3.0, 6.0);
     }
 
-    /// Change camera orbit speed
     pub fn set_speed(&mut self, speed: f64) {
         self.camera_speed = speed.clamp(0.02, 0.5);
     }

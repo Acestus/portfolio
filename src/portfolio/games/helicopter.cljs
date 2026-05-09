@@ -1,0 +1,741 @@
+(ns portfolio.games.helicopter
+  "Choplifter — rescue hostages from enemy territory and fly them to safety."
+  (:require [portfolio.core :as core]
+            [portfolio.components :as ui]))
+
+(def ^:private W 800)
+(def ^:private H 500)
+(def ^:private GROUND-Y 420)
+(def ^:private GRAVITY 350)
+(def ^:private THRUST-UP -500)
+(def ^:private MOVE-SPEED 200)
+(def ^:private MAX-VY 300)
+(def ^:private MAX-VX 250)
+(def ^:private HELI-W 40)
+(def ^:private HELI-H 20)
+(def ^:private BASE-X 30)
+(def ^:private BASE-W 80)
+(def ^:private HOSTAGE-CAPACITY 8)
+(def ^:private HOSTAGES-PER-BUILDING 6)
+(def ^:private NUM-BUILDINGS 4)
+(def ^:private SCROLL-MARGIN 250)
+
+;; Deterministic PRNG
+(defn- prng [seed]
+  (let [s (bit-xor seed (bit-shift-left seed 13))
+        s (bit-xor s (unsigned-bit-shift-right s 17))
+        s (bit-xor s (bit-shift-left s 5))
+        s (bit-and s 0x7FFFFFFF)]
+    [s (/ (double s) 0x7FFFFFFF)]))
+
+(defn- make-buildings [seed]
+  (loop [i 0 s seed buildings []]
+    (if (>= i NUM-BUILDINGS)
+      [buildings s]
+      (let [[s1 r1] (prng s)
+            bx (+ 300 (* i 220) (* r1 60))]
+        (recur (inc i) s1
+               (conj buildings {:x bx :w 50 :alive true
+                                :hostages (vec (repeat HOSTAGES-PER-BUILDING
+                                                       {:state :inside}))}))))))
+
+(defn- make-tanks [seed n]
+  (loop [i 0 s seed tanks []]
+    (if (>= i n)
+      [tanks s]
+      (let [[s1 r1] (prng s)
+            [s2 r2] (prng s1)
+            tx (+ 250 (* r1 800))
+            dir (if (> r2 0.5) 1 -1)]
+        (recur (inc i) s2
+               (conj tanks {:x tx :dir dir :speed (+ 20 (* r1 30))
+                            :cooldown 0 :alive true}))))))
+
+(defn- make-jets [seed n]
+  (loop [i 0 s seed jets []]
+    (if (>= i n)
+      [jets s]
+      (let [[s1 r1] (prng s)
+            jy (+ 40 (* r1 100))
+            dir (if (> r1 0.5) 1 -1)]
+        (recur (inc i) s1
+               (conj jets {:x (if (pos? dir) -50 (+ W 50))
+                           :y jy :dir dir :speed (+ 120 (* r1 80))
+                           :cooldown 0 :alive true}))))))
+
+(defn- init-state []
+  (let [s 42
+        [buildings s1] (make-buildings s)
+        [tanks s2] (make-tanks s1 3)
+        [jets s3] (make-jets s2 2)]
+    {:heli-x 60 :heli-y 300 :heli-vx 0 :heli-vy 0
+     :facing :right
+     :landed false
+     :onboard 0
+     :rescued 0
+     :total-hostages (* NUM-BUILDINGS HOSTAGES-PER-BUILDING)
+     :lost 0
+     :buildings buildings
+     :tanks tanks
+     :jets jets
+     :bullets []
+     :enemy-bullets []
+     :explosions []
+     :particles []
+     :camera-x 0
+     :seed s3
+     :best 0
+     :state :title
+     :level 1
+     :keys #{}}))
+
+(defn- rect-overlap? [ax ay aw ah bx by bw bh]
+  (and (< ax (+ bx bw)) (< bx (+ ax aw))
+       (< ay (+ by bh)) (< by (+ ay ah))))
+
+(defn- update-hostage-release [state]
+  ;; When heli is landed near a building, hostages run out
+  (if (not (:landed state)) state
+    (let [hx (:heli-x state)]
+      (reduce-kv
+        (fn [st bi bldg]
+          (if (not (:alive bldg)) st
+            (let [near (and (> hx (- (:x bldg) 60)) (< hx (+ (:x bldg) (:w bldg) 60)))]
+              (if (not near) st
+                (let [hostages (:hostages bldg)
+                      released (mapv (fn [h]
+                                      (if (= (:state h) :inside)
+                                        (assoc h :state :running
+                                               :x (+ (:x bldg) (/ (:w bldg) 2))
+                                               :y GROUND-Y
+                                               :target-x hx)
+                                        h))
+                                     hostages)]
+                  (assoc-in st [:buildings bi :hostages] released))))))
+        state (vec (map-indexed vector (:buildings state)))))))
+
+(defn- update-hostages [state dt]
+  (let [hx (:heli-x state)
+        landed (:landed state)]
+    (reduce-kv
+      (fn [st bi bldg]
+        (let [hostages
+              (mapv
+                (fn [h]
+                  (case (:state h)
+                    :running
+                    (let [tx (if landed hx (:target-x h))
+                          dx (* (if (< (:x h) tx) 1 -1) 40 dt)
+                          nx (+ (:x h) dx)
+                          ;; Check if reached helicopter and heli is landed
+                          at-heli (and landed
+                                       (< (js/Math.abs (- nx hx)) 15))]
+                      (if at-heli
+                        (assoc h :state :boarding)
+                        (assoc h :x nx)))
+                    :at-base (assoc h :state :safe)
+                    h))
+                (:hostages bldg))
+              ;; Count how many are boarding
+              boarding (count (filter #(= (:state %) :boarding) hostages))
+              hostages (mapv (fn [h] (if (= (:state h) :boarding) (assoc h :state :boarded) h)) hostages)
+              new-onboard (min HOSTAGE-CAPACITY (+ (:onboard st) boarding))]
+          (-> st
+              (assoc-in [:buildings bi :hostages] hostages)
+              (assoc :onboard new-onboard))))
+      state (vec (map-indexed vector (:buildings state))))))
+
+(defn- update-unload [state]
+  ;; When landed at base and carrying hostages
+  (if (and (:landed state)
+           (< (:heli-x state) (+ BASE-X BASE-W 20))
+           (pos? (:onboard state)))
+    (-> state
+        (update :rescued + (:onboard state))
+        (assoc :onboard 0))
+    state))
+
+(defn- update-tanks [state dt]
+  (let [hx (:heli-x state) hy (:heli-y state)]
+    (assoc state :tanks
+      (mapv (fn [t]
+              (if (not (:alive t)) t
+                (let [nx (+ (:x t) (* (:dir t) (:speed t) dt))
+                      ;; Bounce at world edges
+                      [nx dir] (cond
+                                 (> nx 1200) [(- 1200 1) -1]
+                                 (< nx 100)  [101 1]
+                                 :else       [nx (:dir t)])
+                      cd (- (:cooldown t) dt)
+                      ;; Fire when cooldown expires and heli nearby
+                      fire? (and (<= cd 0) (< (js/Math.abs (- hx nx)) 300) (< hy (- GROUND-Y 30)))
+                      new-cd (if fire? (+ 1.5 (* (js/Math.random) 1.5)) (max 0 cd))]
+                  (assoc t :x nx :dir dir :cooldown new-cd
+                         :fired fire?))))
+            (:tanks state)))))
+
+(defn- update-jets [state dt]
+  (let [hx (:heli-x state) hy (:heli-y state)]
+    (assoc state :jets
+      (mapv (fn [j]
+              (if (not (:alive j)) j
+                (let [nx (+ (:x j) (* (:dir j) (:speed j) dt))
+                      cd (- (:cooldown j) dt)
+                      fire? (and (<= cd 0) (< (js/Math.abs (- hx nx)) 200))
+                      new-cd (if fire? (+ 2.0 (* (js/Math.random) 1.0)) (max 0 cd))
+                      ;; Wrap around
+                      nx (cond (> nx (+ W 80)) -60
+                               (< nx -80) (+ W 60)
+                               :else nx)]
+                  (assoc j :x nx :cooldown new-cd :fired fire?))))
+            (:jets state)))))
+
+(defn- spawn-enemy-bullets [state]
+  (let [hx (:heli-x state) hy (:heli-y state)
+        tank-shots (for [t (:tanks state) :when (and (:alive t) (:fired t))]
+                     {:x (:x t) :y (- GROUND-Y 10)
+                      :vx (* 0.6 (- hx (:x t))) :vy (* 0.6 (- hy (- GROUND-Y 10)))
+                      :life 2.0})
+        jet-shots (for [j (:jets state) :when (and (:alive j) (:fired j))]
+                    {:x (:x j) :y (+ (:y j) 10)
+                     :vx 0 :vy 150
+                     :life 2.0})]
+    (update state :enemy-bullets into (concat tank-shots jet-shots))))
+
+(defn- update-bullets [state dt]
+  (-> state
+      (update :bullets
+              (fn [bs]
+                (filterv #(> (:life %) 0)
+                         (mapv (fn [b]
+                                 (-> b
+                                     (update :x + (* (:vx b) dt))
+                                     (update :y + (* (:vy b) dt))
+                                     (update :life - dt)))
+                               bs))))
+      (update :enemy-bullets
+              (fn [bs]
+                (filterv #(> (:life %) 0)
+                         (mapv (fn [b]
+                                 (-> b
+                                     (update :x + (* (:vx b) dt))
+                                     (update :y + (* (:vy b) dt))
+                                     (update :life - dt)))
+                               bs))))))
+
+(defn- check-collisions [state]
+  (let [hx (:heli-x state) hy (:heli-y state)
+        ;; Player bullets hit tanks
+        state (reduce
+                (fn [st bi]
+                  (let [b (nth (:bullets st) bi nil)]
+                    (if (nil? b) st
+                      (let [hit-tank (first (keep-indexed
+                                              (fn [ti t]
+                                                (when (and (:alive t)
+                                                           (< (js/Math.abs (- (:x b) (:x t))) 20)
+                                                           (< (js/Math.abs (- (:y b) GROUND-Y)) 25))
+                                                  ti))
+                                              (:tanks st)))]
+                        (if hit-tank
+                          (-> st
+                              (assoc-in [:tanks hit-tank :alive] false)
+                              (assoc-in [:bullets bi :life] 0)
+                              (update :explosions conj {:x (:x b) :y GROUND-Y :life 0.8}))
+                          st)))))
+                state (range (count (:bullets state))))
+        ;; Player bullets hit jets
+        state (reduce
+                (fn [st bi]
+                  (let [b (nth (:bullets st) bi nil)]
+                    (if (or (nil? b) (<= (:life b) 0)) st
+                      (let [hit-jet (first (keep-indexed
+                                             (fn [ji j]
+                                               (when (and (:alive j)
+                                                          (< (js/Math.abs (- (:x b) (:x j))) 25)
+                                                          (< (js/Math.abs (- (:y b) (:y j))) 15))
+                                                 ji))
+                                             (:jets st)))]
+                        (if hit-jet
+                          (-> st
+                              (assoc-in [:jets hit-jet :alive] false)
+                              (assoc-in [:bullets bi :life] 0)
+                              (update :explosions conj {:x (:x b) :y (:y (nth (:jets st) hit-jet)) :life 0.8}))
+                          st)))))
+                state (range (count (:bullets state))))
+        ;; Enemy bullets hit heli
+        hit-by-enemy (some (fn [b]
+                             (rect-overlap? (- hx (/ HELI-W 2)) (- hy (/ HELI-H 2)) HELI-W HELI-H
+                                            (- (:x b) 3) (- (:y b) 3) 6 6))
+                           (:enemy-bullets state))
+        ;; Enemy bullets kill running hostages
+        state (reduce-kv
+                (fn [st bi bldg]
+                  (let [hostages (mapv (fn [h]
+                                         (if (not= (:state h) :running) h
+                                           (if (some (fn [b]
+                                                       (< (js/Math.abs (- (:x h) (:x b))) 8))
+                                                     (:enemy-bullets st))
+                                             (assoc h :state :dead)
+                                             h)))
+                                       (:hostages bldg))
+                        newly-dead (count (filter (fn [[new-h old-h]]
+                                                        (and (= (:state new-h) :dead)
+                                                             (not= (:state old-h) :dead)))
+                                                      (map vector hostages (:hostages bldg))))]
+                    (-> st
+                        (assoc-in [:buildings bi :hostages] hostages)
+                        (update :lost + newly-dead))))
+                state (vec (map-indexed vector (:buildings state))))]
+    (if hit-by-enemy
+      (-> state (assoc :state :dead)
+          (update :best #(max % (:rescued state)))
+          (update :explosions conj {:x hx :y hy :life 1.2}))
+      state)))
+
+(defn- update-explosions [state dt]
+  (update state :explosions
+          (fn [exs] (filterv #(> (:life %) 0)
+                             (mapv #(update % :life - dt) exs)))))
+
+(defn- update-particles [state dt]
+  (update state :particles
+          (fn [ps] (filterv #(> (:life %) 0)
+                            (mapv (fn [p] (-> p
+                                              (update :x + (* (:vx p) dt))
+                                              (update :y + (* (:vy p) dt))
+                                              (update :life - dt)))
+                                  ps)))))
+
+(defn- add-rotor-particles [state]
+  (if (or (:landed state) (not= (:state state) :playing)) state
+    (let [hx (:heli-x state) hy (:heli-y state)]
+      (update state :particles conj
+              {:x (+ hx (- (* 20 (js/Math.random)) 10))
+               :y (- hy 12)
+               :vx (- (* 40 (js/Math.random)) 20)
+               :vy (- -20 (* 30 (js/Math.random)))
+               :life 0.3}))))
+
+(defn- fire-bullet [state]
+  (let [dir (if (= (:facing state) :right) 1 -1)
+        hx (:heli-x state) hy (:heli-y state)]
+    (update state :bullets conj
+            {:x (+ hx (* dir 25)) :y hy
+             :vx (* dir 400) :vy 0 :life 1.5})))
+
+(defn- check-win [state]
+  (if (and (>= (:rescued state) (:total-hostages state))
+           (= (:state state) :playing))
+    (-> state (assoc :state :won)
+        (update :best #(max % (:rescued state))))
+    state))
+
+(defn- update-game [state dt]
+  (case (:state state)
+    :playing
+    (let [keys (:keys state)
+          thrusting (or (contains? keys :up) (contains? keys :space))
+          move-left (contains? keys :left)
+          move-right (contains? keys :right)
+          shooting (contains? keys :shoot)
+
+          ;; Horizontal movement
+          ax (cond move-left -1 move-right 1 :else 0)
+          facing (cond move-left :left move-right :right :else (:facing state))
+          vx (+ (:heli-vx state) (* ax MOVE-SPEED dt))
+          vx (* vx (if (zero? ax) 0.95 1.0))
+          vx (max (- MAX-VX) (min MAX-VX vx))
+
+          ;; Vertical
+          vy (+ (:heli-vy state) (* (if thrusting THRUST-UP GRAVITY) dt))
+          vy (max (- MAX-VY) (min MAX-VY vy))
+
+          nx (+ (:heli-x state) (* vx dt))
+          ny (+ (:heli-y state) (* vy dt))
+
+          ;; Ground landing
+          on-ground (>= ny (- GROUND-Y (/ HELI-H 2)))
+          ny (if on-ground (- GROUND-Y (/ HELI-H 2)) ny)
+          vy (if on-ground 0 vy)
+          vx (if on-ground (* vx 0.9) vx)
+
+          ;; Ceiling
+          ny (max 15 ny)
+          vy (if (<= ny 15) (max 0 vy) vy)
+
+          ;; Keep in world
+          nx (max 10 (min 1300 nx))
+
+          ;; Camera follows heli
+          cam-target (- nx (/ W 2))
+          cam-target (max 0 cam-target)
+          cam (+ (:camera-x state) (* (- cam-target (:camera-x state)) 3 dt))]
+
+      (-> state
+          (assoc :heli-x nx :heli-y ny :heli-vx vx :heli-vy vy
+                 :landed on-ground :facing facing :camera-x cam)
+          (update-hostage-release)
+          (update-hostages dt)
+          (update-unload)
+          (update-tanks dt)
+          (update-jets dt)
+          (spawn-enemy-bullets)
+          (update-bullets dt)
+          (check-collisions)
+          (update-explosions dt)
+          (update-particles dt)
+          (add-rotor-particles)
+          (check-win)))
+    state))
+
+;; --- Drawing ---
+
+(defn- draw-mountains [ctx cam-x]
+  (set! (.-fillStyle ctx) "#0d0d30")
+  (.beginPath ctx)
+  (.moveTo ctx 0 GROUND-Y)
+  (doseq [i (range 0 (+ W 40) 40)]
+    (let [wx (+ i (* cam-x 0.3))
+          my (- GROUND-Y 30 (* 25 (.sin js/Math (* wx 0.008)))
+                (* 15 (.cos js/Math (* wx 0.013))))]
+      (.lineTo ctx i my)))
+  (.lineTo ctx W GROUND-Y)
+  (.closePath ctx)
+  (.fill ctx))
+
+(defn- draw-ground [ctx]
+  (set! (.-fillStyle ctx) "#1a1a3a")
+  (.fillRect ctx 0 GROUND-Y W (- H GROUND-Y))
+  (set! (.-strokeStyle ctx) "#00ff41")
+  (set! (.-lineWidth ctx) 1)
+  (set! (.-shadowColor ctx) "#00ff41")
+  (set! (.-shadowBlur ctx) 4)
+  (.beginPath ctx)
+  (.moveTo ctx 0 GROUND-Y)
+  (.lineTo ctx W GROUND-Y)
+  (.stroke ctx)
+  (set! (.-shadowBlur ctx) 0))
+
+(defn- draw-base [ctx cam-x]
+  (let [bx (- BASE-X cam-x)]
+    ;; Landing pad
+    (set! (.-fillStyle ctx) "#00ff41")
+    (set! (.-shadowColor ctx) "#00ff41")
+    (set! (.-shadowBlur ctx) 6)
+    (.fillRect ctx bx (- GROUND-Y 3) BASE-W 3)
+    ;; H marker
+    (set! (.-font ctx) "14px 'Press Start 2P', monospace")
+    (set! (.-textAlign ctx) "center")
+    (.fillText ctx "H" (+ bx (/ BASE-W 2)) (+ GROUND-Y 18))
+    (set! (.-textAlign ctx) "left")
+    (set! (.-shadowBlur ctx) 0)
+    ;; Rescued hostages as dots
+    (set! (.-fillStyle ctx) "#ffaa00")))
+
+(defn- draw-buildings [ctx buildings cam-x]
+  (doseq [b buildings]
+    (when (:alive b)
+      (let [bx (- (:x b) cam-x)
+            bw (:w b)]
+        ;; Building body
+        (set! (.-fillStyle ctx) "#443")
+        (.fillRect ctx bx (- GROUND-Y 40) bw 40)
+        ;; Door
+        (set! (.-fillStyle ctx) "#221")
+        (.fillRect ctx (+ bx 18) (- GROUND-Y 20) 14 20)
+        ;; Windows
+        (set! (.-fillStyle ctx) "#ff8")
+        (doseq [wx [5 35] wy [(- GROUND-Y 35) (- GROUND-Y 22)]]
+          (.fillRect ctx (+ bx wx) wy 8 6))
+        ;; Hostages outside
+        (doseq [h (:hostages b)]
+          (when (= (:state h) :running)
+            (let [hx (- (:x h) cam-x)]
+              (set! (.-fillStyle ctx) "#ffaa00")
+              ;; Little person: head + body
+              (.beginPath ctx)
+              (.arc ctx hx (- GROUND-Y 10) 3 0 (* 2 js/Math.PI))
+              (.fill ctx)
+              (.fillRect ctx (- hx 1.5) (- GROUND-Y 7) 3 7))))))))
+
+(defn- draw-tanks [ctx tanks cam-x]
+  (doseq [t tanks]
+    (when (:alive t)
+      (let [tx (- (:x t) cam-x)]
+        (set! (.-fillStyle ctx) "#ff4444")
+        (set! (.-shadowColor ctx) "#ff4444")
+        (set! (.-shadowBlur ctx) 4)
+        ;; Tank body
+        (.fillRect ctx (- tx 15) (- GROUND-Y 10) 30 10)
+        ;; Turret
+        (.fillRect ctx (- tx 5) (- GROUND-Y 16) 10 6)
+        ;; Barrel
+        (.fillRect ctx (- tx 1) (- GROUND-Y 22) 2 8)
+        (set! (.-shadowBlur ctx) 0)))))
+
+(defn- draw-jets [ctx jets cam-x]
+  (doseq [j jets]
+    (when (:alive j)
+      (let [jx (- (:x j) cam-x)
+            jy (:y j)
+            d (:dir j)]
+        (set! (.-fillStyle ctx) "#ff0040")
+        (set! (.-shadowColor ctx) "#ff0040")
+        (set! (.-shadowBlur ctx) 6)
+        ;; Fuselage
+        (.fillRect ctx (- jx 18) (- jy 4) 36 8)
+        ;; Wings
+        (.fillRect ctx (- jx 8) (- jy 10) 16 20)
+        ;; Nose
+        (set! (.-fillStyle ctx) "#ff4466")
+        (.fillRect ctx (+ jx (* d 16)) (- jy 3) 6 6)
+        (set! (.-shadowBlur ctx) 0)))))
+
+(defn- draw-helicopter [ctx state]
+  (let [hx (- (:heli-x state) (:camera-x state))
+        hy (:heli-y state)
+        facing (:facing state)
+        dir (if (= facing :right) 1 -1)]
+    ;; Body
+    (set! (.-fillStyle ctx) "#00d4ff")
+    (set! (.-shadowColor ctx) "#00d4ff")
+    (set! (.-shadowBlur ctx) 10)
+    (.fillRect ctx (- hx 18) (- hy 8) 36 16)
+    ;; Cockpit window
+    (set! (.-fillStyle ctx) "#88eeff")
+    (.fillRect ctx (+ hx (* dir 10)) (- hy 6) 8 8)
+    ;; Tail boom
+    (set! (.-fillStyle ctx) "#0090b0")
+    (.fillRect ctx (- hx (* dir 22)) (- hy 4) 10 8)
+    ;; Tail rotor
+    (set! (.-fillStyle ctx) "#00b8d4")
+    (.fillRect ctx (- hx (* dir 26)) (- hy 10) 4 20)
+    ;; Main rotor
+    (let [rotor-phase (* (js/Date.now) 0.05)
+          rw (* 40 (.cos js/Math rotor-phase))]
+      (set! (.-fillStyle ctx) "rgba(0,212,255,0.5)")
+      (.fillRect ctx (- hx (/ (js/Math.abs rw) 2)) (- hy 12) (js/Math.abs rw) 3))
+    ;; Skids
+    (set! (.-fillStyle ctx) "#0078a0")
+    (.fillRect ctx (- hx 16) (+ hy 8) 32 2)
+    (.fillRect ctx (- hx 14) (+ hy 6) 2 4)
+    (.fillRect ctx (+ hx 12) (+ hy 6) 2 4)
+    (set! (.-shadowBlur ctx) 0)
+    ;; Onboard count
+    (when (pos? (:onboard state))
+      (set! (.-fillStyle ctx) "#ffaa00")
+      (set! (.-font ctx) "8px 'Press Start 2P', monospace")
+      (set! (.-textAlign ctx) "center")
+      (.fillText ctx (str (:onboard state)) hx (+ hy 22))
+      (set! (.-textAlign ctx) "left"))))
+
+(defn- draw-bullets [ctx bullets enemy-bullets cam-x]
+  ;; Player bullets
+  (set! (.-fillStyle ctx) "#00ff41")
+  (set! (.-shadowColor ctx) "#00ff41")
+  (set! (.-shadowBlur ctx) 4)
+  (doseq [b bullets]
+    (.fillRect ctx (- (:x b) cam-x 2) (- (:y b) 1) 6 3))
+  ;; Enemy bullets
+  (set! (.-fillStyle ctx) "#ff4444")
+  (set! (.-shadowColor ctx) "#ff4444")
+  (doseq [b enemy-bullets]
+    (.fillRect ctx (- (:x b) cam-x 2) (- (:y b) 2) 4 4))
+  (set! (.-shadowBlur ctx) 0))
+
+(defn- draw-explosions [ctx explosions cam-x]
+  (doseq [e explosions]
+    (let [r (* 20 (- 1 (:life e)))
+          alpha (min 1 (* 2 (:life e)))]
+      (set! (.-fillStyle ctx) (str "rgba(255,100,0," alpha ")"))
+      (set! (.-shadowColor ctx) "#ff6600")
+      (set! (.-shadowBlur ctx) 10)
+      (.beginPath ctx)
+      (.arc ctx (- (:x e) cam-x) (:y e) r 0 (* 2 js/Math.PI))
+      (.fill ctx)))
+  (set! (.-shadowBlur ctx) 0))
+
+(defn- draw-particles [ctx particles cam-x]
+  (doseq [p particles]
+    (let [alpha (min 1.0 (* 3 (:life p)))]
+      (set! (.-fillStyle ctx) (str "rgba(0,212,255," alpha ")"))
+      (.fillRect ctx (- (:x p) cam-x) (:y p) 2 2))))
+
+(defn- draw-hud [ctx state]
+  (set! (.-font ctx) "14px 'Press Start 2P', monospace")
+  ;; Rescued
+  (set! (.-fillStyle ctx) "#00ff41")
+  (.fillText ctx (str "RESCUED " (:rescued state) "/" (:total-hostages state)) 15 28)
+  ;; Onboard
+  (set! (.-fillStyle ctx) "#ffaa00")
+  (.fillText ctx (str "ONBOARD " (:onboard state) "/" HOSTAGE-CAPACITY) 15 50)
+  ;; Lost
+  (when (pos? (:lost state))
+    (set! (.-fillStyle ctx) "#ff4444")
+    (.fillText ctx (str "LOST " (:lost state)) 15 72))
+  ;; Best
+  (when (pos? (:best state))
+    (set! (.-fillStyle ctx) "#888")
+    (.fillText ctx (str "BEST " (:best state)) (- W 200) 28)))
+
+(defn- draw-overlay [ctx state title subtitle color]
+  (set! (.-fillStyle ctx) "rgba(0,0,0,0.6)")
+  (.fillRect ctx 0 0 W H)
+  (set! (.-fillStyle ctx) color)
+  (set! (.-font ctx) "24px 'Press Start 2P', monospace")
+  (set! (.-textAlign ctx) "center")
+  (.fillText ctx title (/ W 2) (- (/ H 2) 30))
+  (set! (.-font ctx) "11px 'Press Start 2P', monospace")
+  (set! (.-fillStyle ctx) "#00ff41")
+  (.fillText ctx subtitle (/ W 2) (+ (/ H 2) 10))
+  (set! (.-fillStyle ctx) "#888")
+  (set! (.-font ctx) "10px 'Press Start 2P', monospace")
+  (.fillText ctx "ARROWS/WASD MOVE · SPACE SHOOT · TAP/CLICK" (/ W 2) (+ (/ H 2) 40))
+  (set! (.-textAlign ctx) "left"))
+
+(defn- draw! [ctx state]
+  (.save ctx)
+  (let [cam (:camera-x state)]
+    ;; Sky
+    (set! (.-fillStyle ctx) "#0a0a2a")
+    (.fillRect ctx 0 0 W H)
+
+    ;; Stars
+    (set! (.-fillStyle ctx) "rgba(255,255,255,0.3)")
+    (doseq [i (range 40)]
+      (let [sx (mod (+ (* i 37) (* cam 0.1)) W)
+            sy (mod (* i 23) (- GROUND-Y 60))]
+        (.fillRect ctx sx sy 1 1)))
+
+    (draw-mountains ctx cam)
+    (draw-ground ctx)
+    (draw-base ctx cam)
+    (draw-buildings ctx (:buildings state) cam)
+    (draw-tanks ctx (:tanks state) cam)
+    (draw-jets ctx (:jets state) cam)
+    (draw-particles ctx (:particles state) cam)
+    (draw-bullets ctx (:bullets state) (:enemy-bullets state) cam)
+    (draw-explosions ctx (:explosions state) cam)
+    (draw-helicopter ctx state)
+    (draw-hud ctx state)
+
+    (case (:state state)
+      :title (draw-overlay ctx state "CHOPLIFTER"
+                           "RESCUE HOSTAGES · FLY THEM HOME" "#00d4ff")
+      :dead (draw-overlay ctx state "SHOT DOWN!"
+                          (str "RESCUED: " (:rescued state)) "#ff4444")
+      :won (draw-overlay ctx state "MISSION COMPLETE!"
+                         (str "ALL " (:total-hostages state) " RESCUED!") "#00ff41")
+      nil))
+  (.restore ctx))
+
+;; --- Init ---
+
+(defn init []
+  (let [state (atom (init-state))
+        canvas (core/create-el "canvas" {:width (str W) :height (str H) :class "game-canvas"})
+        ctx (.getContext canvas "2d")
+
+        set-key! (fn [k v]
+                   (case (:state @state)
+                     :title (when v
+                              (reset! state (assoc (init-state) :state :playing :best (:best @state))))
+                     (:dead :won) (when v
+                                    (reset! state (assoc (init-state) :state :playing :best (:best @state))))
+                     :playing (if v
+                                (do (swap! state update :keys conj k)
+                                    (when (= k :shoot)
+                                      (swap! state fire-bullet)))
+                                (swap! state update :keys disj k))
+                     nil))]
+
+    ;; Keyboard
+    (let [code-map {"ArrowUp" :up "ArrowDown" :down "ArrowLeft" :left "ArrowRight" :right
+                    "KeyW" :up "KeyS" :down "KeyA" :left "KeyD" :right
+                    "Space" :shoot}]
+      (.addEventListener js/document "keydown"
+        (fn [e]
+          (when-let [k (get code-map (.-code e))]
+            (.preventDefault e)
+            (set-key! k true))))
+      (.addEventListener js/document "keyup"
+        (fn [e]
+          (when-let [k (get code-map (.-code e))]
+            (.preventDefault e)
+            (set-key! k false)))))
+
+    ;; Touch: left half = fly left, right half = fly right, double tap = shoot
+    (let [touch-start (atom nil)]
+      (.addEventListener canvas "touchstart"
+        (fn [e]
+          (.preventDefault e)
+          (let [t (aget (.-touches e) 0)
+                rect (.getBoundingClientRect canvas)
+                tx (- (.-clientX t) (.-left rect))
+                ty (- (.-clientY t) (.-top rect))
+                now (js/Date.now)]
+            ;; Double tap detection for shooting
+            (when (and @touch-start (< (- now @touch-start) 300))
+              (set-key! :shoot true)
+              (js/setTimeout #(swap! state update :keys disj :shoot) 100))
+            (reset! touch-start now)
+            ;; Movement
+            (if (< tx (/ W 2))
+              (set-key! :left true)
+              (set-key! :right true))
+            (when (< ty (/ H 2))
+              (set-key! :up true))))
+        #js {:passive false})
+      (.addEventListener canvas "touchend"
+        (fn [e]
+          (.preventDefault e)
+          (swap! state assoc :keys #{}))
+        #js {:passive false})
+      (.addEventListener canvas "touchcancel"
+        (fn [_] (swap! state assoc :keys #{}))))
+
+    ;; Mouse
+    (.addEventListener canvas "mousedown"
+      (fn [e]
+        (.preventDefault e)
+        (let [rect (.getBoundingClientRect canvas)
+              mx (- (.-clientX e) (.-left rect))]
+          (case (:state @state)
+            :title (reset! state (assoc (init-state) :state :playing :best (:best @state)))
+            (:dead :won) (reset! state (assoc (init-state) :state :playing :best (:best @state)))
+            :playing (do (set-key! :up true)
+                         (if (< mx (/ W 2))
+                           (set-key! :left true)
+                           (set-key! :right true)))
+            nil))))
+    (.addEventListener canvas "mouseup" (fn [_] (swap! state assoc :keys #{})))
+
+    ;; Game loop
+    (let [last-t (atom (js/performance.now))
+          shoot-timer (atom 0)]
+      (letfn [(game-loop [now]
+                (let [dt (min 0.05 (/ (- now @last-t) 1000))]
+                  (reset! last-t now)
+                  ;; Auto-fire when holding shoot
+                  (when (contains? (:keys @state) :shoot)
+                    (swap! shoot-timer + dt)
+                    (when (> @shoot-timer 0.25)
+                      (reset! shoot-timer 0)
+                      (swap! state fire-bullet)))
+                  (swap! state update-game dt)
+                  (draw! ctx @state)
+                  (js/requestAnimationFrame game-loop)))]
+        (js/requestAnimationFrame game-loop)))
+
+    (core/mount!
+      (ui/page-shell :helicopter "/articles/helicopter.html" "src/portfolio/games/helicopter.cljs"
+                     (let [wrapper (core/create-el "div" {:class "game-wrapper"})]
+                       (.appendChild wrapper (core/create-el "h1"
+                                               {:style "font-family:'Press Start 2P',monospace;color:#00d4ff;font-size:var(--step-2);text-align:center"}
+                                               "🚁 Choplifter"))
+                       (.appendChild wrapper (core/create-el "p"
+                                               {:style "color:#888;text-align:center;margin-block-end:var(--space-m)"}
+                                               "Arrow keys/WASD to fly · Space to shoot · Land near buildings to rescue · Fly hostages to base"))
+                       (.appendChild wrapper canvas)
+                       wrapper)))))

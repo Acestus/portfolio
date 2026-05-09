@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <title>Choplifter — Rescue Mission</title>
+  <style>
+    :root { --accent: #00d4ff; --bg: #0a0a2a; --text: #d4d4d4; --summary: #112; }
+    * { box-sizing: border-box; }
+    body { margin: 0 auto; max-width: 1200px; padding: 24px; background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .back-link { display: inline-block; margin-bottom: 1rem; font-weight: 600; }
+    h1 { color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 0.5rem; margin-top: 0; }
+    h2 { color: #00ff41; border-left: 4px solid var(--accent); padding-left: 15px; margin-top: 2.25rem; }
+    .summary { background: var(--summary); border-left: 5px solid var(--accent); border-radius: 4px; padding: 1rem; margin: 1rem 0 1.5rem; }
+    code { background: #1a1a3a; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.9em; color: #00ff41; }
+    footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #333; color: #666; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <a class='back-link' href='/helicopter.html'>← Back to Choplifter</a>
+  <h1>🚁 Choplifter — Rescue Mission</h1>
+
+  <div class='summary'>
+    <strong>TL;DR:</strong> A homage to the classic 1982 Choplifter by Broderbund. Fly your helicopter into
+    enemy territory, land near buildings to rescue hostages, and fly them back to base — while dodging
+    tanks and jets. Built in ClojureScript with HTML5 Canvas.
+  </div>
+
+  <h2>1. How to Play</h2>
+  <ul>
+    <li><strong>Move:</strong> Arrow keys or <code>WASD</code></li>
+    <li><strong>Shoot:</strong> <code>Space</code></li>
+    <li><strong>Mobile:</strong> Tap left/right half to move, top half to ascend, double-tap to shoot</li>
+    <li><strong>Land</strong> near buildings — hostages will run out and board your helicopter</li>
+    <li><strong>Capacity:</strong> You can carry up to 8 hostages at a time</li>
+    <li><strong>Return</strong> to the green <code>H</code> base pad on the left to drop off hostages</li>
+    <li><strong>Win</strong> by rescuing all hostages</li>
+    <li><strong>Avoid</strong> enemy tanks and jets — one hit and you're down!</li>
+  </ul>
+
+  <h2>2. Game Architecture</h2>
+  <p>Pure functional state management — the entire game state is a single immutable map updated each frame:</p>
+  <ul>
+    <li><strong>Physics:</strong> Gravity at 350 px/s², thrust at -500 px/s², horizontal speed 200 px/s</li>
+    <li><strong>Camera:</strong> Smooth-follow camera pans with the helicopter across the world</li>
+    <li><strong>Hostages:</strong> State machine per hostage: <code>:inside</code> → <code>:running</code> → <code>:boarding</code> → <code>:boarded</code> → dropped at base</li>
+    <li><strong>Enemies:</strong> Tanks patrol and fire when you're nearby, jets strafe across the screen</li>
+    <li><strong>Collision:</strong> AABB rectangle overlap for all entities</li>
+    <li><strong>PRNG:</strong> Deterministic xorshift for reproducible level generation</li>
+  </ul>
+
+  <h2>3. Visual Style</h2>
+  <p>Retro arcade aesthetic with neon glow effects: cyan helicopter with animated rotor blur,
+  green ground line with glow, orange hostage sprites, red enemy vehicles with shadow glow,
+  and explosion particles. Parallax mountains scroll in the background.</p>
+
+  <h2>4. Original Choplifter</h2>
+  <p>Choplifter was designed by Dan Gorlin and published by Broderbund Software in 1982 for the
+  Apple II. It pioneered the rescue-mission genre and was later ported to nearly every platform.
+  The core loop — fly in, land, load passengers, fly home — remains one of gaming's most
+  satisfying gameplay patterns.</p>
+
+  <footer>
+    <p>acestus.com — William Weeks-Balconi</p>
+    <p><a href='https://github.com/Acestus/portfolio'>Source Code</a> · <a href='/helicopter.html'>Play Game</a></p>
+  </footer>
+</body>
+</html>
