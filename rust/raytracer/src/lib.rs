@@ -542,11 +542,14 @@ impl Raytracer {
     pub fn render_frame(&mut self, time: f64) {
         let scene = self.build_scene(time);
 
-        let ca = time * 0.1;
-        let cr = 40.0 + 6.0 * (time * 0.05).sin();
-        let cy = 20.0 + 8.0 * (time * 0.07).sin();
-        let origin = Vec3::new(cr * ca.sin(), cy, cr * ca.cos());
-        let look_at = Vec3::new(0.0, ROAD_Y + 2.0, 0.0);
+        let speed = 3.5;
+        let (rx, rz, _) = path_pos(&self.maze_path, time * speed);
+
+        let ca = time * 0.3;
+        let cr = 12.0;
+        let cy = ROAD_Y + 8.0 + 2.0 * (time * 0.1).sin();
+        let origin = Vec3::new(rx + cr * ca.sin(), cy, rz + cr * ca.cos());
+        let look_at = Vec3::new(rx, ROAD_Y + 3.0, rz);
 
         let forward = look_at.sub(origin).norm();
         let right = forward.cross(Vec3::new(0.0, 1.0, 0.0)).norm();
