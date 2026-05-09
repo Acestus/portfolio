@@ -1,7 +1,8 @@
 node_modules/
 .shadow-cljs/
 resources/public/js/
-resources/public/wasm/
+resources/public/wasm/*/*.d.ts
+resources/public/wasm/*/package.json
 rust/*/target/
 rust/target/
 .nrepl-port
