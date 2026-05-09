@@ -83,4 +83,10 @@
   {:target :browser
    :output-dir "resources/public/js/architecture"
    :asset-path "/js/architecture"
-   :modules {:main {:init-fn portfolio.pro.architecture/init}}}}}
+   :modules {:main {:init-fn portfolio.pro.architecture/init}}}
+
+  :agentic
+  {:target :browser
+   :output-dir "resources/public/js/agentic"
+   :asset-path "/js/agentic"
+   :modules {:main {:init-fn portfolio.pro.agentic/init}}}}}

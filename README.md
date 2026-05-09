@@ -2,7 +2,7 @@
 
 Interactive portfolio showcasing Azure, Fabric, Clojure, Rust+WASM, and cloud platform engineering.
 
-## 15 SPAs
+## 16 SPAs
 
 ### Retro Arcade Games (80's theme)
 1. **Cloud Platformer** — Navigate cloud infrastructure in 8-bit glory
@@ -18,11 +18,12 @@ Interactive portfolio showcasing Azure, Fabric, Clojure, Rust+WASM, and cloud pl
 9. **Platform Engineering Console** — Workspace provisioning, Copilot agents, PIM
 10. **ClojureScript REPL** — Live in-browser evaluation powered by SCI
 11. **Architecture Studio** — Interactive C4 models and ADR browser (Fowler-inspired)
+12. **The Agentic Web** — How MCP/OpenClaw is the HTTP of AI agents (Steinberger-inspired)
 
 ### Rust + WASM Demos
-12. **Particle Storm** — Thousands of particles with gravity wells and color trails
-13. **Raytracer** — Real-time progressive ray-traced scene in your browser
-14. **Game of Life** — Massive Conway grid at 60fps showing WASM performance
+13. **Particle Storm** — Thousands of particles with gravity wells and color trails
+14. **Raytracer** — Real-time progressive ray-traced scene in your browser
+15. **Game of Life** — Massive Conway grid at 60fps showing WASM performance
 
 ## Tech Stack
 

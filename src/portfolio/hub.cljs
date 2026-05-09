@@ -16,7 +16,8 @@
             {:title "IaC Pipeline"          :href "/iac.html"        :icon "🏗"  :desc "Bicep AVM → Deployment Stacks"}
             {:title "Platform Console"      :href "/platform.html"   :icon "🎛"  :desc "Platform engineering workspace provisioning"}
             {:title "Clojure REPL"          :href "/repl.html"       :icon "λ"   :desc "Live ClojureScript in your browser"}
-            {:title "Architecture Studio"  :href "/architecture.html" :icon "🏛" :desc "C4 models and architecture decision records"}]}
+            {:title "Architecture Studio"  :href "/architecture.html" :icon "🏛" :desc "C4 models and architecture decision records"}
+            {:title "The Agentic Web"     :href "/agentic.html"      :icon "🦞" :desc "How MCP/OpenClaw is the HTTP of AI agents"}]}
    {:category "🦀 Rust + WASM"
     :items [{:title "Particle Storm"        :href "/particles.html"  :icon "🌀"  :desc "3,000 particles with orbiting gravity wells"}
             {:title "Raytracer"             :href "/raytracer.html"  :icon "🔮"  :desc "Real-time ray-traced scene with reflections"}

@@ -87,6 +87,37 @@
              "└─ func, st, kv, umi, evh, rg")))
     panel))
 
+(def ^:private farley-principles
+  [{:icon "🔄" :title "Work in Small Batches"      :desc "Small incremental changes reduce risk and increase feedback frequency. Every commit is a potential release."}
+   {:icon "⚡" :title "Automate Everything"          :desc "Manual steps introduce errors and slow delivery. Build, test, deploy — all automated, all the time."}
+   {:icon "🎯" :title "Build Quality In"             :desc "Quality isn't tested at the end — it's designed in from the start. Shift left on testing, peer review every change."}
+   {:icon "📡" :title "Fast Feedback Loops"          :desc "Know within minutes if something is wrong. Short feedback loops enable quick responses to problems."}
+   {:icon "🚀" :title "Always Deployable"            :desc "The main branch is always in a deployable state. Done means deployed, not just coded."}
+   {:icon "🗄" :title "Version Everything"           :desc "Code, infrastructure, config, docs — everything required to build and deploy lives in version control."}
+   {:icon "🔬" :title "Relentless Improvement"       :desc "Continuous Delivery is about improving processes step by step. There is always something to optimize."}
+   {:icon "🤝" :title "Collaborative Culture"        :desc "Break down silos between dev, ops, testers, and business. Cross-functional teams deliver value together."}])
+
+(defn- cicd-philosophy-panel []
+  (let [panel (core/create-el "div" {:class "whatif-panel"})
+        quote-el (core/create-el "blockquote"
+                   {:style "border-left:3px solid #0078d4;padding-left:0.75rem;color:#605e5c;font-style:italic;margin-block:0.5rem 1rem;font-size:var(--step--1)"}
+                   "\"The ability to get changes into production safely and quickly in a sustainable way.\" — Dave Farley")]
+    (.appendChild panel (core/create-el "h3" {:class "whatif-title"} "📖 CI/CD Philosophy — Dave Farley"))
+    (.appendChild panel quote-el)
+    (let [grid (core/create-el "div"
+                 {:style "display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:var(--space-s)"})]
+      (doseq [{:keys [icon title desc]} farley-principles]
+        (let [card (core/create-el "div" {:class "agent-card"}
+                     (core/create-el "span" {:class "agent-icon"} icon)
+                     (core/create-el "div" {}
+                       (core/create-el "div" {:class "agent-name"} title)
+                       (core/create-el "div" {:class "agent-desc"} desc)))]
+          (.addEventListener card "click"
+            (fn [_] (core/toast! (str icon " " title))))
+          (.appendChild grid card)))
+      (.appendChild panel grid))
+    panel))
+
 (defn- iac-content []
   (let [container (core/create-el "div" {:class "dashboard-container"})
         state     (atom {:active-step 0})]
@@ -123,6 +154,7 @@
       2000)
     (.appendChild container (what-if-panel))
     (.appendChild container (naming-panel))
+    (.appendChild container (cicd-philosophy-panel))
     container))
 
 (defn init []

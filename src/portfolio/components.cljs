@@ -19,6 +19,7 @@
                {:key :platform    :label "Platform"   :href "/platform.html"}
                {:key :repl        :label "REPL"       :href "/repl.html"}
                {:key :architecture :label "Arch"       :href "/architecture.html"}
+               {:key :agentic      :label "Agentic"    :href "/agentic.html"}
                {:key :particles    :label "Particles"  :href "/particles.html"}
                {:key :raytracer    :label "Raytracer"  :href "/raytracer.html"}
                {:key :life         :label "Life"       :href "/life.html"}]
