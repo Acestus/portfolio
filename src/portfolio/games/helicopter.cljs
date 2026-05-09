@@ -405,13 +405,9 @@
           (add-rotor-particles)
           (check-win)))
     :dead
-    (let [timer (+ (:dead-timer state) dt)]
-      (if (> timer 1.5)
-        (assoc (init-state) :state :playing :best (:best state))
-        (-> state
-            (assoc :dead-timer timer)
-            (update-explosions dt)
-            (update-particles dt))))
+    (-> state
+        (update-explosions dt)
+        (update-particles dt))
     state))
 
 ;; --- Drawing ---
@@ -724,7 +720,7 @@
       :title (draw-overlay ctx state "CLOUD LIFT"
                            "MIGRATE WORKLOADS · FLY THEM TO THE CLOUD" "#00b4d8")
       :dead (draw-overlay ctx state "OUTAGE!"
-                          (str "MIGRATED: " (:rescued state)) "#ff4444")
+                          (str "MIGRATED: " (:rescued state) "  [SPACE] TO RETRY") "#ff4444")
       :won (draw-overlay ctx state "MIGRATION COMPLETE!"
                          (str "ALL " (:total-hostages state) " WORKLOADS IN THE CLOUD!") "#00b4d8")
       nil))
