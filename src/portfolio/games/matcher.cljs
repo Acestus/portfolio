@@ -41,30 +41,64 @@
 
 (defn- render-game [ctx state]
   (eng/clear! ctx W H)
+  ;; Title
   (eng/draw-text! ctx "CAF NAMING PUZZLE" (/ W 2) 30
-                  :color "#00d4ff" :font "16px 'Press Start 2P'" :align "center")
+                  :color "#00d4ff" :font "22px 'Press Start 2P'" :align "center")
+  ;; Timer / score
   (eng/draw-text! ctx (str "TIME: " (int (:timer state))) (- W 10) 30
                   :color (if (< (:timer state) 10) "#ff0040" "#ffaa00")
-                  :font "12px 'Press Start 2P'" :align "right")
+                  :font "13px 'Press Start 2P'" :align "right")
   (eng/draw-text! ctx (str "SCORE: " (:score state)) 10 30
-                  :color "#ffaa00" :font "12px 'Press Start 2P'")
-  ;; resources column
-  (eng/draw-text! ctx "RESOURCE" 20 70 :color "#00d4ff" :font "10px 'Press Start 2P'")
+                  :color "#ffaa00" :font "13px 'Press Start 2P'")
+  ;; resources column (larger font for readability)
+  (eng/draw-text! ctx "RESOURCE" 20 70 :color "#00d4ff" :font "12px 'Press Start 2P'")
   (doseq [[i r] (map-indexed vector (:resources state))]
     (let [matched (some #(= r (:resource %)) (:matched state))
           selected (= r (:selected-resource state))
-          color (cond matched "#00ff41" selected "#ffaa00" :else "#ffffff")]
-      (eng/draw-text! ctx r 20 (+ 100 (* i 30)) :color color :font "11px 'VT323'")))
-  ;; names column
-  (eng/draw-text! ctx "CAF NAME" 260 70 :color "#00d4ff" :font "10px 'Press Start 2P'")
+          color (cond matched "#00ff41" selected "#ffaa00" :else "#ffffff")
+          y (+ 100 (* i 40))]
+      (eng/draw-text! ctx r 20 y :color color :font "16px 'VT323'")))
+  ;; names column (larger font)
+  (eng/draw-text! ctx "CAF NAME" 260 70 :color "#00d4ff" :font "12px 'Press Start 2P'")
   (doseq [[i n] (map-indexed vector (:names state))]
     (let [matched (some #(= n (:caf %)) (:matched state))
-          color (if matched "#00ff41" "#ffffff")]
-      (eng/draw-text! ctx n 260 (+ 100 (* i 30)) :color color :font "11px 'VT323'")))
-  ;; Win / lose
+          color (if matched "#00ff41" "#ffffff")
+          y (+ 100 (* i 40))]
+      (eng/draw-text! ctx n 260 y :color color :font "14px 'VT323'")))
+
+  ;; Draw animated connections (green lines) for recent correct matches
+  (doseq [c (:connections state)]
+    (let [{:keys [x1 y1 x2 y2 elapsed duration]} c
+          prog (min 1 (/ elapsed duration))
+          alpha (+ 0.15 (* 0.85 prog))
+          x-mid (+ x1 (* (- x2 x1) prog))
+          y-mid (+ y1 (* (- y2 y1) prog))]
+      ;; fading line
+      (set! (.-strokeStyle ctx) (str "rgba(0,255,65," alpha ")"))
+      (set! (.-lineWidth ctx) (* 2 (+ 0.5 prog)))
+      (.beginPath ctx)
+      (.moveTo ctx x1 y1)
+      (.lineTo ctx x-mid y-mid)
+      (.stroke ctx)
+      ;; pulsing dot at moving tip
+      (set! (.-fillStyle ctx) (str "rgba(0,255,65," (+ 0.3 (* 0.7 (/ (js/Math.sin (* 6.28 prog)) 2))) ")"))
+      (.beginPath ctx)
+      (.arc ctx x-mid y-mid (+ 2 (* 4 prog)) 0 (* 2 js/Math.PI))
+      (.fill ctx)))
+
+  ;; Win animation: pulsing green rings
   (when (= :win (:phase state))
-    (eng/draw-text! ctx "ALL MATCHED!" (/ W 2) (/ H 2)
-                    :color "#00ff41" :font "20px 'Press Start 2P'" :align "center"))
+    (let [t (* 0.002 (js/Date.now))
+          r1 (+ 20 (* 30 (js/Math.abs (.sin js/Math t))))]
+      (set! (.-strokeStyle ctx) "rgba(0,255,65,0.9)")
+      (set! (.-lineWidth ctx) 3)
+      (.beginPath ctx)
+      (.arc ctx (/ W 2) (/ H 2) r1 0 (* 2 js/Math.PI))
+      (.stroke ctx)
+      (eng/draw-text! ctx "ALL MATCHED!" (/ W 2) (/ H 2)
+                      :color "#00ff41" :font "22px 'Press Start 2P'" :align "center")))
+
+  ;; Timeout message
   (when (= :timeout (:phase state))
     (eng/draw-text! ctx "TIME'S UP!" (/ W 2) (/ H 2)
                     :color "#ff0040" :font "20px 'Press Start 2P'" :align "center")))
