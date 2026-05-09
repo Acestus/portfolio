@@ -480,10 +480,17 @@
           (.moveTo ctx (+ bx 4) ry)
           (.lineTo ctx (+ bx bw -4) ry)
           (.stroke ctx))
-        ;; Blinking status LEDs
-        (set! (.-fillStyle ctx) "#00ff41")
-        (doseq [wy [(- GROUND-Y 33) (- GROUND-Y 25) (- GROUND-Y 17) (- GROUND-Y 9)]]
-          (.fillRect ctx (+ bx 6) wy 3 2))
+        ;; Status LEDs — one per workload, green if inside, dark if gone
+        (let [hostages (:hostages b)
+              n (count hostages)]
+          (doseq [i (range n)]
+            (let [h (nth hostages i)
+                  row (quot i 3)
+                  col (rem i 3)
+                  lx (+ bx 6 (* col 14))
+                  ly (- GROUND-Y 33 (* row -8))]
+              (set! (.-fillStyle ctx) (if (= (:state h) :inside) "#00ff41" "#1a2a1a"))
+              (.fillRect ctx lx ly 3 2))))
         ;; "DC" label
         (set! (.-fillStyle ctx) "#6a7a8a")
         (set! (.-font ctx) "6px 'Press Start 2P', monospace")
