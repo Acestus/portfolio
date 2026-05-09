@@ -3,7 +3,7 @@
 <head>
   <meta charset='utf-8'>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
-  <title>The Agentic Web — MCP, OpenClaw &amp; the Next Internet</title>
+  <title>The Agentic Web — APIs, CLIs &amp; OpenClaw</title>
   <style>
     :root { --accent: #0078d4; --accent-dark: #106ebe; --bg: #faf9f8; --text: #323130; --summary: #e1f5fe; --agent: #00a86b; }
     * { box-sizing: border-box; }
@@ -16,6 +16,8 @@
     .summary { background: var(--summary); border-left: 5px solid var(--accent); border-radius: 4px; padding: 1rem; margin: 1rem 0 1.5rem; }
     blockquote { border-left: 3px solid var(--accent); padding-left: 1rem; color: #605e5c; font-style: italic; margin: 1.5rem 0; }
     code { background: #f3f2f1; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.9em; }
+    pre { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 6px; overflow-x: auto; font-size: 0.9rem; line-height: 1.5; }
+    pre code { background: none; padding: 0; color: inherit; }
     table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
     th, td { border: 1px solid #d2d0ce; padding: 0.5rem 0.75rem; text-align: left; }
     th { background: #f3f2f1; }
@@ -27,29 +29,34 @@
     .flow-item { background: var(--accent); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; }
     .flow-item.agent { background: var(--agent); }
     .flow-arrow { color: var(--accent); font-weight: bold; }
+    .good { color: var(--agent); }
     footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #e1dfdd; color: #a19f9d; font-size: 0.85rem; }
   </style>
 </head>
 <body>
   <a class='back-link' href='/agentic.html'>← Back to The Agentic Web</a>
-  <h1>🦞 The Agentic Web — MCP, OpenClaw & the Next Internet</h1>
+  <h1>🦞 The Agentic Web — APIs, CLIs & OpenClaw</h1>
 
   <div class='summary'>
-    <strong>TL;DR:</strong> The Model Context Protocol (MCP) is doing for AI agents what HTTP did for web browsers.
-    OpenClaw is the first "Mosaic" — a universal agent client built on open standards.
-    History doesn't repeat, but it rhymes.
+    <strong>TL;DR:</strong> Agents don't need a new protocol — they need to be great API consumers.
+    OpenClaw calls REST endpoints and CLIs directly, the same way a senior developer would.
+    The best interface for an agent is the interface that already exists.
   </div>
 
   <div class='metrics'>
-    <div class='metric'><div class='metric-value'>MCP</div><div class='metric-label'>Open Protocol</div></div>
+    <div class='metric'><div class='metric-value' style='color:var(--agent)'>REST + CLI</div><div class='metric-label'>Interface</div></div>
     <div class='metric'><div class='metric-value'>OpenClaw</div><div class='metric-label'>Open Agent</div></div>
     <div class='metric'><div class='metric-value' style='color:var(--agent)'>Local-First</div><div class='metric-label'>Data Privacy</div></div>
     <div class='metric'><div class='metric-value'>Any LLM</div><div class='metric-label'>Model Agnostic</div></div>
   </div>
 
-  <h2>1. The Internet Parallel</h2>
-  <p>Every transformative computing platform follows the same pattern: an open protocol enables interoperability, which enables an ecosystem, which enables network effects. The internet had TCP/IP → HTTP → HTML → Browsers. The agentic web has TCP/IP → MCP → Tool Schemas → Agents.</p>
+  <h2>1. The Steinberger Thesis: APIs Over Protocols</h2>
+  <p>Peter Steinberger — founder of PSPDFKit, veteran open-source developer, and creator of <strong>OpenClaw</strong> — holds a clear position: agents should call APIs directly, not through bespoke middleware protocols.</p>
+  <blockquote>"Why invent a new protocol when every service already has an API? Agents should call APIs — the same way developers do."</blockquote>
+  <p>His reasoning is pragmatic: every service worth integrating already exposes REST endpoints, GraphQL schemas, or CLI tools. These interfaces are documented, battle-tested, and understood by millions of developers. Why add an abstraction layer?</p>
 
+  <h2>2. The Internet Parallel</h2>
+  <p>The internet succeeded because it built on simple, composable interfaces:</p>
   <div class='flow'>
     <span class='flow-item'>TCP/IP</span><span class='flow-arrow'>→</span>
     <span class='flow-item'>HTTP</span><span class='flow-arrow'>→</span>
@@ -57,60 +64,65 @@
     <span class='flow-item'>Browsers</span><span class='flow-arrow'>→</span>
     <span class='flow-item'>The Web</span>
   </div>
+  <p>The agentic web follows the same pattern — but instead of inventing new protocols, it builds on the APIs we already have:</p>
   <div class='flow'>
     <span class='flow-item agent'>TCP/IP</span><span class='flow-arrow'>→</span>
-    <span class='flow-item agent'>MCP</span><span class='flow-arrow'>→</span>
-    <span class='flow-item agent'>Tool Schemas</span><span class='flow-arrow'>→</span>
+    <span class='flow-item agent'>REST / GraphQL</span><span class='flow-arrow'>→</span>
+    <span class='flow-item agent'>JSON + CLI</span><span class='flow-arrow'>→</span>
     <span class='flow-item agent'>OpenClaw</span><span class='flow-arrow'>→</span>
     <span class='flow-item agent'>Agentic Web</span>
   </div>
 
-  <h2>2. What Is MCP?</h2>
-  <p>The <strong>Model Context Protocol</strong>, introduced by Anthropic in late 2024, is a JSON-RPC-based protocol that standardizes how AI agents discover and invoke external tools. It's analogous to HTTP in that it defines the verbs (requests), nouns (resources), and handshake patterns that allow any agent to talk to any tool server.</p>
-  <blockquote>"MCP is HTTP for AI agents — a shared protocol that makes everything composable." — Peter Steinberger</blockquote>
-  <p>Key properties:</p>
-  <ul>
-    <li><strong>Transport-agnostic</strong> — works over HTTPS, SSE, WebSocket, or stdio</li>
-    <li><strong>Schema-driven</strong> — tools self-describe their inputs/outputs using JSON Schema</li>
-    <li><strong>Bidirectional</strong> — agents can push context back to servers (sampling, roots)</li>
-    <li><strong>Composable</strong> — connect multiple tool servers to one agent, or one server to many agents</li>
-  </ul>
+  <h2>3. APIs vs Bespoke Protocols</h2>
+  <table>
+    <tr><th></th><th class='good'>📡 Direct API / CLI</th><th>📦 Bespoke Protocol</th></tr>
+    <tr><td><strong>Integration cost</strong></td><td class='good'>Zero — use existing endpoints</td><td>High — build adapters for each tool server</td></tr>
+    <tr><td><strong>Auth model</strong></td><td class='good'>Standard OAuth/OIDC/API keys</td><td>Custom auth per protocol implementation</td></tr>
+    <tr><td><strong>Debugging</strong></td><td class='good'>curl, Postman, browser devtools</td><td>Specialized protocol inspectors</td></tr>
+    <tr><td><strong>Ecosystem</strong></td><td class='good'>Millions of REST/GraphQL APIs</td><td>Only tools that implement the protocol</td></tr>
+    <tr><td><strong>CLI composability</strong></td><td class='good'>Pipe stdout → agent → API call</td><td>Requires protocol-specific adapters</td></tr>
+    <tr><td><strong>Maturity</strong></td><td class='good'>25+ years of battle-tested infra</td><td>Months old, rapidly changing specs</td></tr>
+  </table>
 
-  <h2>3. Peter Steinberger & OpenClaw</h2>
-  <p>Peter Steinberger — founder of PSPDFKit, veteran open-source developer — created <strong>OpenClaw</strong> as an open-source agentic AI agent. In early 2026 he joined OpenAI while insisting OpenClaw remain open-source under a non-profit foundation.</p>
-  <p>OpenClaw is to MCP what Mosaic was to HTTP. It's the first general-purpose agent that:</p>
+  <h2>4. Agent as Developer</h2>
+  <p>OpenClaw's approach: treat the agent like a senior developer who reads docs, authenticates, and calls APIs:</p>
+  <pre><code># OpenClaw: thinking like a developer
+$ az group list --output json          # Azure REST via CLI
+$ curl -H "Authorization: Bearer $TOK" \
+    https://graph.microsoft.com/v1.0/me # Direct Graph API call
+$ gh pr list --json number,title        # GitHub CLI
+$ kubectl get pods -o json              # K8s API via CLI
+$ fabric pipeline run --workspace prod  # Fabric CLI
+
+# No protocol adapters. No middleware.
+# Just APIs and CLIs — the same tools you'd use.</code></pre>
+  <blockquote>"The lobster is loose, and it's not going back into the tank." — Peter Steinberger</blockquote>
+
+  <h2>5. Peter Steinberger & OpenClaw</h2>
+  <p>Steinberger created OpenClaw as an open-source agentic AI agent. In early 2026 he joined OpenAI while insisting OpenClaw remain open-source under a non-profit foundation. Key design decisions:</p>
   <ul>
     <li><strong>Runs locally</strong> — your data stays on your machine</li>
     <li><strong>Works with any LLM</strong> — Claude, GPT, Gemini, local models</li>
-    <li><strong>Uses MCP natively</strong> — discovers and composes tool servers</li>
-    <li><strong>Has a skills system</strong> — extensible via markdown skill files</li>
-    <li><strong>Is fully open-source</strong> — no vendor lock-in, community governed</li>
+    <li><strong>Calls APIs directly</strong> — REST, GraphQL, gRPC — no translation layer</li>
+    <li><strong>Shells out to CLIs</strong> — az, gh, kubectl, curl — the Unix way</li>
+    <li><strong>Skills via markdown</strong> — extensible, human-readable, version-controllable</li>
+    <li><strong>Fully open-source</strong> — no vendor lock-in, community governed</li>
   </ul>
-  <blockquote>"The lobster is loose, and it's not going back into the tank." — Peter Steinberger</blockquote>
 
-  <h2>4. The Protocol Stack Comparison</h2>
-  <table>
-    <tr><th>Layer</th><th>🌐 Internet</th><th>🤖 Agentic</th></tr>
-    <tr><td>Application</td><td>HTTP, SMTP, FTP, DNS</td><td>OpenClaw, AutoGPT, CrewAI</td></tr>
-    <tr><td>Presentation</td><td>HTML, CSS, JSON, XML</td><td>MCP, Tool Schemas, A2A</td></tr>
-    <tr><td>Session</td><td>TLS/SSL, Cookies, OAuth</td><td>OAuth, API Keys, OIDC</td></tr>
-    <tr><td>Transport</td><td>TCP, UDP, WebSocket</td><td>HTTPS, SSE, WebSocket</td></tr>
-    <tr><td>Network</td><td>IP, ICMP, BGP</td><td>TCP/IP, DNS, CDN</td></tr>
-  </table>
-
-  <h2>5. Why This Matters for Platform Engineers</h2>
-  <p>As a platform engineer working with Azure, IaC, and Fabric, the agentic web isn't theoretical — it's practical:</p>
+  <h2>6. Why This Matters for Platform Engineers</h2>
+  <p>As a platform engineer working with Azure, IaC, and Fabric, the API-first approach is immediately practical:</p>
   <ul>
-    <li><strong>MCP tool servers for Azure</strong> — agents can manage infrastructure via Bicep, query logs via KQL, manage policies</li>
-    <li><strong>Fabric + agents</strong> — MCP-enabled agents can trigger pipelines, run KQL queries, monitor data quality</li>
-    <li><strong>Policy governance via agents</strong> — automated compliance checks, remediation workflows, exemption management</li>
-    <li><strong>Platform self-service</strong> — agents as the interface to platform engineering consoles</li>
+    <li><strong>Azure CLI + agents</strong> — <code>az</code> already exposes every Azure operation. Agents call it directly.</li>
+    <li><strong>Fabric REST APIs</strong> — pipeline triggers, KQL queries, data quality — all callable via HTTPS</li>
+    <li><strong>Infrastructure as Code</strong> — agents read Bicep, run <code>az deployment what-if</code>, and propose changes</li>
+    <li><strong>Graph API for M365</strong> — user management, Teams, SharePoint — standard OAuth + REST</li>
+    <li><strong>Policy governance</strong> — <code>az policy</code> commands for compliance checks, remediation, exemptions</li>
   </ul>
+  <p>No new protocol servers to deploy. No middleware to maintain. The APIs are already there.</p>
 
-  <h2>6. Open Standards Win</h2>
-  <p>The internet wasn't built by one company. TCP/IP, HTTP, HTML, and CSS are all open standards that anyone can implement. The result was the largest collaborative system in human history.</p>
-  <p>The agentic web follows the same pattern: MCP is an open specification, OpenClaw is open-source, and the foundation governing it is non-profit. When protocols are open, ecosystems flourish.</p>
-  <blockquote>"If you want to go fast, go alone. If you want to go far, go together." — African proverb, frequently cited in open-source communities</blockquote>
+  <h2>7. Open Standards Win</h2>
+  <p>The internet wasn't built by one company. TCP/IP, HTTP, HTML, and CSS are all open standards. The result was the largest collaborative system in human history.</p>
+  <p>The agentic web follows the same pattern: REST APIs are universal, CLIs are composable, OAuth is standard, and OpenClaw is open-source. The best agent interface is the one that already works.</p>
 
   <footer>
     <p>acestus.com — William Weeks-Balconi</p>
