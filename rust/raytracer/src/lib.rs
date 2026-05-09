@@ -509,8 +509,7 @@ impl Raytracer {
         let cr = 24.0 + 4.0 * (time * 0.05).sin();
         let cy = 14.0 + 5.0 * (time * 0.07).sin();
         let origin = Vec3::new(cr * ca.sin(), cy, cr * ca.cos());
-        let (lx, lz) = path_pos(&self.maze_path, time * 3.5);
-        let look_at = Vec3::new(lx, ROAD_Y + 2.0, lz);
+        let look_at = Vec3::new(0.0, ROAD_Y + 2.0, 0.0);
 
         let forward = look_at.sub(origin).norm();
         let right = forward.cross(Vec3::new(0.0, 1.0, 0.0)).norm();
