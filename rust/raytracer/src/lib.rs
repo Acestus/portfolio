@@ -11,6 +11,13 @@ const MAZE_N: usize = 15;
 const MAZE_CELLS: usize = MAZE_N * MAZE_N;
 const CELL_SZ: f64 = 2.0;
 
+// --- Aqueduct geometry ---
+
+const FLOOR_Y: f64 = -2.0;
+const AQUEDUCT_H: f64 = 4.0;
+const SLAB_H: f64 = 0.3;
+const ROAD_Y: f64 = FLOOR_Y + AQUEDUCT_H;
+
 // --- Vector math ---
 
 #[derive(Clone, Copy)]
@@ -135,26 +142,104 @@ fn hit_capsule(origin: Vec3, dir: Vec3, cap: &Capsule) -> Option<Hit> {
     } else { None }
 }
 
-// --- Floor (maze pattern) ---
+// --- Ground plane ---
 
-const FLOOR_Y: f64 = -2.0;
-
-fn hit_floor(origin: Vec3, dir: Vec3, maze: &[bool; MAZE_CELLS]) -> Option<Hit> {
+fn hit_ground(origin: Vec3, dir: Vec3) -> Option<Hit> {
     if dir.y.abs() < 1e-8 { return None; }
     let t = (FLOOR_Y - origin.y) / dir.y;
+    if t < 0.001 { return None; }
+    let p = origin.add(dir.scale(t));
+    let ix = (p.x * 0.5).floor() as i32;
+    let iz = (p.z * 0.5).floor() as i32;
+    let v = ((ix.wrapping_mul(374761393) ^ iz.wrapping_mul(668265263)) as u32 & 0xFF) as f64 / 255.0;
+    let g = 0.35 + 0.06 * v;
+    let color = Vec3::new(g * 0.75, g, g * 0.55);
+    Some(Hit { t, normal: Vec3::new(0.0, 1.0, 0.0), color, specular: 5.0, reflective: 0.02 })
+}
+
+// --- Aqueduct road surface (top) ---
+
+fn hit_road_top(origin: Vec3, dir: Vec3, maze: &[bool; MAZE_CELLS]) -> Option<Hit> {
+    if dir.y.abs() < 1e-8 { return None; }
+    let t = (ROAD_Y - origin.y) / dir.y;
     if t < 0.001 { return None; }
     let p = origin.add(dir.scale(t));
     let half = (MAZE_N as f64) * CELL_SZ * 0.5;
     let gx = ((p.x + half) / CELL_SZ).floor() as i32;
     let gz = ((p.z + half) / CELL_SZ).floor() as i32;
-    let is_path = gx >= 0 && gx < MAZE_N as i32 && gz >= 0 && gz < MAZE_N as i32
-        && maze[(gz as usize) * MAZE_N + (gx as usize)];
-    let (color, refl) = if is_path {
-        (Vec3::new(0.92, 0.9, 0.84), 0.12)
-    } else {
-        (Vec3::new(0.38, 0.52, 0.36), 0.05)
-    };
-    Some(Hit { t, normal: Vec3::new(0.0, 1.0, 0.0), color, specular: 30.0, reflective: refl })
+    if gx < 0 || gx >= MAZE_N as i32 || gz < 0 || gz >= MAZE_N as i32 { return None; }
+    if !maze[(gz as usize) * MAZE_N + (gx as usize)] { return None; }
+    let color = Vec3::new(0.82, 0.76, 0.65);
+    Some(Hit { t, normal: Vec3::new(0.0, 1.0, 0.0), color, specular: 20.0, reflective: 0.08 })
+}
+
+// --- Aqueduct road underside ---
+
+fn hit_road_bottom(origin: Vec3, dir: Vec3, maze: &[bool; MAZE_CELLS]) -> Option<Hit> {
+    if dir.y <= 0.0 { return None; }
+    let bottom = ROAD_Y - SLAB_H;
+    let t = (bottom - origin.y) / dir.y;
+    if t < 0.001 { return None; }
+    let p = origin.add(dir.scale(t));
+    let half = (MAZE_N as f64) * CELL_SZ * 0.5;
+    let gx = ((p.x + half) / CELL_SZ).floor() as i32;
+    let gz = ((p.z + half) / CELL_SZ).floor() as i32;
+    if gx < 0 || gx >= MAZE_N as i32 || gz < 0 || gz >= MAZE_N as i32 { return None; }
+    if !maze[(gz as usize) * MAZE_N + (gx as usize)] { return None; }
+    let color = Vec3::new(0.7, 0.64, 0.55);
+    Some(Hit { t, normal: Vec3::new(0.0, -1.0, 0.0), color, specular: 10.0, reflective: 0.03 })
+}
+
+// --- Aqueduct side walls ---
+
+fn hit_aqueduct_walls(origin: Vec3, dir: Vec3, maze: &[bool; MAZE_CELLS]) -> Option<Hit> {
+    let half = (MAZE_N as f64) * CELL_SZ * 0.5;
+    let slab_bottom = ROAD_Y - SLAB_H;
+    let stone = Vec3::new(0.75, 0.68, 0.58);
+    let mut best_t = f64::MAX;
+    let mut best_hit: Option<Hit> = None;
+
+    // X-aligned boundaries
+    if dir.x.abs() > 1e-8 {
+        for gx in 0..=MAZE_N {
+            let wall_x = gx as f64 * CELL_SZ - half;
+            let t = (wall_x - origin.x) / dir.x;
+            if t < 0.001 || t >= best_t { continue; }
+            let p = origin.add(dir.scale(t));
+            if p.y < slab_bottom || p.y > ROAD_Y { continue; }
+            let gz = ((p.z + half) / CELL_SZ).floor() as i32;
+            if gz < 0 || gz >= MAZE_N as i32 { continue; }
+            let left = if gx > 0 { maze[gz as usize * MAZE_N + (gx - 1)] } else { false };
+            let right = if gx < MAZE_N { maze[gz as usize * MAZE_N + gx] } else { false };
+            if left != right {
+                let nx = if dir.x > 0.0 { -1.0 } else { 1.0 };
+                best_t = t;
+                best_hit = Some(Hit { t, normal: Vec3::new(nx, 0.0, 0.0), color: stone, specular: 15.0, reflective: 0.05 });
+            }
+        }
+    }
+
+    // Z-aligned boundaries
+    if dir.z.abs() > 1e-8 {
+        for gz in 0..=MAZE_N {
+            let wall_z = gz as f64 * CELL_SZ - half;
+            let t = (wall_z - origin.z) / dir.z;
+            if t < 0.001 || t >= best_t { continue; }
+            let p = origin.add(dir.scale(t));
+            if p.y < slab_bottom || p.y > ROAD_Y { continue; }
+            let gx = ((p.x + half) / CELL_SZ).floor() as i32;
+            if gx < 0 || gx >= MAZE_N as i32 { continue; }
+            let front = if gz > 0 { maze[(gz - 1) as usize * MAZE_N + gx as usize] } else { false };
+            let back = if (gz as usize) < MAZE_N { maze[gz as usize * MAZE_N + gx as usize] } else { false };
+            if front != back {
+                let nz = if dir.z > 0.0 { -1.0 } else { 1.0 };
+                best_t = t;
+                best_hit = Some(Hit { t, normal: Vec3::new(0.0, 0.0, nz), color: stone, specular: 15.0, reflective: 0.05 });
+            }
+        }
+    }
+
+    best_hit
 }
 
 // --- Daylight sky ---
@@ -240,19 +325,20 @@ fn generate_maze() -> ([bool; MAZE_CELLS], Vec<(usize, usize)>) {
     (grid, path)
 }
 
+fn maze_to_world(gx: usize, gz: usize) -> (f64, f64) {
+    let half = (MAZE_N as f64) * CELL_SZ * 0.5;
+    (gx as f64 * CELL_SZ - half + CELL_SZ * 0.5,
+     gz as f64 * CELL_SZ - half + CELL_SZ * 0.5)
+}
+
 fn path_pos(path: &[(usize, usize)], t: f64) -> (f64, f64) {
     if path.len() < 2 { return (0.0, 0.0); }
     let n = path.len() as f64;
     let t_wrap = ((t % n) + n) % n;
     let i = t_wrap.floor() as usize;
     let f = t_wrap - t_wrap.floor();
-    let half = (MAZE_N as f64) * CELL_SZ * 0.5;
-    let w = |c: (usize, usize)| -> (f64, f64) {
-        (c.0 as f64 * CELL_SZ - half + CELL_SZ * 0.5,
-         c.1 as f64 * CELL_SZ - half + CELL_SZ * 0.5)
-    };
-    let (x0, z0) = w(path[i % path.len()]);
-    let (x1, z1) = w(path[(i + 1) % path.len()]);
+    let (x0, z0) = maze_to_world(path[i % path.len()].0, path[i % path.len()].1);
+    let (x1, z1) = maze_to_world(path[(i + 1) % path.len()].0, path[(i + 1) % path.len()].1);
     (x0 + (x1 - x0) * f, z0 + (z1 - z0) * f)
 }
 
@@ -263,19 +349,19 @@ struct Scene { spheres: Vec<Sphere>, capsules: Vec<Capsule>, maze: [bool; MAZE_C
 impl Scene {
     fn closest_hit(&self, origin: Vec3, dir: Vec3) -> Option<Hit> {
         let mut best: Option<Hit> = None;
+        let mut check = |h: Hit| {
+            if best.is_none() || h.t < best.unwrap().t { best = Some(h); }
+        };
         for s in &self.spheres {
-            if let Some(h) = hit_sphere(origin, dir, s) {
-                if best.is_none() || h.t < best.unwrap().t { best = Some(h); }
-            }
+            if let Some(h) = hit_sphere(origin, dir, s) { check(h); }
         }
         for c in &self.capsules {
-            if let Some(h) = hit_capsule(origin, dir, c) {
-                if best.is_none() || h.t < best.unwrap().t { best = Some(h); }
-            }
+            if let Some(h) = hit_capsule(origin, dir, c) { check(h); }
         }
-        if let Some(h) = hit_floor(origin, dir, &self.maze) {
-            if best.is_none() || h.t < best.unwrap().t { best = Some(h); }
-        }
+        if let Some(h) = hit_ground(origin, dir) { check(h); }
+        if let Some(h) = hit_road_top(origin, dir, &self.maze) { check(h); }
+        if let Some(h) = hit_road_bottom(origin, dir, &self.maze) { check(h); }
+        if let Some(h) = hit_aqueduct_walls(origin, dir, &self.maze) { check(h); }
         best
     }
 
@@ -286,6 +372,9 @@ impl Scene {
         for c in &self.capsules {
             if let Some(h) = hit_capsule(origin, dir, c) { if h.t < max_t { return true; } }
         }
+        if let Some(h) = hit_road_top(origin, dir, &self.maze) { if h.t < max_t { return true; } }
+        if let Some(h) = hit_road_bottom(origin, dir, &self.maze) { if h.t < max_t { return true; } }
+        if let Some(h) = hit_aqueduct_walls(origin, dir, &self.maze) { if h.t < max_t { return true; } }
         false
     }
 }
@@ -343,16 +432,15 @@ fn gamma(v: f64) -> u8 { (v.max(0.0).min(1.0).powf(1.0/2.2) * 255.0) as u8 }
 
 // --- Unicyclist builder ---
 
-fn build_unicyclist(scene: &mut Scene, bx: f64, bz: f64, time: f64, phase: f64, hue: usize) {
+fn build_unicyclist(scene: &mut Scene, bx: f64, bz: f64, ground_y: f64, time: f64, phase: f64, hue: usize) {
     let s = 3.0;
     let pedal_speed = 2.5;
     let pa = time * pedal_speed + phase;
 
     let wheel_r = 0.45 * s;
     let tube_r = 0.07 * s;
-    let wy = FLOOR_Y + wheel_r + tube_r;
+    let wy = ground_y + wheel_r + tube_r;
 
-    // Wheel: capsule segments forming a smooth ring
     let n_segs: usize = 24;
     let tau = std::f64::consts::TAU;
     let spin = time * pedal_speed;
@@ -367,7 +455,6 @@ fn build_unicyclist(scene: &mut Scene, bx: f64, bz: f64, time: f64, phase: f64, 
         });
     }
 
-    // Spokes
     let n_spk = 4;
     for i in 0..n_spk {
         let a = (i as f64) * tau / (n_spk as f64) + spin;
@@ -378,22 +465,18 @@ fn build_unicyclist(scene: &mut Scene, bx: f64, bz: f64, time: f64, phase: f64, 
         });
     }
 
-    // Hub
     scene.spheres.push(Sphere { center: Vec3::new(bx, wy, bz), radius: 0.1 * s,
         color: Vec3::new(0.85, 0.85, 0.9), specular: 300.0, reflective: 0.7 });
 
-    // Seat post
     let seat_y = wy + 0.9 * s;
     scene.capsules.push(Capsule { a: Vec3::new(bx, wy + 0.15 * s, bz), b: Vec3::new(bx, seat_y, bz),
         radius: 0.04 * s, color: Vec3::new(0.7, 0.7, 0.75), specular: 100.0, reflective: 0.5 });
 
-    // Seat
     scene.capsules.push(Capsule {
         a: Vec3::new(bx - 0.1 * s, seat_y + 0.05 * s, bz),
         b: Vec3::new(bx + 0.1 * s, seat_y + 0.05 * s, bz),
         radius: 0.06 * s, color: Vec3::new(0.3, 0.3, 0.35), specular: 50.0, reflective: 0.3 });
 
-    // Body colors
     let colors = [
         Vec3::new(0.0, 0.5, 0.9), Vec3::new(0.9, 0.2, 0.4), Vec3::new(0.0, 0.8, 0.4),
         Vec3::new(0.9, 0.7, 0.0), Vec3::new(0.7, 0.3, 0.9),
@@ -401,18 +484,15 @@ fn build_unicyclist(scene: &mut Scene, bx: f64, bz: f64, time: f64, phase: f64, 
     let bc = colors[hue % colors.len()];
     let bob = 0.06 * s * (time * 4.0 + phase).sin();
 
-    // Torso
     let hip_y = seat_y + 0.25 * s;
     let sh_y = hip_y + 0.55 * s;
     scene.capsules.push(Capsule {
         a: Vec3::new(bx, hip_y + bob, bz), b: Vec3::new(bx, sh_y + bob, bz),
         radius: 0.14 * s, color: bc, specular: 80.0, reflective: 0.4 });
 
-    // Head
     scene.spheres.push(Sphere { center: Vec3::new(bx, sh_y + 0.32 * s + bob, bz),
         radius: 0.16 * s, color: Vec3::new(0.9, 0.75, 0.65), specular: 60.0, reflective: 0.2 });
 
-    // Legs — pedaling
     let cr = 0.25 * s;
     let rf_x = bx + cr * pa.cos();
     let rf_y = wy + cr * pa.sin();
@@ -434,7 +514,6 @@ fn build_unicyclist(scene: &mut Scene, bx: f64, bz: f64, time: f64, phase: f64, 
     scene.capsules.push(Capsule { a: Vec3::new(lk_x, lk_y, bz - 0.08 * s),
         b: Vec3::new(lf_x, lf_y, bz - 0.08 * s), radius: 0.05 * s, color: bc, specular: 60.0, reflective: 0.3 });
 
-    // Arms — exaggerated swing
     let sw = 0.1 * s * (time * 3.0 + phase).sin();
     scene.capsules.push(Capsule { a: Vec3::new(bx, sh_y - 0.05 * s + bob, bz + 0.16 * s),
         b: Vec3::new(bx + 0.25 * s + sw, sh_y - 0.3 * s + bob, bz + 0.1 * s), radius: 0.045 * s, color: bc, specular: 60.0, reflective: 0.3 });
@@ -464,8 +543,8 @@ impl Raytracer {
         canvas.set_height(H);
 
         let lights = vec![
-            Light { base_pos: Vec3::new(8.0, 15.0, 5.0), color: Vec3::new(1.0, 0.97, 0.9), intensity: 2.0, orbit_radius: 0.0, orbit_speed: 0.0 },
-            Light { base_pos: Vec3::new(-5.0, 10.0, -3.0), color: Vec3::new(0.6, 0.7, 1.0), intensity: 0.8, orbit_radius: 0.0, orbit_speed: 0.0 },
+            Light { base_pos: Vec3::new(10.0, 20.0, 8.0), color: Vec3::new(1.0, 0.97, 0.9), intensity: 2.2, orbit_radius: 0.0, orbit_speed: 0.0 },
+            Light { base_pos: Vec3::new(-6.0, 15.0, -5.0), color: Vec3::new(0.6, 0.7, 1.0), intensity: 0.8, orbit_radius: 0.0, orbit_speed: 0.0 },
         ];
 
         let (maze_grid, maze_path) = generate_maze();
@@ -476,17 +555,33 @@ impl Raytracer {
     fn build_scene(&self, time: f64) -> Scene {
         let mut scene = Scene {
             spheres: Vec::with_capacity(20),
-            capsules: Vec::with_capacity(140),
+            capsules: Vec::with_capacity(160),
             maze: self.maze_grid,
         };
 
+        // Stone pillars under the aqueduct at corridor cell centers
+        for gy in (1..MAZE_N).step_by(2) {
+            for gx in (1..MAZE_N).step_by(2) {
+                if self.maze_grid[gy * MAZE_N + gx] {
+                    let (wx, wz) = maze_to_world(gx, gy);
+                    scene.capsules.push(Capsule {
+                        a: Vec3::new(wx, FLOOR_Y, wz),
+                        b: Vec3::new(wx, ROAD_Y - SLAB_H, wz),
+                        radius: 0.35,
+                        color: Vec3::new(0.78, 0.72, 0.6), specular: 20.0, reflective: 0.05,
+                    });
+                }
+            }
+        }
+
+        // 3 cyclists following the maze solution path
         let speed = 3.5;
         let offsets = [0.0, 10.0, 22.0];
         let hues = [0, 1, 3];
         for i in 0..3 {
             let t = time * speed + offsets[i];
             let (px, pz) = path_pos(&self.maze_path, t);
-            build_unicyclist(&mut scene, px, pz, time, offsets[i], hues[i]);
+            build_unicyclist(&mut scene, px, pz, ROAD_Y, time, offsets[i], hues[i]);
         }
 
         scene
@@ -496,11 +591,11 @@ impl Raytracer {
         let scene = self.build_scene(time);
 
         let ca = time * self.camera_speed;
-        let cr = 22.0 + 3.0 * (time * 0.06).sin();
-        let cy = 10.0 + 3.0 * (time * 0.08).sin() + self.camera_height_offset;
+        let cr = 24.0 + 4.0 * (time * 0.05).sin();
+        let cy = 14.0 + 5.0 * (time * 0.07).sin() + self.camera_height_offset;
         let origin = Vec3::new(cr * ca.sin(), cy, cr * ca.cos());
         let (lx, lz) = path_pos(&self.maze_path, time * 3.5);
-        let look_at = Vec3::new(lx, 2.0, lz);
+        let look_at = Vec3::new(lx, ROAD_Y + 2.0, lz);
 
         let forward = look_at.sub(origin).norm();
         let right = forward.cross(Vec3::new(0.0, 1.0, 0.0)).norm();
@@ -535,7 +630,7 @@ impl Raytracer {
 
     pub fn nudge_camera(&mut self, direction: f64) {
         self.camera_height_offset += direction * 0.5;
-        self.camera_height_offset = self.camera_height_offset.clamp(-3.0, 10.0);
+        self.camera_height_offset = self.camera_height_offset.clamp(-5.0, 12.0);
     }
 
     pub fn set_speed(&mut self, speed: f64) {
