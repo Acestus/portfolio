@@ -36,8 +36,10 @@
             bx (+ 300 (* i 220) (* r1 60))]
         (recur (inc i) s1
                (conj buildings {:x bx :w 50 :alive true
-                                :hostages (vec (repeat WORKLOADS-PER-DC
-                                                       {:state :inside}))}))))))
+                                :hostages (vec (map-indexed
+                                                 (fn [idx _]
+                                                   {:state :inside :idx idx})
+                                                 (range WORKLOADS-PER-DC)))}))))))
 
 (defn- make-tanks [seed n]
   (loop [i 0 s seed tanks []]
@@ -95,7 +97,7 @@
        (< ay (+ by bh)) (< by (+ ay ah))))
 
 (defn- update-hostage-release [state]
-  ;; When cloud is near a building, workloads run out
+  ;; When cloud is near a building, workloads run out spread apart
   (let [hx (:heli-x state)
         hy (:heli-y state)]
     (reduce-kv
@@ -109,10 +111,12 @@
               (let [hostages (:hostages bldg)
                     released (mapv (fn [h]
                                     (if (= (:state h) :inside)
-                                      (assoc h :state :running
-                                             :x (+ bx (/ bw 2))
-                                             :y GROUND-Y
-                                             :target-x hx)
+                                      (let [idx (or (:idx h) 0)
+                                            spread (* (- idx 2.5) 10)]
+                                        (assoc h :state :running
+                                               :x (+ bx (/ bw 2) spread)
+                                               :y GROUND-Y
+                                               :target-x hx))
                                       h))
                                    hostages)]
                 (assoc-in st [:buildings bi :hostages] released))))))
@@ -129,7 +133,9 @@
                 (fn [h]
                   (case (:state h)
                     :running
-                    (let [dx (* (if (< (:x h) hx) 1 -1) 50 dt)
+                    (let [idx (or (:idx h) 0)
+                          speed (+ 35 (* idx 5))
+                          dx (* (if (< (:x h) hx) 1 -1) speed dt)
                           nx (+ (:x h) dx)
                           close-enough (and (< (js/Math.abs (- nx hx)) 15)
                                             (< hy (- GROUND-Y 10)))]
