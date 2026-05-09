@@ -11,12 +11,12 @@ const MAZE_N: usize = 25;
 const MAZE_CELLS: usize = MAZE_N * MAZE_N;
 const CELL_SZ: f64 = 2.0;
 
-// --- Aqueduct geometry ---
+// --- Elevated road geometry ---
 
 const FLOOR_Y: f64 = -2.0;
-const AQUEDUCT_H: f64 = 4.0;
+const ELEVATION_H: f64 = 4.0;
 const SLAB_H: f64 = 0.3;
-const ROAD_Y: f64 = FLOOR_Y + AQUEDUCT_H;
+const ROAD_Y: f64 = FLOOR_Y + ELEVATION_H;
 
 // --- Vector math ---
 
@@ -158,7 +158,7 @@ fn hit_ground(origin: Vec3, dir: Vec3) -> Option<Hit> {
     Some(Hit { t, normal: Vec3::new(0.0, 1.0, 0.0), color })
 }
 
-// --- Aqueduct road surface (top) ---
+// --- Road surface (top) ---
 
 fn hit_road_top(origin: Vec3, dir: Vec3, maze: &[bool; MAZE_CELLS]) -> Option<Hit> {
     if dir.y.abs() < 1e-8 { return None; }
