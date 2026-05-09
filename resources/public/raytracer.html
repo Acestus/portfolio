@@ -3,17 +3,39 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Real-time ray-traced scene with reflections — Rust + WASM">
+  <meta name="description" content="A Mind's Eye homage — chrome spheres, starfield, checkerboard — real-time ray traced in Rust + WASM">
   <meta name="theme-color" content="#0a0a2a">
-  <meta property="og:title" content="Raytracer — acestus.com">
-  <meta property="og:description" content="Real-time ray-traced scene with reflections — Rust + WASM">
+  <meta property="og:title" content="Mind's Eye Raytracer — acestus.com">
+  <meta property="og:description" content="A Mind's Eye homage — chrome spheres, starfield, checkerboard — Rust + WASM">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://portfolio.acestus.com/raytracer.html">
   <meta property="og:image" content="https://portfolio.acestus.com/favicon.svg">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <title>Raytracer — acestus.com</title>
+  <title>Mind's Eye Raytracer — acestus.com</title>
   <link rel="stylesheet" href="/css/shared.css">
   <link rel="stylesheet" href="/css/arcade.css">
+  <style>
+    .controls {
+      display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center;
+      margin-block: var(--space-s); padding-inline: var(--space-s);
+    }
+    .ctrl-btn {
+      font-family: 'Press Start 2P', monospace; font-size: 0.6rem;
+      background: transparent; color: #00d4ff; border: 1px solid #00d4ff;
+      padding: 0.4rem 0.8rem; border-radius: 4px; cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .ctrl-btn:hover, .ctrl-btn.active { background: #00d4ff; color: #0a0a2a; }
+    .ctrl-btn:active { transform: scale(0.95); }
+    .info-bar {
+      color: #555; font-family: monospace; font-size: var(--step--2);
+      text-align: center; margin-block-start: var(--space-2xs);
+    }
+    .info-bar span { color: #00ff41; }
+    .subtitle { color: #888; text-align: center; margin-block-end: var(--space-s); }
+    .subtitle em { color: #00d4ff; font-style: normal; }
+  </style>
 </head>
 <body class="arcade-theme">
   <div id="app">
@@ -30,10 +52,21 @@
       </nav>
       <main class="main-content">
         <div class="game-wrapper">
-          <h1 style="font-family:'Press Start 2P',monospace;color:#00d4ff;font-size:var(--step-2);text-align:center">🔮 Raytracer</h1>
-          <p style="color:#888;text-align:center;margin-block-end:var(--space-m)">5 spheres · reflections · shadows · orbiting camera · <span style="color:#00ff41">Rust + WASM</span></p>
-          <canvas id="canvas" class="game-canvas"></canvas>
-          <p id="fps" style="color:#666;font-family:monospace;font-size:var(--step--2)"></p>
+          <h1 style="font-family:'Press Start 2P',monospace;color:#00d4ff;font-size:var(--step-2);text-align:center">🔮 Mind's Eye</h1>
+          <p class="subtitle">A homage to <em>The Mind's Eye: A Computer Animation Odyssey</em> (1990)<br>
+            Chrome spheres · starfield · checkerboard · colored lights · <span style="color:#00ff41">Rust + WASM</span></p>
+          <div class="controls">
+            <button class="ctrl-btn" id="btn-slow">🐢 Slow</button>
+            <button class="ctrl-btn active" id="btn-normal">▶ Normal</button>
+            <button class="ctrl-btn" id="btn-fast">⚡ Fast</button>
+            <button class="ctrl-btn" id="btn-up">↑ Camera Up</button>
+            <button class="ctrl-btn" id="btn-down">↓ Camera Down</button>
+            <button class="ctrl-btn" id="btn-reset">⟳ Reset</button>
+          </div>
+          <canvas id="canvas" class="game-canvas" style="cursor:grab"></canvas>
+          <div class="info-bar">
+            <span id="fps"></span> · Click/drag canvas to orbit · Tap buttons to control camera
+          </div>
         </div>
         <div class="action-links">
           <a class="action-btn" href="/articles/raytracer.html">📄 Read Article</a>
@@ -50,12 +83,55 @@
       const canvas = document.getElementById('canvas');
       const rt = new Raytracer(canvas);
       const fpsEl = document.getElementById('fps');
+
+      // --- Speed controls ---
+      const speeds = { slow: 0.04, normal: 0.12, fast: 0.35 };
+      const speedBtns = { slow: document.getElementById('btn-slow'), normal: document.getElementById('btn-normal'), fast: document.getElementById('btn-fast') };
+      function setSpeed(name) {
+        rt.set_speed(speeds[name]);
+        Object.values(speedBtns).forEach(b => b.classList.remove('active'));
+        speedBtns[name].classList.add('active');
+      }
+      speedBtns.slow.onclick = () => setSpeed('slow');
+      speedBtns.normal.onclick = () => setSpeed('normal');
+      speedBtns.fast.onclick = () => setSpeed('fast');
+
+      // --- Camera height ---
+      document.getElementById('btn-up').onclick = () => rt.nudge_camera(1.0);
+      document.getElementById('btn-down').onclick = () => rt.nudge_camera(-1.0);
+      document.getElementById('btn-reset').onclick = () => { rt.nudge_camera(-99); rt.nudge_camera(0); setSpeed('normal'); };
+
+      // --- Mouse drag to nudge camera ---
+      let dragging = false, lastY = 0;
+      canvas.addEventListener('mousedown', (e) => { dragging = true; lastY = e.clientY; canvas.style.cursor = 'grabbing'; });
+      window.addEventListener('mouseup', () => { dragging = false; canvas.style.cursor = 'grab'; });
+      window.addEventListener('mousemove', (e) => {
+        if (!dragging) return;
+        const dy = (lastY - e.clientY) * 0.02;
+        rt.nudge_camera(dy);
+        lastY = e.clientY;
+      });
+
+      // --- Touch drag ---
+      let touchY = 0;
+      canvas.addEventListener('touchstart', (e) => { e.preventDefault(); touchY = e.touches[0].clientY; }, { passive: false });
+      canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const dy = (touchY - e.touches[0].clientY) * 0.02;
+        rt.nudge_camera(dy);
+        touchY = e.touches[0].clientY;
+      }, { passive: false });
+
+      // --- Render loop ---
       let frames = 0, fpsTime = 0, last = performance.now();
       function loop(now) {
         const dt = (now - last) / 1000;
         last = now;
         frames++; fpsTime += dt;
-        if (fpsTime > 1.0) { fpsEl.textContent = `${(frames/fpsTime).toFixed(1)} fps · 640×480 · Rust WASM`; frames = 0; fpsTime = 0; }
+        if (fpsTime > 1.0) {
+          fpsEl.textContent = `${(frames/fpsTime).toFixed(1)} fps · 640×480 · 7 spheres · 3 lights`;
+          frames = 0; fpsTime = 0;
+        }
         rt.render_frame(now / 1000);
         requestAnimationFrame(loop);
       }
