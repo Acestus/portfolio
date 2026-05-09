@@ -839,7 +839,8 @@
     ;; Game loop: use shared engine loop and on-screen touch controls
     (eng/init-keyboard!)
     (let [wrapper (core/create-el "div" {:class "game-wrapper"})
-          touch   (eng/init-touch! wrapper)]
+          controls (core/create-el "div" {:class "touch-controls-container"})
+          touch   (eng/init-touch! controls)]
       (.appendChild wrapper (core/create-el "h1"
                               {:style "font-family:'Press Start 2P',monospace;color:#00b4d8;font-size:var(--step-2);text-align:center"}
                               "☁️ Cloud Lift"))
@@ -847,6 +848,8 @@
                               {:style "color:#888;text-align:center;margin-block-end:var(--space-m)"}
                               "Fly to data centers · Pick up workloads · Deliver them to the cloud · Avoid outages"))
       (.appendChild wrapper canvas)
+      ;; place touch controls below the canvas
+      (.appendChild wrapper controls)
 
       (core/mount!
         (ui/page-shell :helicopter "/articles/helicopter.html" "src/portfolio/games/helicopter.cljs" wrapper))
