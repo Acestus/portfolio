@@ -2,8 +2,8 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::Clamped;
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, ImageData};
 
-const W: u32 = 320;
-const H: u32 = 240;
+const W: u32 = 480;
+const H: u32 = 360;
 
 // --- Maze ---
 
@@ -381,7 +381,7 @@ impl Scene {
 
 // --- Trace ---
 
-const MAX_DEPTH: u32 = 1;
+const MAX_DEPTH: u32 = 0;
 
 fn trace(origin: Vec3, dir: Vec3, scene: &Scene, lights: &[Light], time: f64, depth: u32) -> Vec3 {
     let hit = match scene.closest_hit(origin, dir) {
@@ -392,7 +392,7 @@ fn trace(origin: Vec3, dir: Vec3, scene: &Scene, lights: &[Light], time: f64, de
     let p = origin.add(dir.scale(hit.t));
     let n = hit.normal;
 
-    let mut diffuse = Vec3::new(0.15, 0.15, 0.18);
+    let mut diffuse = Vec3::new(0.2, 0.22, 0.25);
     let mut spec = Vec3::new(0.0, 0.0, 0.0);
 
     for light in lights {
@@ -441,7 +441,7 @@ fn build_unicyclist(scene: &mut Scene, bx: f64, bz: f64, ground_y: f64, time: f6
     let tube_r = 0.07 * s;
     let wy = ground_y + wheel_r + tube_r;
 
-    let n_segs: usize = 24;
+    let n_segs: usize = 16;
     let tau = std::f64::consts::TAU;
     let spin = time * pedal_speed;
     for i in 0..n_segs {
@@ -455,7 +455,7 @@ fn build_unicyclist(scene: &mut Scene, bx: f64, bz: f64, ground_y: f64, time: f6
         });
     }
 
-    let n_spk = 4;
+    let n_spk = 2;
     for i in 0..n_spk {
         let a = (i as f64) * tau / (n_spk as f64) + spin;
         scene.capsules.push(Capsule {
@@ -543,8 +543,7 @@ impl Raytracer {
         canvas.set_height(H);
 
         let lights = vec![
-            Light { base_pos: Vec3::new(10.0, 20.0, 8.0), color: Vec3::new(1.0, 0.97, 0.9), intensity: 2.2, orbit_radius: 0.0, orbit_speed: 0.0 },
-            Light { base_pos: Vec3::new(-6.0, 15.0, -5.0), color: Vec3::new(0.6, 0.7, 1.0), intensity: 0.8, orbit_radius: 0.0, orbit_speed: 0.0 },
+            Light { base_pos: Vec3::new(10.0, 20.0, 8.0), color: Vec3::new(1.0, 0.97, 0.9), intensity: 2.5, orbit_radius: 0.0, orbit_speed: 0.0 },
         ];
 
         let (maze_grid, maze_path) = generate_maze();
@@ -559,9 +558,9 @@ impl Raytracer {
             maze: self.maze_grid,
         };
 
-        // Stone pillars under the aqueduct at corridor cell centers
-        for gy in (1..MAZE_N).step_by(2) {
-            for gx in (1..MAZE_N).step_by(2) {
+        // Stone pillars under the aqueduct at select corridor cells
+        for gy in (1..MAZE_N).step_by(4) {
+            for gx in (1..MAZE_N).step_by(4) {
                 if self.maze_grid[gy * MAZE_N + gx] {
                     let (wx, wz) = maze_to_world(gx, gy);
                     scene.capsules.push(Capsule {
@@ -601,16 +600,10 @@ impl Raytracer {
 
         for y in 0..H {
             for x in 0..W {
-                let mut color = Vec3::new(0.0, 0.0, 0.0);
-                for sy in 0..2u32 {
-                    for sx in 0..2u32 {
-                        let px = (2.0 * (x as f64 + 0.25 + 0.5 * sx as f64) / W as f64 - 1.0) * aspect * fov;
-                        let py = (1.0 - 2.0 * (y as f64 + 0.25 + 0.5 * sy as f64) / H as f64) * fov;
-                        let dir = forward.add(right.scale(px)).add(up.scale(py)).norm();
-                        color = color.add(trace(origin, dir, &scene, &self.lights, time, 0));
-                    }
-                }
-                color = color.scale(0.25);
+                let px = (2.0 * (x as f64 + 0.5) / W as f64 - 1.0) * aspect * fov;
+                let py = (1.0 - 2.0 * (y as f64 + 0.5) / H as f64) * fov;
+                let dir = forward.add(right.scale(px)).add(up.scale(py)).norm();
+                let color = trace(origin, dir, &scene, &self.lights, time, 0);
                 let idx = ((y * W + x) * 4) as usize;
                 self.buf[idx]   = gamma(color.x);
                 self.buf[idx + 1] = gamma(color.y);

@@ -129,7 +129,7 @@
         last = now;
         frames++; fpsTime += dt;
         if (fpsTime > 1.0) {
-          fpsEl.textContent = `${(frames/fpsTime).toFixed(1)} fps · 320×240 2×AA · aqueduct maze`;
+          fpsEl.textContent = `${(frames/fpsTime).toFixed(1)} fps · 480×360 · aqueduct maze · Rust+WASM`;
           frames = 0; fpsTime = 0;
         }
         rt.render_frame(now / 1000);
