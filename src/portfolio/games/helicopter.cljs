@@ -17,7 +17,7 @@
 (def ^:private BASE-W 80)
 (def ^:private HOSTAGE-CAPACITY 24)
 (def ^:private WORKLOADS-PER-DC 6)
-(def ^:private NUM-BUILDINGS 4)
+(def ^:private NUM-BUILDINGS 5)
 (def ^:private SCROLL-MARGIN 250)
 
 ;; Deterministic PRNG
@@ -176,7 +176,7 @@
                 (let [nx (+ (:x t) (* (:dir t) (:speed t) dt))
                       ;; Bounce at world edges
                       [nx dir] (cond
-                                 (> nx 1200) [(- 1200 1) -1]
+                                 (> nx 1450) [(- 1450 1) -1]
                                  (< nx 100)  [101 1]
                                  :else       [nx (:dir t)])
                       cd (- (:cooldown t) dt)
@@ -393,7 +393,7 @@
           vy (if (<= ny 15) (max 0 vy) vy)
 
           ;; Keep in world
-          nx (max 10 (min 1300 nx))
+          nx (max 10 (min 1550 nx))
 
           ;; Camera follows heli
           cam-target (- nx (/ W 2))
