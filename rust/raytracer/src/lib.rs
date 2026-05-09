@@ -574,15 +574,11 @@ impl Raytracer {
             }
         }
 
-        // 3 cyclists following the maze solution path
+        // Single cyclist following the maze solution path
         let speed = 3.5;
-        let offsets = [0.0, 10.0, 22.0];
-        let hues = [0, 1, 3];
-        for i in 0..3 {
-            let t = time * speed + offsets[i];
-            let (px, pz) = path_pos(&self.maze_path, t);
-            build_unicyclist(&mut scene, px, pz, ROAD_Y, time, offsets[i], hues[i]);
-        }
+        let t = time * speed;
+        let (px, pz) = path_pos(&self.maze_path, t);
+        build_unicyclist(&mut scene, px, pz, ROAD_Y, time, 0.0, 0);
 
         scene
     }

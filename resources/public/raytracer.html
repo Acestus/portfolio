@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="A Mind's Eye homage — unicyclists, chrome orbs, checkerboard — real-time ray traced in Rust + WASM">
+  <meta name="description" content="Unicyclist on a Roman aqueduct maze — real-time ray traced in Rust + WASM">
   <meta name="theme-color" content="#0a0a2a">
-  <meta property="og:title" content="Mind's Eye Raytracer — acestus.com">
-  <meta property="og:description" content="A Mind's Eye homage — unicyclists, chrome orbs, checkerboard — Rust + WASM">
+  <meta property="og:title" content="Aqueduct Raytracer — acestus.com">
+  <meta property="og:description" content="Unicyclist on a Roman aqueduct maze — Rust + WASM">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://portfolio.acestus.com/raytracer.html">
   <meta property="og:image" content="https://portfolio.acestus.com/favicon.svg">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <title>Mind's Eye Raytracer — acestus.com</title>
+  <title>Aqueduct Raytracer — acestus.com</title>
   <link rel="stylesheet" href="/css/shared.css">
   <link rel="stylesheet" href="/css/arcade.css">
   <style>
@@ -52,9 +52,9 @@
       </nav>
       <main class="main-content">
         <div class="game-wrapper">
-          <h1 style="font-family:'Press Start 2P',monospace;color:#00d4ff;font-size:var(--step-2);text-align:center">🔮 Mind's Eye</h1>
-          <p class="subtitle">A homage to <em>The Mind's Eye: A Computer Animation Odyssey</em> (1990)<br>
-            Unicyclists · chrome orbs · checkerboard · colored lights · <span style="color:#00ff41">Rust + WASM</span></p>
+          <h1 style="font-family:'Press Start 2P',monospace;color:#00d4ff;font-size:var(--step-2);text-align:center">🏛️ Aqueduct Raytracer</h1>
+          <p class="subtitle">A unicyclist solving an elevated Roman aqueduct maze<br>
+            Stone pillars · daylight · 2×AA · <span style="color:#00ff41">Rust + WASM</span></p>
           <div class="controls">
             <button class="ctrl-btn" id="btn-slow">🐢 Slow</button>
             <button class="ctrl-btn active" id="btn-normal">▶ Normal</button>
@@ -129,7 +129,7 @@
         last = now;
         frames++; fpsTime += dt;
         if (fpsTime > 1.0) {
-          fpsEl.textContent = `${(frames/fpsTime).toFixed(1)} fps · 320×240 2×AA · maze · 3 riders`;
+          fpsEl.textContent = `${(frames/fpsTime).toFixed(1)} fps · 320×240 2×AA · aqueduct maze`;
           frames = 0; fpsTime = 0;
         }
         rt.render_frame(now / 1000);
