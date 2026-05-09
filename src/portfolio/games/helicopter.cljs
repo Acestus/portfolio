@@ -112,7 +112,7 @@
                                         h))
                                      hostages)]
                   (assoc-in st [:buildings bi :hostages] released))))))
-        state (vec (map-indexed vector (:buildings state)))))))
+        state (:buildings state)))))
 
 (defn- update-hostages [state dt]
   (let [hx (:heli-x state)
@@ -143,7 +143,7 @@
           (-> st
               (assoc-in [:buildings bi :hostages] hostages)
               (assoc :onboard new-onboard))))
-      state (vec (map-indexed vector (:buildings state))))))
+      state (:buildings state))))
 
 (defn- update-unload [state]
   ;; When landed at base and carrying hostages
@@ -286,7 +286,7 @@
                     (-> st
                         (assoc-in [:buildings bi :hostages] hostages)
                         (update :lost + newly-dead))))
-                state (vec (map-indexed vector (:buildings state))))]
+                state (:buildings state))]
     (if hit-by-enemy
       (-> state (assoc :state :dead)
           (update :best #(max % (:rescued state)))
@@ -507,38 +507,45 @@
   (let [hx (- (:heli-x state) (:camera-x state))
         hy (:heli-y state)
         facing (:facing state)
-        dir (if (= facing :right) 1 -1)]
-    ;; Body
-    (set! (.-fillStyle ctx) "#00d4ff")
-    (set! (.-shadowColor ctx) "#00d4ff")
-    (set! (.-shadowBlur ctx) 10)
-    (.fillRect ctx (- hx 18) (- hy 8) 36 16)
-    ;; Cockpit window
-    (set! (.-fillStyle ctx) "#88eeff")
-    (.fillRect ctx (+ hx (* dir 10)) (- hy 6) 8 8)
-    ;; Tail boom
-    (set! (.-fillStyle ctx) "#0090b0")
-    (.fillRect ctx (- hx (* dir 22)) (- hy 4) 10 8)
-    ;; Tail rotor
-    (set! (.-fillStyle ctx) "#00b8d4")
-    (.fillRect ctx (- hx (* dir 26)) (- hy 10) 4 20)
-    ;; Main rotor
-    (let [rotor-phase (* (js/Date.now) 0.05)
-          rw (* 40 (.cos js/Math rotor-phase))]
-      (set! (.-fillStyle ctx) "rgba(0,212,255,0.5)")
-      (.fillRect ctx (- hx (/ (js/Math.abs rw) 2)) (- hy 12) (js/Math.abs rw) 3))
-    ;; Skids
-    (set! (.-fillStyle ctx) "#0078a0")
-    (.fillRect ctx (- hx 16) (+ hy 8) 32 2)
-    (.fillRect ctx (- hx 14) (+ hy 6) 2 4)
-    (.fillRect ctx (+ hx 12) (+ hy 6) 2 4)
+        dir (if (= facing :right) 1 -1)
+        bob (* 1.5 (.sin js/Math (* (js/Date.now) 0.003)))]
+    ;; Cloud body — three overlapping circles
+    (set! (.-fillStyle ctx) "#ffffff")
+    (set! (.-shadowColor ctx) "#88ccff")
+    (set! (.-shadowBlur ctx) 15)
+    (.beginPath ctx)
+    (.arc ctx hx (+ hy bob) 16 0 (* 2 js/Math.PI))
+    (.fill ctx)
+    (.beginPath ctx)
+    (.arc ctx (- hx 14) (+ hy bob 4) 12 0 (* 2 js/Math.PI))
+    (.fill ctx)
+    (.beginPath ctx)
+    (.arc ctx (+ hx 14) (+ hy bob 4) 12 0 (* 2 js/Math.PI))
+    (.fill ctx)
+    ;; Top puff
+    (.beginPath ctx)
+    (.arc ctx (+ hx (* dir 4)) (+ hy bob -10) 10 0 (* 2 js/Math.PI))
+    (.fill ctx)
+    ;; Cloud highlight
+    (set! (.-fillStyle ctx) "rgba(200,230,255,0.6)")
+    (.beginPath ctx)
+    (.arc ctx (- hx 6) (+ hy bob -4) 8 0 (* 2 js/Math.PI))
+    (.fill ctx)
+    ;; Direction indicator — small arrow
+    (set! (.-fillStyle ctx) "#0078d4")
+    (.beginPath ctx)
+    (.moveTo ctx (+ hx (* dir 22)) (+ hy bob 4))
+    (.lineTo ctx (+ hx (* dir 28)) (+ hy bob))
+    (.lineTo ctx (+ hx (* dir 22)) (+ hy bob -4))
+    (.closePath ctx)
+    (.fill ctx)
     (set! (.-shadowBlur ctx) 0)
     ;; Onboard count
     (when (pos? (:onboard state))
-      (set! (.-fillStyle ctx) "#ffaa00")
+      (set! (.-fillStyle ctx) "#0078d4")
       (set! (.-font ctx) "8px 'Press Start 2P', monospace")
       (set! (.-textAlign ctx) "center")
-      (.fillText ctx (str (:onboard state)) hx (+ hy 22))
+      (.fillText ctx (str (:onboard state)) hx (+ hy bob 26))
       (set! (.-textAlign ctx) "left"))))
 
 (defn- draw-bullets [ctx bullets enemy-bullets cam-x]
