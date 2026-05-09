@@ -873,4 +873,4 @@
                                                {:style "color:#888;text-align:center;margin-block-end:var(--space-m)"}
                                                "Fly to data centers · Pick up workloads · Deliver them to the cloud · Avoid outages"))
                        (.appendChild wrapper canvas)
-                       wrapper)))))
+                       wrapper))))))
