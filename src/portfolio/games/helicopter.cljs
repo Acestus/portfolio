@@ -1,7 +1,8 @@
 (ns portfolio.games.helicopter
   "Cloud Lift — migrate workloads from on-prem data centers to the cloud, one rescue at a time."
   (:require [portfolio.core :as core]
-            [portfolio.components :as ui]))
+            [portfolio.components :as ui]
+            [portfolio.games.engine :as eng]))
 
 (def ^:private W 800)
 (def ^:private H 500)
@@ -344,10 +345,17 @@
         (update :best #(max % (:rescued state))))
     state))
 
-(defn- update-game [state dt]
+(defn- update-game [state dt touch]
   (case (:state state)
     :playing
-    (let [keys (:keys state)
+    (let [ts (if (nil? touch) {:left false :right false :up false :action false} @touch)
+          touch-set (cond-> #{}
+                      (:left ts) (conj :left)
+                      (:right ts) (conj :right)
+                      (:up ts) (conj :up)
+                      (:action ts) (conj :shoot))
+          keys (into (:keys state) touch-set)
+
           thrusting (or (contains? keys :up) (contains? keys :space))
           move-left (contains? keys :left)
           move-right (contains? keys :right)
@@ -828,31 +836,19 @@
             nil))))
     (.addEventListener canvas "mouseup" (fn [_] (swap! state assoc :keys #{})))
 
-    ;; Game loop
-    (let [last-t (atom (js/performance.now))
-          shoot-timer (atom 0)]
-      (letfn [(game-loop [now]
-                (let [dt (min 0.05 (/ (- now @last-t) 1000))]
-                  (reset! last-t now)
-                  ;; Auto-fire when holding shoot
-                  (when (contains? (:keys @state) :shoot)
-                    (swap! shoot-timer + dt)
-                    (when (> @shoot-timer 0.25)
-                      (reset! shoot-timer 0)
-                      (swap! state fire-bullet)))
-                  (swap! state update-game dt)
-                  (draw! ctx @state)
-                  (js/requestAnimationFrame game-loop)))]
-        (js/requestAnimationFrame game-loop)))
+    ;; Game loop: use shared engine loop and on-screen touch controls
+    (eng/init-keyboard!)
+    (let [wrapper (core/create-el "div" {:class "game-wrapper"})
+          touch   (eng/init-touch! wrapper)]
+      (.appendChild wrapper (core/create-el "h1"
+                              {:style "font-family:'Press Start 2P',monospace;color:#00b4d8;font-size:var(--step-2);text-align:center"}
+                              "☁️ Cloud Lift"))
+      (.appendChild wrapper (core/create-el "p"
+                              {:style "color:#888;text-align:center;margin-block-end:var(--space-m)"}
+                              "Fly to data centers · Pick up workloads · Deliver them to the cloud · Avoid outages"))
+      (.appendChild wrapper canvas)
 
-    (core/mount!
-      (ui/page-shell :helicopter "/articles/helicopter.html" "src/portfolio/games/helicopter.cljs"
-                     (let [wrapper (core/create-el "div" {:class "game-wrapper"})]
-                       (.appendChild wrapper (core/create-el "h1"
-                                               {:style "font-family:'Press Start 2P',monospace;color:#00b4d8;font-size:var(--step-2);text-align:center"}
-                                               "☁️ Cloud Lift"))
-                       (.appendChild wrapper (core/create-el "p"
-                                               {:style "color:#888;text-align:center;margin-block-end:var(--space-m)"}
-                                               "Fly to data centers · Pick up workloads · Deliver them to the cloud · Avoid outages"))
-                       (.appendChild wrapper canvas)
-                       wrapper)))))
+      (core/mount!
+        (ui/page-shell :helicopter "/articles/helicopter.html" "src/portfolio/games/helicopter.cljs" wrapper))
+
+      (eng/game-loop canvas state (fn [s dt] (update-game s dt touch)) draw!))))
