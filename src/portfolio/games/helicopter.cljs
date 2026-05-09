@@ -15,7 +15,7 @@
 (def ^:private HELI-H 20)
 (def ^:private BASE-X 30)
 (def ^:private BASE-W 80)
-(def ^:private HOSTAGE-CAPACITY 8)
+(def ^:private HOSTAGE-CAPACITY 24)
 (def ^:private WORKLOADS-PER-DC 6)
 (def ^:private NUM-BUILDINGS 4)
 (def ^:private SCROLL-MARGIN 250)
@@ -95,28 +95,32 @@
        (< ay (+ by bh)) (< by (+ ay ah))))
 
 (defn- update-hostage-release [state]
-  ;; When heli is landed near a building, hostages run out
-  (if (not (:landed state)) state
-    (let [hx (:heli-x state)]
-      (reduce-kv
-        (fn [st bi bldg]
-          (if (not (:alive bldg)) st
-            (let [near (and (> hx (- (:x bldg) 60)) (< hx (+ (:x bldg) (:w bldg) 60)))]
-              (if (not near) st
-                (let [hostages (:hostages bldg)
-                      released (mapv (fn [h]
-                                      (if (= (:state h) :inside)
-                                        (assoc h :state :running
-                                               :x (+ (:x bldg) (/ (:w bldg) 2))
-                                               :y GROUND-Y
-                                               :target-x hx)
-                                        h))
-                                     hostages)]
-                  (assoc-in st [:buildings bi :hostages] released))))))
-        state (:buildings state)))))
+  ;; When cloud is near a building, workloads run out
+  (let [hx (:heli-x state)
+        hy (:heli-y state)]
+    (reduce-kv
+      (fn [st bi bldg]
+        (if (not (:alive bldg)) st
+          (let [bx (:x bldg)
+                bw (:w bldg)
+                near (and (> hx (- bx 100)) (< hx (+ bx bw 100))
+                          (< hy (+ GROUND-Y 40)))]
+            (if (not near) st
+              (let [hostages (:hostages bldg)
+                    released (mapv (fn [h]
+                                    (if (= (:state h) :inside)
+                                      (assoc h :state :running
+                                             :x (+ bx (/ bw 2))
+                                             :y GROUND-Y
+                                             :target-x hx)
+                                      h))
+                                   hostages)]
+                (assoc-in st [:buildings bi :hostages] released))))))
+      state (:buildings state))))
 
 (defn- update-hostages [state dt]
   (let [hx (:heli-x state)
+        hy (:heli-y state)
         landed (:landed state)]
     (reduce-kv
       (fn [st bi bldg]
@@ -125,19 +129,16 @@
                 (fn [h]
                   (case (:state h)
                     :running
-                    (let [tx (if landed hx (:target-x h))
-                          dx (* (if (< (:x h) tx) 1 -1) 40 dt)
+                    (let [dx (* (if (< (:x h) hx) 1 -1) 50 dt)
                           nx (+ (:x h) dx)
-                          ;; Check if reached helicopter and heli is landed
-                          at-heli (and landed
-                                       (< (js/Math.abs (- nx hx)) 15))]
-                      (if at-heli
+                          close-enough (and (< (js/Math.abs (- nx hx)) 15)
+                                            (< hy (- GROUND-Y 10)))]
+                      (if close-enough
                         (assoc h :state :boarding)
                         (assoc h :x nx)))
                     :at-base (assoc h :state :safe)
                     h))
                 (:hostages bldg))
-              ;; Count how many are boarding
               boarding (count (filter #(= (:state %) :boarding) hostages))
               hostages (mapv (fn [h] (if (= (:state h) :boarding) (assoc h :state :boarded) h)) hostages)
               new-onboard (min HOSTAGE-CAPACITY (+ (:onboard st) boarding))]
@@ -357,9 +358,24 @@
 
           ;; Ground landing
           on-ground (>= ny (- GROUND-Y (/ HELI-H 2)))
-          ny (if on-ground (- GROUND-Y (/ HELI-H 2)) ny)
-          vy (if on-ground 0 vy)
-          vx (if on-ground (* vx 0.9) vx)
+
+          ;; Building roof landing
+          on-building (and (not on-ground)
+                          (pos? vy)
+                          (some (fn [b]
+                                  (and (:alive b)
+                                       (>= nx (- (:x b) 4))
+                                       (<= nx (+ (:x b) (:w b) 4))
+                                       (>= ny (- GROUND-Y 40 (/ HELI-H 2)))
+                                       (<= (- ny (/ HELI-H 2)) (- GROUND-Y 38))))
+                                (:buildings state)))
+          roof-y (- GROUND-Y 40 (/ HELI-H 2))
+          landed (or on-ground on-building)
+          ny (cond on-ground (- GROUND-Y (/ HELI-H 2))
+                   on-building roof-y
+                   :else ny)
+          vy (if landed 0 vy)
+          vx (if landed (* vx 0.9) vx)
 
           ;; Ceiling
           ny (max 15 ny)
@@ -375,7 +391,7 @@
 
       (-> state
           (assoc :heli-x nx :heli-y ny :heli-vx vx :heli-vy vy
-                 :landed on-ground :facing facing :camera-x cam)
+                 :landed landed :facing facing :camera-x cam)
           (update-hostage-release)
           (update-hostages dt)
           (update-unload)
@@ -467,15 +483,41 @@
         (set! (.-textAlign ctx) "center")
         (.fillText ctx "DC" (+ bx (/ bw 2)) (- GROUND-Y 2))
         (set! (.-textAlign ctx) "left")
-        ;; Workloads outside (shown as container boxes)
+        ;; Workloads running out (little people with waving arms)
         (doseq [h (:hostages b)]
           (when (= (:state h) :running)
-            (let [hx (- (:x h) cam-x)]
+            (let [hx (- (:x h) cam-x)
+                  t (* (js/Date.now) 0.008)
+                  arm-angle (* 0.6 (.sin js/Math (+ t (* hx 0.1))))]
+              ;; Body
               (set! (.-fillStyle ctx) "#0078d4")
-              ;; Container box sprite
-              (.fillRect ctx (- hx 4) (- GROUND-Y 10) 8 10)
-              (set! (.-fillStyle ctx) "#00b4d8")
-              (.fillRect ctx (- hx 3) (- GROUND-Y 9) 6 3))))))))
+              (.fillRect ctx (- hx 3) (- GROUND-Y 14) 6 10)
+              ;; Head
+              (set! (.-fillStyle ctx) "#ffcc88")
+              (.beginPath ctx)
+              (.arc ctx hx (- GROUND-Y 18) 4 0 (* 2 js/Math.PI))
+              (.fill ctx)
+              ;; Left arm waving
+              (set! (.-strokeStyle ctx) "#0078d4")
+              (set! (.-lineWidth ctx) 2)
+              (.beginPath ctx)
+              (.moveTo ctx (- hx 3) (- GROUND-Y 12))
+              (.lineTo ctx (- hx 8) (- GROUND-Y (+ 16 (* 6 arm-angle))))
+              (.stroke ctx)
+              ;; Right arm waving
+              (.beginPath ctx)
+              (.moveTo ctx (+ hx 3) (- GROUND-Y 12))
+              (.lineTo ctx (+ hx 8) (- GROUND-Y (+ 16 (* 6 (- arm-angle)))))
+              (.stroke ctx)
+              ;; Legs
+              (.beginPath ctx)
+              (.moveTo ctx (- hx 1) (- GROUND-Y 4))
+              (.lineTo ctx (- hx 4) GROUND-Y)
+              (.stroke ctx)
+              (.beginPath ctx)
+              (.moveTo ctx (+ hx 1) (- GROUND-Y 4))
+              (.lineTo ctx (+ hx 4) GROUND-Y)
+              (.stroke ctx))))))))
 
 (defn- draw-tanks [ctx tanks cam-x]
   (doseq [t tanks]
@@ -517,37 +559,68 @@
         hy (:heli-y state)
         facing (:facing state)
         dir (if (= facing :right) 1 -1)
-        bob (* 1.5 (.sin js/Math (* (js/Date.now) 0.003)))]
-    ;; Cloud body — three overlapping circles
+        landed (:landed state)
+        moving (> (js/Math.abs (:heli-vx state)) 15)
+        bob (if landed 0 (* 1.5 (.sin js/Math (* (js/Date.now) 0.003))))]
     (set! (.-fillStyle ctx) "#ffffff")
     (set! (.-shadowColor ctx) "#88ccff")
     (set! (.-shadowBlur ctx) 15)
-    (.beginPath ctx)
-    (.arc ctx hx (+ hy bob) 16 0 (* 2 js/Math.PI))
-    (.fill ctx)
-    (.beginPath ctx)
-    (.arc ctx (- hx 14) (+ hy bob 4) 12 0 (* 2 js/Math.PI))
-    (.fill ctx)
-    (.beginPath ctx)
-    (.arc ctx (+ hx 14) (+ hy bob 4) 12 0 (* 2 js/Math.PI))
-    (.fill ctx)
-    ;; Top puff
-    (.beginPath ctx)
-    (.arc ctx (+ hx (* dir 4)) (+ hy bob -10) 10 0 (* 2 js/Math.PI))
-    (.fill ctx)
-    ;; Cloud highlight
-    (set! (.-fillStyle ctx) "rgba(200,230,255,0.6)")
-    (.beginPath ctx)
-    (.arc ctx (- hx 6) (+ hy bob -4) 8 0 (* 2 js/Math.PI))
-    (.fill ctx)
-    ;; Direction indicator — small arrow
-    (set! (.-fillStyle ctx) "#0078d4")
-    (.beginPath ctx)
-    (.moveTo ctx (+ hx (* dir 22)) (+ hy bob 4))
-    (.lineTo ctx (+ hx (* dir 28)) (+ hy bob))
-    (.lineTo ctx (+ hx (* dir 22)) (+ hy bob -4))
-    (.closePath ctx)
-    (.fill ctx)
+    (if (and landed (not moving))
+      ;; Front-facing cloud — round and symmetrical with face
+      (do
+        (.beginPath ctx)
+        (.arc ctx hx (+ hy bob) 18 0 (* 2 js/Math.PI))
+        (.fill ctx)
+        (.beginPath ctx)
+        (.arc ctx (- hx 13) (+ hy bob 6) 11 0 (* 2 js/Math.PI))
+        (.fill ctx)
+        (.beginPath ctx)
+        (.arc ctx (+ hx 13) (+ hy bob 6) 11 0 (* 2 js/Math.PI))
+        (.fill ctx)
+        (.beginPath ctx)
+        (.arc ctx hx (+ hy bob -12) 11 0 (* 2 js/Math.PI))
+        (.fill ctx)
+        ;; Eyes
+        (set! (.-fillStyle ctx) "#334455")
+        (.beginPath ctx)
+        (.arc ctx (- hx 5) (+ hy bob -1) 2.5 0 (* 2 js/Math.PI))
+        (.fill ctx)
+        (.beginPath ctx)
+        (.arc ctx (+ hx 5) (+ hy bob -1) 2.5 0 (* 2 js/Math.PI))
+        (.fill ctx)
+        ;; Smile
+        (set! (.-strokeStyle ctx) "#334455")
+        (set! (.-lineWidth ctx) 1.5)
+        (.beginPath ctx)
+        (.arc ctx hx (+ hy bob 2) 4 0.2 2.9)
+        (.stroke ctx))
+      ;; Profile cloud — elongated with direction arrow
+      (do
+        (.beginPath ctx)
+        (.arc ctx hx (+ hy bob) 16 0 (* 2 js/Math.PI))
+        (.fill ctx)
+        (.beginPath ctx)
+        (.arc ctx (+ hx (* dir 12)) (+ hy bob 2) 13 0 (* 2 js/Math.PI))
+        (.fill ctx)
+        (.beginPath ctx)
+        (.arc ctx (- hx (* dir 10)) (+ hy bob 4) 11 0 (* 2 js/Math.PI))
+        (.fill ctx)
+        (.beginPath ctx)
+        (.arc ctx (+ hx (* dir 4)) (+ hy bob -10) 10 0 (* 2 js/Math.PI))
+        (.fill ctx)
+        ;; Highlight
+        (set! (.-fillStyle ctx) "rgba(200,230,255,0.6)")
+        (.beginPath ctx)
+        (.arc ctx (- hx (* dir 2)) (+ hy bob -4) 8 0 (* 2 js/Math.PI))
+        (.fill ctx)
+        ;; Direction arrow
+        (set! (.-fillStyle ctx) "#0078d4")
+        (.beginPath ctx)
+        (.moveTo ctx (+ hx (* dir 24)) (+ hy bob 4))
+        (.lineTo ctx (+ hx (* dir 30)) (+ hy bob))
+        (.lineTo ctx (+ hx (* dir 24)) (+ hy bob -4))
+        (.closePath ctx)
+        (.fill ctx)))
     (set! (.-shadowBlur ctx) 0)
     ;; Onboard count
     (when (pos? (:onboard state))
