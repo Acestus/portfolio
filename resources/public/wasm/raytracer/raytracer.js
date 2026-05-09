@@ -22,22 +22,10 @@ export class Raytracer {
         return this;
     }
     /**
-     * @param {number} direction
-     */
-    nudge_camera(direction) {
-        wasm.raytracer_nudge_camera(this.__wbg_ptr, direction);
-    }
-    /**
      * @param {number} time
      */
     render_frame(time) {
         wasm.raytracer_render_frame(this.__wbg_ptr, time);
-    }
-    /**
-     * @param {number} speed
-     */
-    set_speed(speed) {
-        wasm.raytracer_set_speed(this.__wbg_ptr, speed);
     }
 }
 if (Symbol.dispose) Raytracer.prototype[Symbol.dispose] = Raytracer.prototype.free;

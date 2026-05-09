@@ -456,8 +456,6 @@ pub struct Raytracer {
     ctx: CanvasRenderingContext2d,
     buf: Vec<u8>,
     light: Light,
-    camera_speed: f64,
-    camera_height_offset: f64,
     maze_grid: [bool; MAZE_CELLS],
     maze_path: Vec<(usize, usize)>,
 }
@@ -473,7 +471,7 @@ impl Raytracer {
         let light = Light { pos: Vec3::new(10.0, 20.0, 8.0), intensity: 2.5 };
         let (maze_grid, maze_path) = generate_maze();
 
-        Ok(Raytracer { ctx, buf: vec![0u8; (W*H*4) as usize], light, camera_speed: 0.1, camera_height_offset: 0.0, maze_grid, maze_path })
+        Ok(Raytracer { ctx, buf: vec![0u8; (W*H*4) as usize], light, maze_grid, maze_path })
     }
 
     fn build_scene(&self, time: f64) -> Scene {
@@ -507,9 +505,9 @@ impl Raytracer {
     pub fn render_frame(&mut self, time: f64) {
         let scene = self.build_scene(time);
 
-        let ca = time * self.camera_speed;
+        let ca = time * 0.1;
         let cr = 24.0 + 4.0 * (time * 0.05).sin();
-        let cy = 14.0 + 5.0 * (time * 0.07).sin() + self.camera_height_offset;
+        let cy = 14.0 + 5.0 * (time * 0.07).sin();
         let origin = Vec3::new(cr * ca.sin(), cy, cr * ca.cos());
         let (lx, lz) = path_pos(&self.maze_path, time * 3.5);
         let look_at = Vec3::new(lx, ROAD_Y + 2.0, lz);
@@ -537,14 +535,5 @@ impl Raytracer {
         if let Ok(img) = ImageData::new_with_u8_clamped_array_and_sh(Clamped(&self.buf), W, H) {
             let _ = self.ctx.put_image_data(&img, 0.0, 0.0);
         }
-    }
-
-    pub fn nudge_camera(&mut self, direction: f64) {
-        self.camera_height_offset += direction * 0.5;
-        self.camera_height_offset = self.camera_height_offset.clamp(-5.0, 12.0);
-    }
-
-    pub fn set_speed(&mut self, speed: f64) {
-        self.camera_speed = speed.clamp(0.02, 0.5);
     }
 }
