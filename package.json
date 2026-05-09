@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npx shadow-cljs watch hub platformer invaders matcher breakout fabric policy logs iac platform repl",
-    "release": "npx shadow-cljs release hub platformer invaders matcher breakout fabric policy logs iac platform repl",
+    "dev": "npx shadow-cljs watch hub platformer invaders matcher breakout fabric policy logs iac platform repl architecture",
+    "release": "npx shadow-cljs release hub platformer invaders matcher breakout fabric policy logs iac platform repl architecture",
     "clean": "rm -rf resources/public/js"
   },
   "devDependencies": {

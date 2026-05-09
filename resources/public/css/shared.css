@@ -81,11 +81,16 @@ button { cursor: pointer; border: none; font: inherit; }
 /* --- Game Wrapper --- */
 .game-wrapper {
   display: flex; flex-direction: column; align-items: center; gap: 1rem;
+  width: 100%;
 }
 .game-canvas {
   border: 2px solid #00d4ff; border-radius: 4px;
   max-width: 100%; height: auto;
   image-rendering: pixelated;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* --- Touch Controls --- */

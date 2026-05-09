@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <title>Real-Time Log Pipeline — Event Hub to Eventhouse</title>
+  <style>
+    :root { --accent: #0078d4; --accent-dark: #106ebe; --bg: #faf9f8; --text: #323130; --summary: #e1f5fe; }
+    * { box-sizing: border-box; }
+    body { margin: 0 auto; max-width: 1200px; padding: 24px; background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .back-link { display: inline-block; margin-bottom: 1rem; font-weight: 600; }
+    h1 { color: var(--accent); border-bottom: 3px solid var(--accent); padding-bottom: 0.5rem; margin-top: 0; }
+    h2 { color: var(--accent-dark); border-left: 4px solid var(--accent); padding-left: 15px; margin-top: 2.25rem; }
+    .summary { background: var(--summary); border-left: 5px solid var(--accent); border-radius: 4px; padding: 1rem; margin: 1rem 0 1.5rem; }
+    .metrics { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0; }
+    .metric-card { background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-bottom: 3px solid var(--accent); padding: 1rem; flex: 1 1 180px; min-width: 170px; }
+    .metric-value { color: var(--accent); font-size: 1.6rem; font-weight: 700; }
+    .metric-label { color: #605e5c; font-size: 0.95rem; }
+    .flow { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.5rem; margin: 1.5rem 0; }
+    .pill { background: var(--accent); color: #fff; padding: 0.65rem 1rem; border-radius: 999px; font-weight: 600; }
+    .arrow { color: var(--accent-dark); font-size: 1.25rem; font-weight: 700; }
+    .code-block { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 6px; overflow: auto; white-space: pre; font-family: Consolas, Monaco, 'Courier New', monospace; font-size: 0.92rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; background: #fff; }
+    th, td { border: 1px solid #d2d0ce; padding: 0.8rem; text-align: left; vertical-align: top; }
+    th { background: var(--accent); color: #fff; }
+    tbody tr:nth-child(even) { background: #f3f2f1; }
+    tbody tr:hover { background: #deecf9; }
+    .footer-link { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #d2d0ce; }
+    @media (max-width: 768px) {
+      body { padding: 16px; }
+      .metrics { flex-direction: column; }
+      .flow { flex-direction: column; }
+      .arrow { transform: rotate(90deg); }
+      .table-wrap { overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <a class='back-link' href='/logs.html'>← Back to Demo</a>
+  <h1>Real-Time Log Pipeline — Event Hub to Eventhouse</h1>
+
+  <div class='summary'>
+    Animated visualization of a real-time log ingestion pipeline. Spring Boot applications emit structured and semi-structured events into Event Hub; Eventstream forwards them into Fabric Eventhouse; KQL update policies or transformation functions parse raw messages into analytical tables; and Gold Lakehouse outputs provide report-friendly aggregates. The SPA makes that flow visible with a live log stream and KQL panel.
+  </div>
+
+  <div class='metrics'>
+    <div class='metric-card'><div class='metric-value'>247</div><div class='metric-label'>Events / sec</div></div>
+    <div class='metric-card'><div class='metric-value'>&lt; 2s</div><div class='metric-label'>Parse Latency</div></div>
+    <div class='metric-card'><div class='metric-value'>0.3%</div><div class='metric-label'>Error Rate</div></div>
+    <div class='metric-card'><div class='metric-value'>2</div><div class='metric-label'>KQL Tables</div></div>
+  </div>
+
+  <div class='flow'>
+    <span class='pill'>Spring Boot Apps</span><span class='arrow'>→</span>
+    <span class='pill'>Event Hub</span><span class='arrow'>→</span>
+    <span class='pill'>Eventstream</span><span class='arrow'>→</span>
+    <span class='pill'>Eventhouse</span><span class='arrow'>→</span>
+    <span class='pill'>Gold Lakehouse</span>
+  </div>
+
+  <h2>1. Architecture Overview</h2>
+  <p>The architecture solves a classic scaling mistake: using application databases as log sinks. In the old world, operational services often pushed diagnostic rows straight into SQL tables. That creates contention, schema coupling, and poor separation between OLTP and observability. In the event-driven version, applications emit facts, Event Hub absorbs throughput, and downstream systems parse and aggregate independently.</p>
+  <p>The SPA mirrors that design in miniature. The stage row is rendered from a data structure of pipeline nodes, and a timer prepends new sample events into the stream while trimming the list to the latest 15 lines. That means the page behaves like an active log console without requiring a backend.</p>
+
+  <h2>2. KQL Update Policies</h2>
+  <p>Real-time value comes from parsing near the ingestion point. Raw logs are still useful for replay, but analytical questions need typed columns: timestamps, app names, levels, HTTP status, and message body. KQL transformation functions are ideal here because they express parsing as readable, versionable query logic.</p>
+  <div class='code-block'>.create-or-alter function TransformRawLogs() {
+  transaction_raw
+  | extend parsed_ts = todatetime(raw_timestamp)
+  | extend app_name = extract('app=([\\w-]+)', 1, raw_message)
+  | extend log_level = extract('level=(\\w+)', 1, raw_message)
+  | extend http_status = toint(extract('→ (\\d+)', 1, raw_message))
+  | project parsed_ts, app_name, log_level, http_status, raw_message
+}</div>
+  <p>A production implementation would usually pair that function with an update policy on a parsed table so the raw table remains authoritative and the parsed table stays continuously queryable. That pattern gives you both forensic retention and analytical convenience.</p>
+
+  <h2>3. Gold Lakehouse Aggregation</h2>
+  <p>Not every query belongs in Eventhouse. Once logs are parsed, a PySpark notebook can aggregate them into gold datasets such as hourly request counts, failure rates by service, or P95 latency bands. That is the right place to denormalize for BI, because the transformations are explicit and batch-oriented instead of hidden inside dashboard formulas.</p>
+  <div class='code-block'>df = spark.read.table('transaction_parsed')
+(df.groupBy('app_name', window('parsed_ts', '1 hour'))
+   .agg(count('*').alias('events'),
+        avg('http_status').alias('avg_status'))
+   .write.mode('overwrite')
+   .format('delta')
+   .saveAsTable('gld_app_hourly'))</div>
+
+  <h2>4. Monitoring &amp; Observability</h2>
+  <p>The page's live stream is more than decoration. It illustrates the observability feedback loop: ingest, parse, classify, and watch for anomalies. The demo color-codes INFO, WARN, and ERROR records, which is exactly the kind of lightweight signal that helps an operator decide whether a red metric is a transient spike or a systemic issue.</p>
+  <p>In a real estate, you would pair these visuals with lag monitoring, malformed message counts, Event Hub throughput metrics, and alerting on transformation failures. The architectural point remains the same: observability pipelines need observability too.</p>
+
+  <h2>5. From SQL Inserts to Event-Driven</h2>
+  <p>The most important shift is organizational as much as technical. Once logs become events instead of table inserts, applications no longer need to know how analytics stores are modeled. They only need to emit durable, well-formed facts. The platform then owns enrichment, schema evolution, retention, and downstream publication.</p>
+  <p>That is why this SPA works as a portfolio piece. It does not just show pretty boxes. It tells the story of decoupling, contract design, and operational maturity—exactly the reasons teams move from brittle insert-based telemetry to streaming pipelines.</p>
+
+  <div class='footer-link'>
+    <a href='https://github.com/Acestus/portfolio/blob/main/src/portfolio/pro/logs.cljs' target='_blank' rel='noopener noreferrer'>View Source Code</a>
+  </div>
+</body>
+</html>

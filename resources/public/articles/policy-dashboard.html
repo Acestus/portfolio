@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <title>Azure Policy Governance Dashboard</title>
+  <style>
+    :root { --accent: #0078d4; --accent-dark: #106ebe; --bg: #faf9f8; --text: #323130; --summary: #e1f5fe; }
+    * { box-sizing: border-box; }
+    body { margin: 0 auto; max-width: 1200px; padding: 24px; background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .back-link { display: inline-block; margin-bottom: 1rem; font-weight: 600; }
+    h1 { color: var(--accent); border-bottom: 3px solid var(--accent); padding-bottom: 0.5rem; margin-top: 0; }
+    h2 { color: var(--accent-dark); border-left: 4px solid var(--accent); padding-left: 15px; margin-top: 2.25rem; }
+    .summary { background: var(--summary); border-left: 5px solid var(--accent); border-radius: 4px; padding: 1rem; margin: 1rem 0 1.5rem; }
+    .metrics { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0; }
+    .metric-card { background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-bottom: 3px solid var(--accent); padding: 1rem; flex: 1 1 180px; min-width: 170px; }
+    .metric-value { color: var(--accent); font-size: 1.6rem; font-weight: 700; }
+    .metric-label { color: #605e5c; font-size: 0.95rem; }
+    .flow { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.5rem; margin: 1.5rem 0; }
+    .pill { background: var(--accent); color: #fff; padding: 0.65rem 1rem; border-radius: 999px; font-weight: 600; }
+    .arrow { color: var(--accent-dark); font-size: 1.25rem; font-weight: 700; }
+    .code-block { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 6px; overflow: auto; white-space: pre; font-family: Consolas, Monaco, 'Courier New', monospace; font-size: 0.92rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; background: #fff; }
+    th, td { border: 1px solid #d2d0ce; padding: 0.8rem; text-align: left; vertical-align: top; }
+    th { background: var(--accent); color: #fff; }
+    tbody tr:nth-child(even) { background: #f3f2f1; }
+    tbody tr:hover { background: #deecf9; }
+    .footer-link { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #d2d0ce; }
+    @media (max-width: 768px) {
+      body { padding: 16px; }
+      .metrics { flex-direction: column; }
+      .flow { flex-direction: column; }
+      .arrow { transform: rotate(90deg); }
+      .table-wrap { overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <a class='back-link' href='/policy.html'>← Back to Demo</a>
+  <h1>Azure Policy Governance Dashboard</h1>
+
+  <div class='summary'>
+    Interactive dashboard showing tenant-wide Azure Policy governance. It reflects a real platform concern: policy is not a one-time hardening exercise, but a continuously managed product spanning multiple subscriptions, scopes, and remediation paths. The SPA models 10 assignments across deny, modify, audit, and DeployIfNotExists effects with compliance scoring and filterable views.
+  </div>
+
+  <div class='metrics'>
+    <div class='metric-card'><div class='metric-value'>10</div><div class='metric-label'>Policies</div></div>
+    <div class='metric-card'><div class='metric-value'>4</div><div class='metric-label'>Effect Types</div></div>
+    <div class='metric-card'><div class='metric-value'>94%</div><div class='metric-label'>Average Compliance</div></div>
+    <div class='metric-card'><div class='metric-value'>3</div><div class='metric-label'>Representative Scopes</div></div>
+  </div>
+
+  <div class='flow'>
+    <span class='pill'>Policy Definition</span><span class='arrow'>→</span>
+    <span class='pill'>Assignment Scope</span><span class='arrow'>→</span>
+    <span class='pill'>Effect Evaluation</span><span class='arrow'>→</span>
+    <span class='pill'>Compliance Score</span><span class='arrow'>→</span>
+    <span class='pill'>Remediation</span>
+  </div>
+
+  <h2>1. Policy as Product</h2>
+  <p>The philosophy behind the dashboard is simple: platform governance only scales when policies are treated like products with users, versioning, support cost, and measurable outcomes. A deny rule may be technically correct and still be a bad product if it blocks onboarding, lacks documentation, or arrives without exceptions strategy.</p>
+  <p>The SPA expresses that idea in a useful way. It does not just show policy names; it shows effect, scope, and compliance side by side. That mirrors how real platform teams reason about policy quality: what does it do, where does it apply, and is it actually improving estate posture?</p>
+
+  <h2>2. Effect Types</h2>
+  <p>Azure Policy effect choice is where governance design becomes architecture. Deny is strong but blunt. Modify can standardize resources in-flight. Audit creates visibility without blocking delivery. DeployIfNotExists automates missing dependencies such as agents or diagnostic settings.</p>
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Effect</th><th>Behavior</th><th>Best Use Case</th><th>Tradeoff</th></tr></thead>
+      <tbody>
+        <tr><td>Deny</td><td>Rejects non-compliant create or update operations</td><td>High-confidence guardrails like TLS enforcement or public access denial</td><td>Powerful, but painful if rolled out before teams are ready</td></tr>
+        <tr><td>Modify</td><td>Adds or changes properties during deployment</td><td>Tag enforcement, diagnostic settings defaults, metadata hygiene</td><td>Helpful, but can hide drift if teams do not understand what was changed</td></tr>
+        <tr><td>Audit</td><td>Reports non-compliance without blocking</td><td>Progressive rollout, discovery, and low-confidence standards</td><td>Safe to deploy, but easy to ignore if not operationalized</td></tr>
+        <tr><td>DeployIfNotExists</td><td>Deploys required supporting resources after evaluation</td><td>AMA rollout, flow logs, baseline monitoring agents</td><td>Operationally rich, but requires identity and remediation plumbing</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>3. Compliance Scoring</h2>
+  <p>The dashboard's compliance bars intentionally compress a lot of meaning into one visual. A percentage by itself is not governance, but it is a useful portfolio metric when coupled with scope and effect. In the source, the bar color changes based on thresholds: green for strong posture, amber for warning, red for material gaps.</p>
+  <p>That is a subtle but correct design move. Compliance is not binary across a tenant. A 78% result for public network access denial suggests rollout friction or legacy exception debt, while 100% on TLS 1.2 tells you the control is mature and safely enforceable.</p>
+
+  <h2>4. Remediation Workflows</h2>
+  <p>Remediation is where policy programs live or die. For modify and DeployIfNotExists, the hardest part is rarely authoring JSON; it is the operating model around assignment identity, exclusions, sequencing, and safe backfill. A healthy remediation workflow usually includes pilot scopes, exception review, remediation tasks, and clear ownership when a deployment fails.</p>
+  <p>The SPA models this operationally by making filters first-class. Platform engineers rarely inspect every policy at once. They pivot by effect type, then investigate the row that needs action. That filtering behavior is small in code and very real in day-to-day governance practice.</p>
+
+  <h2>5. Real-World Governance</h2>
+  <p>The showcased controls are realistic: tag enforcement, Azure Monitor Agent deployment, TLS configuration, private endpoint expectations, NSG flow logs, Key Vault soft delete, and public network denial. These are the kinds of controls that turn governance from slideware into actual platform behavior.</p>
+  <p>Most importantly, the dashboard keeps policy visible as an operational system. It is not just about blocking bad choices. It is about gradually making the paved road safer, more consistent, and easier to consume across tenant root, subscription, and workload scopes.</p>
+
+  <div class='footer-link'>
+    <a href='https://github.com/Acestus/portfolio/blob/main/src/portfolio/pro/policy.cljs' target='_blank' rel='noopener noreferrer'>View Source Code</a>
+  </div>
+</body>
+</html>

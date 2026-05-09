@@ -15,7 +15,8 @@
             {:title "Log Pipeline"          :href "/logs.html"       :icon "📡"  :desc "Real-time Event Hub → Eventhouse flow"}
             {:title "IaC Pipeline"          :href "/iac.html"        :icon "🏗"  :desc "Bicep AVM → Deployment Stacks"}
             {:title "Platform Console"      :href "/platform.html"   :icon "🎛"  :desc "Platform engineering workspace provisioning"}
-            {:title "Clojure REPL"          :href "/repl.html"       :icon "λ"   :desc "Live ClojureScript in your browser"}]}])
+            {:title "Clojure REPL"          :href "/repl.html"       :icon "λ"   :desc "Live ClojureScript in your browser"}
+            {:title "Architecture Studio"  :href "/architecture.html" :icon "🏛" :desc "C4 models and architecture decision records"}]}])
 
 (defn- card [item]
   (core/create-el "a" {:class "hub-card" :href (:href item)}

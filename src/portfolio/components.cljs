@@ -17,7 +17,8 @@
                {:key :logs        :label "Logs"       :href "/logs.html"}
                {:key :iac         :label "IaC"        :href "/iac.html"}
                {:key :platform    :label "Platform"   :href "/platform.html"}
-               {:key :repl        :label "REPL"       :href "/repl.html"}]
+               {:key :repl        :label "REPL"       :href "/repl.html"}
+               {:key :architecture :label "Arch"       :href "/architecture.html"}]
         nav (core/create-el "nav" {:class "site-nav" :role "navigation"})
         home (core/create-el "a" {:class "site-name" :href "https://acestus.com"} "acestus.com")]
     (.appendChild nav home)

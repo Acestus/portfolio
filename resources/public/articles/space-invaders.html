@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <title>Space Invaders — Defending Against Misconfigurations</title>
+  <style>
+    :root { --accent: #0078d4; --accent-dark: #106ebe; --bg: #faf9f8; --text: #323130; --summary: #e1f5fe; }
+    * { box-sizing: border-box; }
+    body { margin: 0 auto; max-width: 1200px; padding: 24px; background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .back-link { display: inline-block; margin-bottom: 1rem; font-weight: 600; }
+    h1 { color: var(--accent); border-bottom: 3px solid var(--accent); padding-bottom: 0.5rem; margin-top: 0; }
+    h2 { color: var(--accent-dark); border-left: 4px solid var(--accent); padding-left: 15px; margin-top: 2.25rem; }
+    .summary { background: var(--summary); border-left: 5px solid var(--accent); border-radius: 4px; padding: 1rem; margin: 1rem 0 1.5rem; }
+    .metrics { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0; }
+    .metric-card { background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-bottom: 3px solid var(--accent); padding: 1rem; flex: 1 1 180px; min-width: 170px; }
+    .metric-value { color: var(--accent); font-size: 1.6rem; font-weight: 700; }
+    .metric-label { color: #605e5c; font-size: 0.95rem; }
+    .flow { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.5rem; margin: 1.5rem 0; }
+    .pill { background: var(--accent); color: #fff; padding: 0.65rem 1rem; border-radius: 999px; font-weight: 600; }
+    .arrow { color: var(--accent-dark); font-size: 1.25rem; font-weight: 700; }
+    .code-block { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 6px; overflow: auto; white-space: pre; font-family: Consolas, Monaco, 'Courier New', monospace; font-size: 0.92rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; background: #fff; }
+    th, td { border: 1px solid #d2d0ce; padding: 0.8rem; text-align: left; vertical-align: top; }
+    th { background: var(--accent); color: #fff; }
+    tbody tr:nth-child(even) { background: #f3f2f1; }
+    tbody tr:hover { background: #deecf9; }
+    .footer-link { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #d2d0ce; }
+    @media (max-width: 768px) {
+      body { padding: 16px; }
+      .metrics { flex-direction: column; }
+      .flow { flex-direction: column; }
+      .arrow { transform: rotate(90deg); }
+      .table-wrap { overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <a class='back-link' href='/invaders.html'>← Back to Demo</a>
+  <h1>Space Invaders — Defending Against Misconfigurations</h1>
+
+  <div class='summary'>
+    Classic space invaders reskinned with Azure security threats as enemies. The SPA turns governance failures into a readable threat catalog, then implements the game loop with a compact ClojureScript state machine: invader grid generation, bullet lists, collision reduction, timed movement, and cooldown-gated firing.
+  </div>
+
+  <div class='metrics'>
+    <div class='metric-card'><div class='metric-value'>32</div><div class='metric-label'>Invaders</div></div>
+    <div class='metric-card'><div class='metric-value'>5</div><div class='metric-label'>Threat Types</div></div>
+    <div class='metric-card'><div class='metric-value'>3</div><div class='metric-label'>Power-up Types</div></div>
+    <div class='metric-card'><div class='metric-value'>Keyboard + Touch</div><div class='metric-label'>Control Design</div></div>
+  </div>
+
+  <div class='flow'>
+    <span class='pill'>Threat Catalog</span><span class='arrow'>→</span>
+    <span class='pill'>4×8 Spawn Grid</span><span class='arrow'>→</span>
+    <span class='pill'>Bullet Update</span><span class='arrow'>→</span>
+    <span class='pill'>AABB Hit Test</span><span class='arrow'>→</span>
+    <span class='pill'>Threat Neutralized</span>
+  </div>
+
+  <h2>Security Threat Model</h2>
+  <p>The enemy roster is the best part of the theme. Instead of anonymous aliens, each invader is a recognizable cloud failure mode: Open Port, Public Blob, No MFA, No NSG, and No Backup. In real Azure estates, these categories map directly to preventable incidents: widened attack surface, data exposure, weak identity posture, flat networks, and poor recoverability.</p>
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Threat</th><th>Azure Interpretation</th><th>Why It Fits The Arcade Metaphor</th></tr></thead>
+      <tbody>
+        <tr><td>Open Port</td><td>Unnecessary inbound exposure</td><td>Fast-moving, obvious perimeter weakness</td></tr>
+        <tr><td>Public Blob</td><td>Data exposed outside intended boundary</td><td>High-visibility target with immediate risk</td></tr>
+        <tr><td>No MFA</td><td>Weak identity protection</td><td>Small control gap with outsized blast radius</td></tr>
+        <tr><td>No NSG</td><td>Missing network segmentation</td><td>Lets threats advance unchecked</td></tr>
+        <tr><td>No Backup</td><td>Poor resilience and recovery posture</td><td>Turns a single hit into a lasting outage</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Game Mechanics</h2>
+  <p>The implementation generates 32 invaders from nested row and column loops. Each invader carries position, size, color, label, and an <code>:alive</code> flag, which means there is no need for object mutation or removal from the array mid-frame. The game simply keeps the full vector and flips state when a threat is cleared.</p>
+  <p>Movement is intentionally chunky, like the original arcade game. Every 0.8 seconds, living invaders shift horizontally by 20 pixels. Player motion is analog by comparison: each frame computes left or right velocity from held keys and clamps the ship to the canvas width. Firing is controlled by a 0.2 second cooldown so the pace feels deliberate instead of spammy.</p>
+  <div class='code-block'>[invaders2 bullets2 score-add]
+(reduce
+  (fn [[invs buls sc] bullet]
+    (if-let [hit (first (filter #(and (:alive %) (aabb? bullet %)) invs))]
+      [(mapv #(if (= % hit) (assoc % :alive false) %) invs)
+       buls
+       (+ sc 50)]
+      [invs (conj buls bullet) sc]))
+  [invaders [] 0]
+  bullets)</div>
+
+  <h2>Power-up System</h2>
+  <p>The current demo defines three power-up types—Sentinel, WAF, and Defender—even though the core build focuses on shooting and collision rather than drop collection. That is still meaningful. It shows the state model already has room for deeper mechanics such as temporary shielding, wider projectiles, or threat suppression zones.</p>
+  <p>From a design standpoint, that is a good portfolio choice: ship the stable loop first, expose the extension points in code, and let the article explain where the architecture can grow without pretending unfinished features are already live.</p>
+
+  <h2>Real-World Parallels</h2>
+  <p>The metaphor works because platform teams really do spend large amounts of time eliminating repeated, low-creativity defects. Space Invaders captures that pattern: threats arrive in waves, the operator acts with limited bandwidth, and success depends on clearing classes of misconfiguration before they become systemic.</p>
+  <p>Technically, the SPA mirrors that discipline. Threats are data, not hard-coded render branches. Scoring is derived from events, not from UI state. Victory is computed by checking whether every invader is no longer alive. That same mindset—make controls declarative, measure outcomes, keep state obvious—is exactly what makes cloud governance scalable.</p>
+
+  <div class='footer-link'>
+    <a href='https://github.com/Acestus/portfolio/blob/main/src/portfolio/games/invaders.cljs' target='_blank' rel='noopener noreferrer'>View Source Code</a>
+  </div>
+</body>
+</html>

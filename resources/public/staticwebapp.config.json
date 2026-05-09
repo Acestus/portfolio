@@ -1,0 +1,30 @@
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/css/*", "/js/*", "/articles/*", "*.html"]
+  },
+  "routes": [
+    { "route": "/platformer", "rewrite": "/platformer.html" },
+    { "route": "/invaders",   "rewrite": "/invaders.html" },
+    { "route": "/matcher",    "rewrite": "/matcher.html" },
+    { "route": "/breakout",   "rewrite": "/breakout.html" },
+    { "route": "/fabric",     "rewrite": "/fabric.html" },
+    { "route": "/policy",     "rewrite": "/policy.html" },
+    { "route": "/logs",       "rewrite": "/logs.html" },
+    { "route": "/iac",        "rewrite": "/iac.html" },
+    { "route": "/platform",   "rewrite": "/platform.html" },
+    { "route": "/repl",         "rewrite": "/repl.html" },
+    { "route": "/architecture", "rewrite": "/architecture.html" }
+  ],
+  "responseOverrides": {
+    "404": {
+      "rewrite": "/index.html",
+      "statusCode": 200
+    }
+  },
+  "globalHeaders": {
+    "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "SAMEORIGIN"
+  }
+}

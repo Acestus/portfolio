@@ -77,4 +77,10 @@
   {:target :browser
    :output-dir "resources/public/js/repl"
    :asset-path "/js/repl"
-   :modules {:main {:init-fn portfolio.pro.repl/init}}}}}
+   :modules {:main {:init-fn portfolio.pro.repl/init}}}
+
+  :architecture
+  {:target :browser
+   :output-dir "resources/public/js/architecture"
+   :asset-path "/js/architecture"
+   :modules {:main {:init-fn portfolio.pro.architecture/init}}}}}

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <title>ClojureScript REPL Playground</title>
+  <style>
+    :root { --accent: #0078d4; --accent-dark: #106ebe; --bg: #faf9f8; --text: #323130; --summary: #e1f5fe; }
+    * { box-sizing: border-box; }
+    body { margin: 0 auto; max-width: 1200px; padding: 24px; background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .back-link { display: inline-block; margin-bottom: 1rem; font-weight: 600; }
+    h1 { color: var(--accent); border-bottom: 3px solid var(--accent); padding-bottom: 0.5rem; margin-top: 0; }
+    h2 { color: var(--accent-dark); border-left: 4px solid var(--accent); padding-left: 15px; margin-top: 2.25rem; }
+    .summary { background: var(--summary); border-left: 5px solid var(--accent); border-radius: 4px; padding: 1rem; margin: 1rem 0 1.5rem; }
+    .metrics { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0; }
+    .metric-card { background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-bottom: 3px solid var(--accent); padding: 1rem; flex: 1 1 180px; min-width: 170px; }
+    .metric-value { color: var(--accent); font-size: 1.6rem; font-weight: 700; }
+    .metric-label { color: #605e5c; font-size: 0.95rem; }
+    .flow { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.5rem; margin: 1.5rem 0; }
+    .pill { background: var(--accent); color: #fff; padding: 0.65rem 1rem; border-radius: 999px; font-weight: 600; }
+    .arrow { color: var(--accent-dark); font-size: 1.25rem; font-weight: 700; }
+    .code-block { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 6px; overflow: auto; white-space: pre; font-family: Consolas, Monaco, 'Courier New', monospace; font-size: 0.92rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; background: #fff; }
+    th, td { border: 1px solid #d2d0ce; padding: 0.8rem; text-align: left; vertical-align: top; }
+    th { background: var(--accent); color: #fff; }
+    tbody tr:nth-child(even) { background: #f3f2f1; }
+    tbody tr:hover { background: #deecf9; }
+    .footer-link { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #d2d0ce; }
+    @media (max-width: 768px) {
+      body { padding: 16px; }
+      .metrics { flex-direction: column; }
+      .flow { flex-direction: column; }
+      .arrow { transform: rotate(90deg); }
+      .table-wrap { overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <a class='back-link' href='/repl.html'>← Back to Demo</a>
+  <h1>ClojureScript REPL Playground</h1>
+
+  <div class='summary'>
+    Live in-browser ClojureScript evaluation powered by SCI (Small Clojure Interpreter). No server is required; code is evaluated locally in the browser, examples are injected into the editor, and Ctrl+Enter runs forms instantly. The page is both a technical demo and a small tribute to the Clojure community's bias toward simplicity, data, and composability.
+  </div>
+
+  <div class='metrics'>
+    <div class='metric-card'><div class='metric-value'>6</div><div class='metric-label'>Examples</div></div>
+    <div class='metric-card'><div class='metric-value'>SCI</div><div class='metric-label'>Evaluator</div></div>
+    <div class='metric-card'><div class='metric-value'>Ctrl+Enter</div><div class='metric-label'>Run Shortcut</div></div>
+    <div class='metric-card'><div class='metric-value'>Zero</div><div class='metric-label'>Backend Dependency</div></div>
+  </div>
+
+  <div class='flow'>
+    <span class='pill'>Example Snippet</span><span class='arrow'>→</span>
+    <span class='pill'>Textarea Editor</span><span class='arrow'>→</span>
+    <span class='pill'>SCI Eval</span><span class='arrow'>→</span>
+    <span class='pill'>History Append</span><span class='arrow'>→</span>
+    <span class='pill'>Output Pane</span>
+  </div>
+
+  <h2>1. Why Clojure</h2>
+  <p>Rich Hickey's distinction between simple and easy matters here. Clojure is not always the easiest language in the moment, but it is unusually good at making systems simple: data is explicit, mutation is controlled, values are composable, and complexity is harder to hide behind classes and framework ceremony.</p>
+  <p>That philosophy shows up even in this tiny REPL. Examples focus on map/filter, persistent vectors, threading macros, destructuring, recursion, and atoms. In other words, the demo teaches the language through ideas that scale beyond syntax.</p>
+
+  <h2>2. SCI — Small Clojure Interpreter</h2>
+  <p>SCI is the technical trick that makes the page possible. Instead of sending code to a server-side runtime, the browser hosts an interpreter configured with an allowed namespace surface. The source initializes an SCI context once and reuses it for each evaluation, which keeps the interaction immediate while avoiding the complexity of standing up a remote REPL service.</p>
+  <div class='code-block'>(def sci-ctx
+  (sci/init {:namespaces {'user {'println println}}}))
+
+(defn evaluate [code]
+  (try
+    {:ok true :value (pr-str (sci/eval-string* sci-ctx code))}
+    (catch :default e
+      {:ok false :value (str 'Error: ' (.-message e))})))</div>
+  <p>That restricted model is part of why the demo feels safe and portable. It is not pretending to be a full development environment; it is a focused in-browser evaluator with a clear trust boundary.</p>
+
+  <h2>3. This Website Runs Clojure</h2>
+  <p>The page is also a quiet statement about the broader stack: Clojure is not confined to toy REPLs or back-office batch jobs. The ecosystem comfortably spans browser code, build tooling, serverless functions, and cloud workflows. In that sense the playground is less a gimmick than a visible endpoint of a larger Clojure-first approach.</p>
+  <p>That is why the portfolio framing matters. A live REPL on a personal site says something stronger than a static code screenshot: the language is part of the operating model, not just a side hobby.</p>
+
+  <h2>4. ClojureScript for the Browser</h2>
+  <p>The surrounding site uses shadow-cljs with multiple independent browser builds, one per SPA. That is a nice fit for portfolio architecture because each demo has a separate entry point and compiled artifact, while still sharing utility namespaces. The REPL itself is just one build among many, not a special snowflake.</p>
+  <p>Interaction is delightfully direct: buttons inject sample programs into the textarea, the Evaluate button runs the current buffer, Clear resets editor and history, and Ctrl+Enter or Cmd+Enter triggers evaluation from the keyboard. Those are small touches, but they make the page feel like a real tool instead of a static showcase.</p>
+
+  <h2>5. The Clojure Community</h2>
+  <p>The final section is about culture. Clojure's community has long valued careful reasoning, durable abstractions, and generosity in teaching. Libraries like SCI are a perfect example: they enable creative experiences without abandoning the language's core values around data and explicitness.</p>
+  <p>This playground feels like a love letter because it is one. It turns a browser tab into a tiny space for exploration, which is exactly what a good REPL has always been.</p>
+
+  <div class='footer-link'>
+    <a href='https://github.com/Acestus/portfolio/blob/main/src/portfolio/pro/repl.cljs' target='_blank' rel='noopener noreferrer'>View Source Code</a>
+  </div>
+</body>
+</html>

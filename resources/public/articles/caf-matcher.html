@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <title>CAF Naming Puzzle — Cloud Adoption Framework Naming</title>
+  <style>
+    :root { --accent: #0078d4; --accent-dark: #106ebe; --bg: #faf9f8; --text: #323130; --summary: #e1f5fe; }
+    * { box-sizing: border-box; }
+    body { margin: 0 auto; max-width: 1200px; padding: 24px; background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .back-link { display: inline-block; margin-bottom: 1rem; font-weight: 600; }
+    h1 { color: var(--accent); border-bottom: 3px solid var(--accent); padding-bottom: 0.5rem; margin-top: 0; }
+    h2 { color: var(--accent-dark); border-left: 4px solid var(--accent); padding-left: 15px; margin-top: 2.25rem; }
+    .summary { background: var(--summary); border-left: 5px solid var(--accent); border-radius: 4px; padding: 1rem; margin: 1rem 0 1.5rem; }
+    .metrics { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0; }
+    .metric-card { background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-bottom: 3px solid var(--accent); padding: 1rem; flex: 1 1 180px; min-width: 170px; }
+    .metric-value { color: var(--accent); font-size: 1.6rem; font-weight: 700; }
+    .metric-label { color: #605e5c; font-size: 0.95rem; }
+    .flow { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.5rem; margin: 1.5rem 0; }
+    .pill { background: var(--accent); color: #fff; padding: 0.65rem 1rem; border-radius: 999px; font-weight: 600; }
+    .arrow { color: var(--accent-dark); font-size: 1.25rem; font-weight: 700; }
+    .code-block { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 6px; overflow: auto; white-space: pre; font-family: Consolas, Monaco, 'Courier New', monospace; font-size: 0.92rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; background: #fff; }
+    th, td { border: 1px solid #d2d0ce; padding: 0.8rem; text-align: left; vertical-align: top; }
+    th { background: var(--accent); color: #fff; }
+    tbody tr:nth-child(even) { background: #f3f2f1; }
+    tbody tr:hover { background: #deecf9; }
+    .footer-link { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #d2d0ce; }
+    @media (max-width: 768px) {
+      body { padding: 16px; }
+      .metrics { flex-direction: column; }
+      .flow { flex-direction: column; }
+      .arrow { transform: rotate(90deg); }
+      .table-wrap { overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <a class='back-link' href='/matcher.html'>← Back to Demo</a>
+  <h1>CAF Naming Puzzle — Cloud Adoption Framework Naming</h1>
+
+  <div class='summary'>
+    Timed puzzle matching Azure resources to their CAF-compliant names. It looks playful, but the implementation teaches an operationally serious skill: naming standards as machine-readable metadata. The SPA randomizes a round from a larger naming corpus, tracks selection state on canvas, and uses click-position scaling so desktop and mobile taps resolve accurately.
+  </div>
+
+  <div class='metrics'>
+    <div class='metric-card'><div class='metric-value'>12</div><div class='metric-label'>Resource Types</div></div>
+    <div class='metric-card'><div class='metric-value'>30s</div><div class='metric-label'>Round Timer</div></div>
+    <div class='metric-card'><div class='metric-value'>Click/Tap</div><div class='metric-label'>Primary Input</div></div>
+    <div class='metric-card'><div class='metric-value'>Score</div><div class='metric-label'>Tracked Per Match</div></div>
+  </div>
+
+  <div class='flow'>
+    <span class='pill'>Pick 5 Pairs</span><span class='arrow'>→</span>
+    <span class='pill'>Shuffle Columns</span><span class='arrow'>→</span>
+    <span class='pill'>Select Resource</span><span class='arrow'>→</span>
+    <span class='pill'>Match CAF Name</span><span class='arrow'>→</span>
+    <span class='pill'>+200 Score</span>
+  </div>
+
+  <h2>CAF Naming Convention</h2>
+  <p>The puzzle is built around a practical naming grammar, not arbitrary strings. Resource names encode type, project, environment, region, and instance. That makes them readable to humans while still predictable enough for scripts, governance policies, and support runbooks.</p>
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Prefix</th><th>Resource</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td>func</td><td>Function App</td><td>func-project-dev-usw2-001</td></tr>
+        <tr><td>st</td><td>Storage Account</td><td>st-project-dev-usw2-001</td></tr>
+        <tr><td>kv</td><td>Key Vault</td><td>kv-project-dev-usw2-001</td></tr>
+        <tr><td>vnet</td><td>Virtual Network</td><td>vnet-project-dev-usw2-001</td></tr>
+        <tr><td>umi</td><td>User-assigned Managed Identity</td><td>umi-project-dev-usw2-ctl</td></tr>
+        <tr><td>evh</td><td>Event Hub</td><td>evh-project-dev-usw2-001</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>The Naming Pattern</h2>
+  <p>The article-worthy detail is that the game teaches structure, not memorization. Players are effectively parsing a naming DSL. Once you recognize that <code>usw2</code> is West US 2 and <code>ctl</code> signals a control identity or control-plane role, the string stops being noise and starts becoming an inventory record.</p>
+  <div class='code-block'>{type}-{project}-{env}-{region}-{instance}
+func-project-dev-usw2-001
+st-project-dev-usw2-001
+umi-project-dev-usw2-ctl</div>
+  <p>Because the source data is a vector of maps, the game can separate display text from semantics. A round is generated by taking five random pairs, then independently shuffling the resource column and CAF-name column. That means every round is small enough to read yet different enough to stay interesting.</p>
+
+  <h2>Why Naming Matters</h2>
+  <p>Good naming reduces cognitive load during incidents, deployments, and audits. If a platform engineer sees <code>kv-skpad-prd-usw2-001</code>, they can infer service class, workload, environment, geography, and multiplicity without opening Azure Portal. That is exactly why naming standards belong in policy, IaC, dashboards, and onboarding material.</p>
+  <p>The game also quietly shows why inconsistent naming is expensive. Every mismatch forces extra lookup steps. In real systems that means harder chargeback, weaker troubleshooting, and brittle automation because regex, tag rules, and deployment scopes all become less trustworthy.</p>
+
+  <h2>Implementation in ClojureScript</h2>
+  <p>This SPA renders entirely on canvas, so it must convert browser click coordinates into game coordinates. The code reads the canvas bounding rectangle, derives X and Y scale factors, and maps pointer position back into the 480×400 game world before deciding which row was selected.</p>
+  <div class='code-block'>rect = canvas.getBoundingClientRect()
+scale-x = W / rect.width
+scale-y = H / rect.height
+mx = (clientX - rect.left) * scale-x
+my = (clientY - rect.top) * scale-y</div>
+  <p>That one step is the difference between a toy and a robust canvas UI. It preserves hit accuracy regardless of CSS scaling, making the puzzle usable on phones and tablets without changing the logical layout or introducing a second rendering path.</p>
+
+  <div class='footer-link'>
+    <a href='https://github.com/Acestus/portfolio/blob/main/src/portfolio/games/matcher.cljs' target='_blank' rel='noopener noreferrer'>View Source Code</a>
+  </div>
+</body>
+</html>

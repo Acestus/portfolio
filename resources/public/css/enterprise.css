@@ -173,4 +173,160 @@
   .pipeline-flow { flex-direction: column; }
   .flow-arrow { transform: rotate(90deg); }
   .stage-card { width: 100%; }
+  .adr-browser { flex-direction: column; }
+  .adr-list { max-width: 100%; }
+  .c4-systems-row { grid-template-columns: 1fr; }
+  .c4-containers-grid { grid-template-columns: 1fr; }
+}
+
+/* ==========================================================================
+   C4 Model — Interactive architecture diagrams
+   ========================================================================== */
+.c4-panel { margin: 1rem 0; }
+
+.c4-level-title {
+  font-size: 1.1rem; font-weight: 700; color: #0078d4;
+  margin-bottom: 0.25rem;
+}
+.c4-level-desc {
+  font-size: 0.85rem; color: #605e5c; font-style: italic;
+  margin-bottom: 1.25rem;
+}
+
+.c4-actors-row {
+  display: flex; gap: 1rem; justify-content: center;
+  margin-bottom: 2rem; flex-wrap: wrap;
+}
+.c4-actor {
+  text-align: center; padding: 0.75rem 1rem; min-width: 140px;
+  background: #e8f4fd; border: 2px dashed #0078d4; border-radius: 8px;
+}
+.c4-actor-icon { font-size: 1.5rem; margin-bottom: 0.25rem; }
+.c4-actor-label { font-weight: 600; font-size: 0.85rem; color: #0078d4; }
+.c4-actor-desc { font-size: 0.75rem; color: #605e5c; margin-top: 0.15rem; }
+
+.c4-systems-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+.c4-system {
+  background: #fff; border-radius: 8px; padding: 1rem;
+  border-left: 4px solid #0078d4; cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.c4-system:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0,120,212,0.2);
+}
+.c4-system-label { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.25rem; }
+.c4-system-desc { font-size: 0.8rem; color: #605e5c; margin-bottom: 0.5rem; }
+.c4-drill-hint { font-size: 0.75rem; color: #0078d4; font-weight: 500; }
+
+.c4-back-btn {
+  background: #f3f2f1; border: 1px solid #d2d0ce; border-radius: 6px;
+  padding: 0.4rem 0.75rem; font-size: 0.85rem; color: #0078d4;
+  cursor: pointer; margin-bottom: 1rem;
+  transition: background 0.2s;
+}
+.c4-back-btn:hover { background: #e8f4fd; }
+
+.c4-containers-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+.c4-container {
+  background: #fff; border-radius: 8px; padding: 0.75rem;
+  border: 1px solid #edebe9; box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+}
+.c4-container-label { font-weight: 600; font-size: 0.85rem; color: #323130; }
+.c4-container-tech {
+  font-size: 0.75rem; color: #0078d4; font-family: 'Consolas', monospace;
+  margin: 0.15rem 0;
+}
+.c4-container-desc { font-size: 0.75rem; color: #605e5c; }
+
+/* ==========================================================================
+   ADR Browser — Architecture Decision Records
+   ========================================================================== */
+.adr-browser {
+  display: flex; gap: 1rem; min-height: 400px;
+}
+.adr-list {
+  flex: 0 0 320px; max-width: 320px; overflow-y: auto;
+}
+.adr-list-heading {
+  font-size: 1rem; font-weight: 700; color: #0078d4; margin-bottom: 0.25rem;
+}
+.adr-fowler-quote {
+  font-size: 0.8rem; color: #605e5c; font-style: italic;
+  margin-bottom: 1rem; padding-left: 0.5rem;
+  border-left: 3px solid #0078d4;
+}
+
+.adr-list-item {
+  padding: 0.6rem 0.75rem; border-radius: 6px; cursor: pointer;
+  border: 1px solid transparent; margin-bottom: 0.35rem;
+  transition: background 0.15s, border-color 0.15s;
+}
+.adr-list-item:hover { background: #f3f2f1; }
+.adr-list-item.selected {
+  background: #e8f4fd; border-color: #0078d4;
+}
+.adr-item-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.15rem; }
+.adr-id { font-family: 'Consolas', monospace; font-size: 0.8rem; color: #605e5c; font-weight: 600; }
+.adr-item-title { font-size: 0.85rem; font-weight: 500; color: #323130; }
+
+.adr-status {
+  display: inline-block; padding: 0.1rem 0.4rem; border-radius: 10px;
+  font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+}
+.adr-status-accepted { background: #dff6dd; color: #107c10; }
+.adr-status-proposed { background: #fff4ce; color: #797600; }
+.adr-status-deprecated { background: #fed9cc; color: #d13438; }
+.adr-status-default { background: #f3f2f1; color: #605e5c; }
+
+.adr-detail-panel { flex: 1; min-width: 0; }
+
+.adr-detail {
+  background: #fff; border-radius: 8px; padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.adr-detail-header {
+  display: flex; align-items: center; gap: 0.75rem;
+  margin-bottom: 0.75rem; flex-wrap: wrap;
+}
+.adr-id-large { font-family: 'Consolas', monospace; font-size: 1rem; font-weight: 700; color: #0078d4; }
+.adr-date { font-size: 0.8rem; color: #a19f9d; }
+
+.adr-detail-title {
+  font-size: 1.1rem; font-weight: 700; color: #323130;
+  margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #edebe9;
+}
+.adr-section-heading {
+  font-size: 0.9rem; font-weight: 700; color: #0078d4;
+  margin: 0.75rem 0 0.25rem; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.adr-section-body { font-size: 0.85rem; color: #323130; line-height: 1.6; }
+
+.adr-consequences {
+  list-style: none; padding: 0; margin: 0.25rem 0;
+}
+.adr-consequences li {
+  padding: 0.25rem 0 0.25rem 1.25rem; font-size: 0.85rem;
+  position: relative; color: #323130;
+}
+.adr-consequences li::before {
+  content: '→'; position: absolute; left: 0; color: #0078d4; font-weight: 700;
+}
+
+.adr-placeholder {
+  display: flex; flex-direction: column; justify-content: center;
+  align-items: center; height: 100%; min-height: 300px; text-align: center;
+  color: #a19f9d;
+}
+.adr-placeholder-text { font-size: 0.95rem; margin-bottom: 1rem; }
+.adr-placeholder-quote {
+  font-size: 0.85rem; font-style: italic; max-width: 400px;
+  color: #605e5c; padding: 0.75rem; border-left: 3px solid #0078d4;
 }

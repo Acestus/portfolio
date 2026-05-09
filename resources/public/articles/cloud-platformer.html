@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <title>Cloud Platformer — Navigating Azure Infrastructure</title>
+  <style>
+    :root { --accent: #0078d4; --accent-dark: #106ebe; --bg: #faf9f8; --text: #323130; --summary: #e1f5fe; }
+    * { box-sizing: border-box; }
+    body { margin: 0 auto; max-width: 1200px; padding: 24px; background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .back-link { display: inline-block; margin-bottom: 1rem; font-weight: 600; }
+    h1 { color: var(--accent); border-bottom: 3px solid var(--accent); padding-bottom: 0.5rem; margin-top: 0; }
+    h2 { color: var(--accent-dark); border-left: 4px solid var(--accent); padding-left: 15px; margin-top: 2.25rem; }
+    .summary { background: var(--summary); border-left: 5px solid var(--accent); border-radius: 4px; padding: 1rem; margin: 1rem 0 1.5rem; }
+    .metrics { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0; }
+    .metric-card { background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-bottom: 3px solid var(--accent); padding: 1rem; flex: 1 1 180px; min-width: 170px; }
+    .metric-value { color: var(--accent); font-size: 1.6rem; font-weight: 700; }
+    .metric-label { color: #605e5c; font-size: 0.95rem; }
+    .flow { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.5rem; margin: 1.5rem 0; }
+    .pill { background: var(--accent); color: #fff; padding: 0.65rem 1rem; border-radius: 999px; font-weight: 600; }
+    .arrow { color: var(--accent-dark); font-size: 1.25rem; font-weight: 700; }
+    .code-block { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 6px; overflow: auto; white-space: pre; font-family: Consolas, Monaco, 'Courier New', monospace; font-size: 0.92rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; background: #fff; }
+    th, td { border: 1px solid #d2d0ce; padding: 0.8rem; text-align: left; vertical-align: top; }
+    th { background: var(--accent); color: #fff; }
+    tbody tr:nth-child(even) { background: #f3f2f1; }
+    tbody tr:hover { background: #deecf9; }
+    .footer-link { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #d2d0ce; }
+    @media (max-width: 768px) {
+      body { padding: 16px; }
+      .metrics { flex-direction: column; }
+      .flow { flex-direction: column; }
+      .arrow { transform: rotate(90deg); }
+      .table-wrap { overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <a class='back-link' href='/platformer.html'>← Back to Demo</a>
+  <h1>Cloud Platformer — Navigating Azure Infrastructure</h1>
+
+  <div class='summary'>
+    Retro 8-bit game where you collect Azure resource icons across cloud platforms. Under the hood it is a compact ClojureScript canvas game: a single atom holds world state, requestAnimationFrame drives updates, and a shared engine handles keyboard, touch, HUD rendering, and AABB collision tests.
+  </div>
+
+  <div class='metrics'>
+    <div class='metric-card'><div class='metric-value'>5</div><div class='metric-label'>Platforms</div></div>
+    <div class='metric-card'><div class='metric-value'>5</div><div class='metric-label'>Collectibles</div></div>
+    <div class='metric-card'><div class='metric-value'>60fps</div><div class='metric-label'>Canvas Loop Target</div></div>
+    <div class='metric-card'><div class='metric-value'>Touch</div><div class='metric-label'>Optimized Controls</div></div>
+  </div>
+
+  <div class='flow'>
+    <span class='pill'>Input</span><span class='arrow'>→</span>
+    <span class='pill'>State Atom</span><span class='arrow'>→</span>
+    <span class='pill'>Physics Update</span><span class='arrow'>→</span>
+    <span class='pill'>Collision Checks</span><span class='arrow'>→</span>
+    <span class='pill'>Canvas Render</span>
+  </div>
+
+  <h2>Game Design</h2>
+  <p>The level is intentionally small and legible: a 480×320 canvas, six static platforms, and one player rectangle with explicit velocity, grounded state, and collectible progress. The design goal is not procedural complexity; it is teaching motion through infrastructure. Each jump is a tiny routing exercise across the cloud topology.</p>
+  <p>Movement is deterministic and frame-rate aware. The update loop applies input, then gravity, then motion, then platform collision resolution. Gravity is expressed in pixels per second squared, horizontal velocity snaps to fixed left/right values, and jump impulse only fires while the player is grounded. That keeps the rules arcade-simple while still feeling responsive on desktop and mobile.</p>
+  <div class='code-block'>(-&gt; state
+    (update :player #(-> %
+                         (apply-input touch-state)
+                         (apply-gravity dt)
+                         (move-player dt)
+                         (collide-platforms (:platforms state))
+                         clamp-bounds))
+    collect-items)</div>
+
+  <h2>Azure Resource Icons</h2>
+  <p>The collectibles are emoji-backed resource markers rather than sprite sheets: ⚡, ☁, 🔒, ⚙, and ★. That is a clever tradeoff for a portfolio game. It avoids asset loading, keeps the build self-contained, and still communicates compute, cloud, security, operations, and completion semantics instantly.</p>
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Icon</th><th>Infrastructure Reading</th><th>Why It Works In-Game</th></tr></thead>
+      <tbody>
+        <tr><td>⚡</td><td>Compute or execution trigger</td><td>Placed early to teach the first jump rhythm</td></tr>
+        <tr><td>☁</td><td>Core cloud landing zone</td><td>Signals the middle of the route</td></tr>
+        <tr><td>🔒</td><td>Security control or protected service</td><td>Adds meaning to higher-risk jumps</td></tr>
+        <tr><td>⚙</td><td>Operations and configuration</td><td>Connects gameplay to platform engineering</td></tr>
+        <tr><td>★</td><td>Goal state or production-ready completion</td><td>Acts as the last reward and win trigger</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Collection is done with the same axis-aligned bounding box test used for platforms. When player and item rectangles overlap, the item is marked <code>:collected true</code> and score increments by 100. The win condition is simply <code>every? :collected</code>, which makes the game state machine very easy to reason about.</p>
+
+  <h2>ClojureScript Game Engine</h2>
+  <p>The strongest architectural choice is reuse. This page sits on top of a shared engine namespace that creates canvases, keeps a <code>keys-down</code> atom, exposes <code>aabb?</code> for collision detection, and provides a generic <code>game-loop</code> wrapper over <code>requestAnimationFrame</code>. The game code stays focused on platforming rules instead of browser plumbing.</p>
+  <p>That separation also makes the SPA portfolio coherent. Platformer, Invaders, Matcher, and Breakout all inherit the same rendering and timing model, so each article can talk about different mechanics without hiding the common implementation discipline underneath.</p>
+
+  <h2>Canvas &amp; Input System</h2>
+  <p>Keyboard support uses browser keydown/keyup listeners and a set-backed atom. Touch support is implemented as a virtual d-pad appended beside the canvas. Each button updates a touch-state atom on <code>touchstart</code> and <code>touchend</code>, letting the game treat touch and keyboard as equivalent input channels.</p>
+  <p>That detail matters: it means the platformer is not just visually responsive at the 768px breakpoint; the interaction model is mobile-aware too. Combined with canvas bounds clamping and a lightweight HUD, the game remains readable even when embedded in a portfolio page rather than a dedicated fullscreen shell.</p>
+
+  <div class='footer-link'>
+    <a href='https://github.com/Acestus/portfolio/blob/main/src/portfolio/games/platformer.cljs' target='_blank' rel='noopener noreferrer'>View Source Code</a>
+  </div>
+</body>
+</html>
