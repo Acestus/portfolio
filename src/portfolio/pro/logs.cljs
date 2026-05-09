@@ -11,15 +11,21 @@
    {:id :parsed    :label "transaction_parsed" :color "#E8E8E8" :icon "⚙"}
    {:id :gold      :label "Gold Lakehouse"    :color "#FFF8DC" :icon "🥇"}])
 
+(defn- utc-ts []
+  (let [d (js/Date.)
+        pad2 #(if (< % 10) (str "0" %) (str %))
+        pad3 #(cond (< % 10) (str "00" %) (< % 100) (str "0" %) :else (str %))]
+    (str (pad2 (.getUTCHours d)) ":" (pad2 (.getUTCMinutes d)) ":" (pad2 (.getUTCSeconds d)) "." (pad3 (.getUTCMilliseconds d)))))
+
 (def ^:private sample-logs
-  [{:ts "08:33:01.247" :level "INFO"  :app "svc-orders"   :msg "POST /api/orders → 201 (42ms)"}
-   {:ts "08:33:01.312" :level "INFO"  :app "svc-payments" :msg "Payment processed txn=a8f3 amount=149.99"}
-   {:ts "08:33:01.489" :level "WARN"  :app "svc-orders"   :msg "Retry #2 for downstream notification"}
-   {:ts "08:33:02.001" :level "INFO"  :app "svc-inventory" :msg "Stock decremented sku=WDG-4401 qty=1"}
-   {:ts "08:33:02.118" :level "ERROR" :app "svc-shipping" :msg "Address validation timeout after 5000ms"}
-   {:ts "08:33:02.220" :level "INFO"  :app "svc-orders"   :msg "POST /api/orders → 201 (38ms)"}
-   {:ts "08:33:02.445" :level "INFO"  :app "svc-payments" :msg "Payment processed txn=b2c1 amount=89.50"}
-   {:ts "08:33:03.001" :level "INFO"  :app "svc-orders"   :msg "GET /api/orders/a8f3 → 200 (12ms)"}])
+  [{:level "INFO"  :app "svc-orders"   :msg "POST /api/orders → 201 (42ms)"}
+   {:level "INFO"  :app "svc-payments" :msg "Payment processed txn=a8f3 amount=149.99"}
+   {:level "WARN"  :app "svc-orders"   :msg "Retry #2 for downstream notification"}
+   {:level "INFO"  :app "svc-inventory" :msg "Stock decremented sku=WDG-4401 qty=1"}
+   {:level "ERROR" :app "svc-shipping" :msg "Address validation timeout after 5000ms"}
+   {:level "INFO"  :app "svc-orders"   :msg "POST /api/orders → 201 (38ms)"}
+   {:level "INFO"  :app "svc-payments" :msg "Payment processed txn=b2c1 amount=89.50"}
+   {:level "INFO"  :app "svc-orders"   :msg "GET /api/orders/a8f3 → 200 (12ms)"}])
 
 (defn- kql-panel []
   (let [panel (core/create-el "div" {:class "kql-panel"})]
@@ -45,7 +51,7 @@
         (let [level-cls (case (:level log) "ERROR" "log-error" "WARN" "log-warn" "log-info")]
           (.appendChild stream
             (let [line (core/create-el "div" {:class (str "log-line " level-cls)}
-                         (core/create-el "span" {:class "log-ts"} (:ts log))
+                         (core/create-el "span" {:class "log-ts"} (utc-ts))
                          (core/create-el "span" {:class "log-level"} (:level log))
                          (core/create-el "span" {:class "log-app"} (:app log))
                          (core/create-el "span" {:class "log-msg"} (:msg log)))]
@@ -100,7 +106,7 @@
             (let [new-log (rand-nth sample-logs)
                   level-cls (case (:level new-log) "ERROR" "log-error" "WARN" "log-warn" "log-info")
                   line (core/create-el "div" {:class (str "log-line " level-cls " log-new")}
-                         (core/create-el "span" {:class "log-ts"} (:ts new-log))
+                         (core/create-el "span" {:class "log-ts"} (utc-ts))
                          (core/create-el "span" {:class "log-level"} (:level new-log))
                          (core/create-el "span" {:class "log-app"} (:app new-log))
                          (core/create-el "span" {:class "log-msg"} (:msg new-log)))]

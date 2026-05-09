@@ -1,97 +1,122 @@
 /* ==========================================================================
    REPL Theme — Dark terminal aesthetic for ClojureScript playground
+   Custom properties, fluid type, logical properties
    ========================================================================== */
 
 .repl-theme {
-  background: #1a1b26;
-  color: #c0caf5;
+  --clr-surface:    #1a1b26;
+  --clr-surface-2:  #24283b;
+  --clr-text:       #c0caf5;
+  --clr-text-muted: #565f89;
+  --clr-accent:     #7aa2f7;
+  --clr-accent-2:   #9ece6a;
+  --clr-border:     #3b4261;
+  --nav-bg:         #16161e;
+
+  background: var(--clr-surface);
+  color: var(--clr-text);
   font-family: 'Consolas', 'Courier New', monospace;
 }
 
 .repl-theme .site-nav {
-  background: #16161e;
-  border-bottom: 2px solid #7aa2f7;
+  background: var(--nav-bg);
+  border-block-end: 2px solid var(--clr-accent);
 }
-.repl-theme .site-name { color: #7aa2f7; font-family: 'Consolas', monospace; }
-.repl-theme .nav-link { font-family: 'Consolas', monospace; color: #565f89; }
-.repl-theme .nav-link:hover { color: #c0caf5; }
-.repl-theme .nav-link.active { color: #9ece6a; }
-.repl-theme .nav-toggle { color: #c0caf5; }
+.repl-theme .site-name { color: var(--clr-accent); font-family: 'Consolas', monospace; }
+.repl-theme .nav-link { font-family: 'Consolas', monospace; color: var(--clr-text-muted); }
+.repl-theme .nav-link:hover { color: var(--clr-text); }
+.repl-theme .nav-link.active { color: var(--clr-accent-2); }
+.repl-theme .nav-toggle { color: var(--clr-text); }
 
 .repl-theme .site-footer {
-  background: #16161e; border-top: 1px solid #24283b; color: #565f89;
+  background: var(--nav-bg);
+  border-block-start: 1px solid var(--clr-surface-2);
+  color: var(--clr-text-muted);
 }
 
 /* --- REPL Layout --- */
-.repl-container { max-width: 800px; margin: 0 auto; }
+.repl-container { max-inline-size: 50rem; margin-inline: auto; }
 
 .repl-title {
-  font-size: 1.5rem; color: #bb9af7;
-  margin-bottom: 0.25rem;
+  font-size: var(--step-2); color: #bb9af7;
+  margin-block-end: var(--space-2xs);
 }
-.repl-subtitle { color: #565f89; margin-bottom: 1.5rem; font-size: 0.9rem; }
+.repl-subtitle {
+  color: var(--clr-text-muted);
+  margin-block-end: var(--space-l);
+  font-size: var(--step-0);
+}
 
 /* --- Examples Bar --- */
 .examples-bar {
-  display: flex; gap: 0.5rem; align-items: center;
-  flex-wrap: wrap; margin-bottom: 1rem;
+  display: flex; gap: var(--space-xs); align-items: center;
+  flex-wrap: wrap; margin-block-end: var(--space-m);
 }
-.examples-label { color: #565f89; font-size: 0.85rem; }
+.examples-label { color: var(--clr-text-muted); font-size: var(--step--1); }
 .example-btn {
-  padding: 0.25rem 0.6rem; border-radius: 4px;
-  background: #24283b; color: #7aa2f7; font-size: 0.8rem;
-  border: 1px solid #3b4261;
+  padding: var(--space-2xs) var(--space-xs); border-radius: var(--radius-s);
+  background: var(--clr-surface-2); color: var(--clr-accent); font-size: var(--step--2);
+  border: 1px solid var(--clr-border);
+  transition: background var(--transition-snappy), color var(--transition-snappy);
 }
-.example-btn:hover { background: #3b4261; color: #c0caf5; }
+.example-btn:hover {
+  background: var(--clr-border);
+  color: var(--clr-text);
+}
 
 /* --- Editor --- */
 .repl-editor {
-  width: 100%; min-height: 140px; padding: 1rem;
-  background: #24283b; color: #c0caf5; border: 1px solid #3b4261;
-  border-radius: 6px; font-family: 'Consolas', 'Courier New', monospace;
-  font-size: 0.9rem; resize: vertical; line-height: 1.5;
+  inline-size: 100%; min-block-size: 140px; padding: var(--space-m);
+  background: var(--clr-surface-2); color: var(--clr-text);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-m); font-family: 'Consolas', 'Courier New', monospace;
+  font-size: var(--step-0); resize: vertical; line-height: 1.5;
   tab-size: 2;
 }
-.repl-editor:focus { outline: none; border-color: #7aa2f7; }
+.repl-editor:focus { outline: none; border-color: var(--clr-accent); }
 
 /* --- Buttons --- */
-.repl-btn-bar { display: flex; gap: 0.5rem; margin: 0.75rem 0; }
+.repl-btn-bar { display: flex; gap: var(--space-xs); margin-block: var(--space-s); }
 
 .repl-run-btn {
-  padding: 0.5rem 1.25rem; border-radius: 6px;
-  background: #9ece6a; color: #1a1b26; font-weight: 700;
-  font-size: 0.9rem;
+  padding: var(--space-xs) var(--space-l); border-radius: var(--radius-m);
+  background: var(--clr-accent-2); color: var(--clr-surface); font-weight: 700;
+  font-size: var(--step-0);
+  transition: background var(--transition-snappy);
 }
 .repl-run-btn:hover { background: #73daca; }
 
 .repl-clear-btn {
-  padding: 0.5rem 1rem; border-radius: 6px;
-  background: #3b4261; color: #c0caf5; font-size: 0.9rem;
+  padding: var(--space-xs) var(--space-m); border-radius: var(--radius-m);
+  background: var(--clr-border); color: var(--clr-text); font-size: var(--step-0);
+  transition: background var(--transition-snappy);
 }
-.repl-clear-btn:hover { background: #565f89; }
+.repl-clear-btn:hover { background: var(--clr-text-muted); }
 
 /* --- Output --- */
 .repl-output-label {
-  font-size: 0.8rem; color: #565f89; margin-bottom: 0.25rem;
+  font-size: var(--step--2); color: var(--clr-text-muted);
+  margin-block-end: var(--space-2xs);
   text-transform: uppercase; letter-spacing: 0.05em;
 }
 .repl-output {
-  width: 100%; min-height: 120px; max-height: 300px;
-  padding: 1rem; overflow-y: auto;
-  background: #16161e; color: #9ece6a; border: 1px solid #24283b;
-  border-radius: 6px; font-family: 'Consolas', 'Courier New', monospace;
-  font-size: 0.85rem; line-height: 1.5; white-space: pre-wrap;
+  inline-size: 100%; min-block-size: 120px; max-block-size: 300px;
+  padding: var(--space-m); overflow-y: auto;
+  background: var(--nav-bg); color: var(--clr-accent-2);
+  border: 1px solid var(--clr-surface-2);
+  border-radius: var(--radius-m); font-family: 'Consolas', 'Courier New', monospace;
+  font-size: var(--step--1); line-height: 1.5; white-space: pre-wrap;
 }
 
 /* --- Action btn REPL override --- */
 .repl-theme .action-btn {
-  background: #24283b; border-color: #3b4261; color: #7aa2f7;
+  background: var(--clr-surface-2); border-color: var(--clr-border); color: var(--clr-accent);
 }
 .repl-theme .action-btn:hover {
-  background: #3b4261; border-color: #7aa2f7;
+  background: var(--clr-border); border-color: var(--clr-accent);
 }
 
 .repl-theme .metric-card {
-  background: #24283b; border-bottom-color: #7aa2f7;
+  background: var(--clr-surface-2); border-block-end-color: var(--clr-accent);
 }
-.repl-theme .metric-label { color: #565f89; }
+.repl-theme .metric-label { color: var(--clr-text-muted); }

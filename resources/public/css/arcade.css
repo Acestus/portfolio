@@ -1,23 +1,33 @@
 /* ==========================================================================
-   Arcade Theme — 80's retro, Wreck-It Ralph, CRT scanlines, neon glow
+   Arcade Theme — 80's retro, CRT scanlines, neon glow
+   Uses shared custom properties for consistency
    ========================================================================== */
 
 .arcade-theme {
-  background: #0a0a2a;
-  color: #e0e0e0;
+  --clr-surface:    #0a0a2a;
+  --clr-surface-2:  #0f0f3a;
+  --clr-text:       #e0e0e0;
+  --clr-text-muted: #888;
+  --clr-accent:     #00d4ff;
+  --clr-accent-2:   #00ff41;
+  --clr-border:     #1a1a6a;
+  --nav-bg:         #050520;
+
+  background: var(--clr-surface);
+  color: var(--clr-text);
   font-family: 'VT323', monospace;
 }
 
 /* CRT scanline overlay */
 .arcade-theme::after {
   content: '';
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  position: fixed; inset: 0;
   background: repeating-linear-gradient(
     0deg,
     transparent,
     transparent 2px,
-    rgba(0, 0, 0, 0.08) 2px,
-    rgba(0, 0, 0, 0.08) 4px
+    rgb(0 0 0 / 0.08) 2px,
+    rgb(0 0 0 / 0.08) 4px
   );
   pointer-events: none;
   z-index: 9999;
@@ -26,53 +36,53 @@
 /* Screen glow */
 .arcade-theme .game-canvas {
   box-shadow:
-    0 0 10px rgba(0, 212, 255, 0.3),
-    0 0 30px rgba(0, 212, 255, 0.1),
-    inset 0 0 10px rgba(0, 0, 0, 0.5);
+    0 0 10px color-mix(in oklch, var(--clr-accent) 30%, transparent),
+    0 0 30px color-mix(in oklch, var(--clr-accent) 10%, transparent),
+    inset 0 0 10px rgb(0 0 0 / 0.5);
 }
 
 .arcade-theme .site-nav {
-  background: #050520;
-  border-bottom: 2px solid #00d4ff;
-  box-shadow: 0 2px 10px rgba(0, 212, 255, 0.2);
+  background: var(--nav-bg);
+  border-block-end: 2px solid var(--clr-accent);
+  box-shadow: 0 2px 10px color-mix(in oklch, var(--clr-accent) 20%, transparent);
 }
 
 .arcade-theme .site-footer {
-  background: #050520;
-  border-top: 1px solid #1a1a4a;
+  background: var(--nav-bg);
+  border-block-start: 1px solid color-mix(in oklch, var(--clr-accent) 15%, var(--clr-surface));
   color: #555;
 }
 
 .arcade-theme .hub-card {
-  background: #0f0f3a;
-  border: 1px solid #1a1a6a;
+  background: var(--clr-surface-2);
+  border: 1px solid var(--clr-border);
 }
 .arcade-theme .hub-card:hover {
-  border-color: #00ff41;
-  box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+  border-color: var(--clr-accent-2);
+  box-shadow: 0 0 15px color-mix(in oklch, var(--clr-accent-2) 20%, transparent);
 }
 
 .arcade-theme .action-btn {
-  background: #0f0f3a;
-  border-color: #1a1a6a;
-  color: #00d4ff;
+  background: var(--clr-surface-2);
+  border-color: var(--clr-border);
+  color: var(--clr-accent);
   font-family: 'VT323', monospace;
-  font-size: 1rem;
+  font-size: var(--step-0);
 }
 .arcade-theme .action-btn:hover {
-  border-color: #00d4ff;
-  box-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
+  border-color: var(--clr-accent);
+  box-shadow: 0 0 8px color-mix(in oklch, var(--clr-accent) 30%, transparent);
 }
 
 /* Neon text glow for headings */
-.arcade-theme h1, .arcade-theme h2 {
+.arcade-theme :is(h1, h2) {
   font-family: 'Press Start 2P', monospace;
   text-shadow: 0 0 10px currentColor;
 }
 
 .arcade-theme .metric-card {
-  background: #0f0f3a;
-  border-bottom-color: #00d4ff;
-  box-shadow: 0 0 8px rgba(0, 212, 255, 0.1);
+  background: var(--clr-surface-2);
+  border-block-end-color: var(--clr-accent);
+  box-shadow: 0 0 8px color-mix(in oklch, var(--clr-accent) 10%, transparent);
 }
-.arcade-theme .metric-label { color: #888; }
+.arcade-theme .metric-label { color: var(--clr-text-muted); }
