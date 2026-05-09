@@ -7,7 +7,7 @@ const H: u32 = 240;
 
 // --- Maze ---
 
-const MAZE_N: usize = 15;
+const MAZE_N: usize = 25;
 const MAZE_CELLS: usize = MAZE_N * MAZE_N;
 const CELL_SZ: f64 = 2.0;
 
@@ -262,15 +262,18 @@ fn maze_to_world(gx: usize, gz: usize) -> (f64, f64) {
      gz as f64 * CELL_SZ - half + CELL_SZ * 0.5)
 }
 
-fn path_pos(path: &[(usize, usize)], t: f64) -> (f64, f64) {
-    if path.len() < 2 { return (0.0, 0.0); }
+fn path_pos(path: &[(usize, usize)], t: f64) -> (f64, f64, f64) {
+    if path.len() < 2 { return (0.0, 0.0, 0.0); }
     let n = path.len() as f64;
     let t_wrap = ((t % n) + n) % n;
     let i = t_wrap.floor() as usize;
     let f = t_wrap - t_wrap.floor();
     let (x0, z0) = maze_to_world(path[i % path.len()].0, path[i % path.len()].1);
     let (x1, z1) = maze_to_world(path[(i + 1) % path.len()].0, path[(i + 1) % path.len()].1);
-    (x0 + (x1 - x0) * f, z0 + (z1 - z0) * f)
+    let dx = x1 - x0;
+    let dz = z1 - z0;
+    let facing = dz.atan2(dx);
+    (x0 + dx * f, z0 + dz * f, facing)
 }
 
 // --- Scene with rider bounding sphere ---
@@ -362,49 +365,63 @@ fn gamma(v: f64) -> u8 { (v.max(0.0).min(1.0).powf(1.0/2.2) * 255.0) as u8 }
 
 // --- Unicyclist builder ---
 
-fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f64, bz: f64, ground_y: f64, time: f64, phase: f64, hue: usize) -> (Vec3, f64) {
+fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f64, bz: f64, ground_y: f64, time: f64, phase: f64, hue: usize, facing: f64) -> (Vec3, f64) {
     let s = 3.0;
     let pedal_speed = 2.5;
     let pa = time * pedal_speed + phase;
+    let (fc, fs) = (facing.cos(), facing.sin());
 
     let wheel_r = 0.45 * s;
     let tube_r = 0.07 * s;
     let wy = ground_y + wheel_r + tube_r;
 
+    // Wheel segments — wheel plane is perpendicular to facing direction
+    // Local right = (-sin(facing), 0, cos(facing)), local up = (0, 1, 0)
     let n_segs: usize = 10;
     let tau = std::f64::consts::TAU;
     let spin = time * pedal_speed;
     for i in 0..n_segs {
         let a0 = (i as f64) * tau / (n_segs as f64) + spin;
         let a1 = ((i + 1) as f64) * tau / (n_segs as f64) + spin;
+        let rc0 = wheel_r * a0.cos();
+        let rs0 = wheel_r * a0.sin();
+        let rc1 = wheel_r * a1.cos();
+        let rs1 = wheel_r * a1.sin();
         rider_c.push(Capsule {
-            a: Vec3::new(bx + wheel_r * a0.cos(), wy + wheel_r * a0.sin(), bz),
-            b: Vec3::new(bx + wheel_r * a1.cos(), wy + wheel_r * a1.sin(), bz),
+            a: Vec3::new(bx - fs * rc0, wy + rs0, bz + fc * rc0),
+            b: Vec3::new(bx - fs * rc1, wy + rs1, bz + fc * rc1),
             radius: tube_r,
             color: Vec3::new(0.75, 0.75, 0.8),
         });
     }
 
+    // Spokes
     let n_spk = 2;
     for i in 0..n_spk {
         let a = (i as f64) * tau / (n_spk as f64) + spin;
+        let rc = wheel_r * a.cos();
+        let rs = wheel_r * a.sin();
         rider_c.push(Capsule {
             a: Vec3::new(bx, wy, bz),
-            b: Vec3::new(bx + wheel_r * a.cos(), wy + wheel_r * a.sin(), bz),
+            b: Vec3::new(bx - fs * rc, wy + rs, bz + fc * rc),
             radius: 0.02 * s, color: Vec3::new(0.8, 0.8, 0.85),
         });
     }
 
+    // Hub
     rider_s.push(Sphere { center: Vec3::new(bx, wy, bz), radius: 0.1 * s,
         color: Vec3::new(0.85, 0.85, 0.9) });
 
+    // Seat post (vertical — no rotation needed)
     let seat_y = wy + 0.9 * s;
     rider_c.push(Capsule { a: Vec3::new(bx, wy + 0.15 * s, bz), b: Vec3::new(bx, seat_y, bz),
         radius: 0.04 * s, color: Vec3::new(0.7, 0.7, 0.75) });
 
+    // Seat — spans perpendicular to facing (along right vector)
+    let seat_hw = 0.1 * s;
     rider_c.push(Capsule {
-        a: Vec3::new(bx - 0.1 * s, seat_y + 0.05 * s, bz),
-        b: Vec3::new(bx + 0.1 * s, seat_y + 0.05 * s, bz),
+        a: Vec3::new(bx + fs * seat_hw, seat_y + 0.05 * s, bz - fc * seat_hw),
+        b: Vec3::new(bx - fs * seat_hw, seat_y + 0.05 * s, bz + fc * seat_hw),
         radius: 0.06 * s, color: Vec3::new(0.3, 0.3, 0.35) });
 
     let colors = [
@@ -414,35 +431,55 @@ fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f
     let bc = colors[hue % colors.len()];
     let bob = 0.06 * s * (time * 4.0 + phase).sin();
 
+    // Torso (vertical)
     let hip_y = seat_y + 0.25 * s;
     let sh_y = hip_y + 0.55 * s;
     rider_c.push(Capsule {
         a: Vec3::new(bx, hip_y + bob, bz), b: Vec3::new(bx, sh_y + bob, bz),
         radius: 0.14 * s, color: bc });
 
+    // Head
     rider_s.push(Sphere { center: Vec3::new(bx, sh_y + 0.32 * s + bob, bz),
         radius: 0.16 * s, color: Vec3::new(0.9, 0.75, 0.65) });
 
+    // Pedal crank radius
     let cr = 0.25 * s;
-    let rf_x = bx + cr * pa.cos();
-    let rf_y = wy + cr * pa.sin();
-    let rk_x = bx + 0.12 * s * pa.cos();
+
+    // Right leg — pedal offset in facing direction, leg offset along right
+    let rpx = cr * pa.cos(); // forward offset
+    let rpy = cr * pa.sin(); // vertical offset
+    let (rpx_w, rpz_w) = (fc * rpx, fs * rpx); // world forward offset
+    let leg_side = 0.08 * s;
+    let (rsx, rsz) = (-fs * leg_side, fc * leg_side); // right offset
+
+    let rf_x = bx + rpx_w;
+    let rf_z = bz + rpz_w;
+    let rf_y = wy + rpy;
+    let rk_x = bx + fc * 0.12 * s * pa.cos();
+    let rk_z = bz + fs * 0.12 * s * pa.cos();
     let rk_y = (rf_y + hip_y + bob) * 0.5 + 0.1 * s;
 
-    rider_c.push(Capsule { a: Vec3::new(bx - 0.06 * s, hip_y + bob, bz + 0.08 * s),
-        b: Vec3::new(rk_x, rk_y, bz + 0.08 * s), radius: 0.06 * s, color: bc });
-    rider_c.push(Capsule { a: Vec3::new(rk_x, rk_y, bz + 0.08 * s),
-        b: Vec3::new(rf_x, rf_y, bz + 0.08 * s), radius: 0.05 * s, color: bc });
+    rider_c.push(Capsule {
+        a: Vec3::new(bx - fc * 0.06 * s + rsx, hip_y + bob, bz - fs * 0.06 * s + rsz),
+        b: Vec3::new(rk_x + rsx, rk_y, rk_z + rsz), radius: 0.06 * s, color: bc });
+    rider_c.push(Capsule {
+        a: Vec3::new(rk_x + rsx, rk_y, rk_z + rsz),
+        b: Vec3::new(rf_x + rsx, rf_y, rf_z + rsz), radius: 0.05 * s, color: bc });
 
-    let lf_x = bx - cr * pa.cos();
-    let lf_y = wy - cr * pa.sin();
-    let lk_x = bx - 0.12 * s * pa.cos();
+    // Left leg — opposite pedal, opposite side
+    let lf_x = bx - rpx_w;
+    let lf_z = bz - rpz_w;
+    let lf_y = wy - rpy;
+    let lk_x = bx - fc * 0.12 * s * pa.cos();
+    let lk_z = bz - fs * 0.12 * s * pa.cos();
     let lk_y = (lf_y + hip_y + bob) * 0.5 + 0.1 * s;
 
-    rider_c.push(Capsule { a: Vec3::new(bx + 0.06 * s, hip_y + bob, bz - 0.08 * s),
-        b: Vec3::new(lk_x, lk_y, bz - 0.08 * s), radius: 0.06 * s, color: bc });
-    rider_c.push(Capsule { a: Vec3::new(lk_x, lk_y, bz - 0.08 * s),
-        b: Vec3::new(lf_x, lf_y, bz - 0.08 * s), radius: 0.05 * s, color: bc });
+    rider_c.push(Capsule {
+        a: Vec3::new(bx + fc * 0.06 * s - rsx, hip_y + bob, bz + fs * 0.06 * s - rsz),
+        b: Vec3::new(lk_x - rsx, lk_y, lk_z - rsz), radius: 0.06 * s, color: bc });
+    rider_c.push(Capsule {
+        a: Vec3::new(lk_x - rsx, lk_y, lk_z - rsz),
+        b: Vec3::new(lf_x - rsx, lf_y, lf_z - rsz), radius: 0.05 * s, color: bc });
 
     let center_y = (wy + sh_y + 0.32 * s + bob) * 0.5;
     let bound = (sh_y + 0.32 * s + bob - (wy - wheel_r)) * 0.5 + 1.0;
@@ -496,8 +533,8 @@ impl Raytracer {
 
         let speed = 3.5;
         let t = time * speed;
-        let (px, pz) = path_pos(&self.maze_path, t);
-        let (center, bound) = build_unicyclist(&mut rider_spheres, &mut rider_capsules, px, pz, ROAD_Y, time, 0.0, 0);
+        let (px, pz, facing) = path_pos(&self.maze_path, t);
+        let (center, bound) = build_unicyclist(&mut rider_spheres, &mut rider_capsules, px, pz, ROAD_Y, time, 0.0, 0, facing);
 
         Scene { rider_spheres, rider_capsules, rider_center: center, rider_bound: bound, pillars, maze: self.maze_grid }
     }
@@ -506,8 +543,8 @@ impl Raytracer {
         let scene = self.build_scene(time);
 
         let ca = time * 0.1;
-        let cr = 24.0 + 4.0 * (time * 0.05).sin();
-        let cy = 14.0 + 5.0 * (time * 0.07).sin();
+        let cr = 40.0 + 6.0 * (time * 0.05).sin();
+        let cy = 20.0 + 8.0 * (time * 0.07).sin();
         let origin = Vec3::new(cr * ca.sin(), cy, cr * ca.cos());
         let look_at = Vec3::new(0.0, ROAD_Y + 2.0, 0.0);
 
