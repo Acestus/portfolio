@@ -33,13 +33,19 @@
     (if (>= i NUM-BUILDINGS)
       [buildings s]
       (let [[s1 r1] (prng s)
-            bx (+ 300 (* i 220) (* r1 60))]
-        (recur (inc i) s1
+            bx (+ 300 (* i 220) (* r1 60))
+            [hostages s2]
+            (loop [j 0 hs [] ss s1]
+              (if (>= j WORKLOADS-PER-DC)
+                [hs ss]
+                (let [[ns r] (prng ss)]
+                  (recur (inc j)
+                         (conj hs {:state :inside :idx j
+                                   :speed (+ 25 (* r 50))})
+                         ns))))]
+        (recur (inc i) s2
                (conj buildings {:x bx :w 50 :alive true
-                                :hostages (vec (map-indexed
-                                                 (fn [idx _]
-                                                   {:state :inside :idx idx})
-                                                 (range WORKLOADS-PER-DC)))}))))))
+                                :hostages hostages}))))))
 
 (defn- make-tanks [seed n]
   (loop [i 0 s seed tanks []]
@@ -133,8 +139,7 @@
                 (fn [h]
                   (case (:state h)
                     :running
-                    (let [idx (or (:idx h) 0)
-                          speed (+ 35 (* idx 5))
+                    (let [speed (or (:speed h) 40)
                           dx (* (if (< (:x h) hx) 1 -1) speed dt)
                           nx (+ (:x h) dx)
                           close-enough (and (< (js/Math.abs (- nx hx)) 15)
