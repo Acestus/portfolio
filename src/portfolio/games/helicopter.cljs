@@ -826,8 +826,8 @@
                            (let [k (cond-> #{}
                                      (:left ts) (conj :left)
                                      (:right ts) (conj :right)
-                                     (:up ts) (conj :up))
-                             s (assoc :keys k))))))
+                                     (:up ts) (conj :up))]
+                             (assoc s :keys k)))))
         50))
 
     ;; Mouse
