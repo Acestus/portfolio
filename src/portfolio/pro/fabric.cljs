@@ -26,12 +26,15 @@
 ;; ---------------------------------------------------------------------------
 
 (defn- stage-card [{:keys [label color icon desc]} active]
-  (let [cls (str "stage-card" (when active " active"))]
-    (core/create-el "div" {:class cls :style (str "border-left: 4px solid " color)}
-      (core/create-el "div" {:class "stage-header"}
-        (core/create-el "span" {:class "stage-icon"} icon)
-        (core/create-el "span" {:class "stage-label"} label))
-      (core/create-el "p" {:class "stage-desc"} desc))))
+  (let [cls (str "stage-card" (when active " active"))
+        el  (core/create-el "div" {:class cls :style (str "border-left: 4px solid " color)}
+              (core/create-el "div" {:class "stage-header"}
+                (core/create-el "span" {:class "stage-icon"} icon)
+                (core/create-el "span" {:class "stage-label"} label))
+              (core/create-el "p" {:class "stage-desc"} desc))]
+    (.addEventListener el "click"
+      (fn [_] (core/toast! (str icon " " label " — " desc))))
+    el))
 
 (defn- arrow []
   (core/create-el "div" {:class "flow-arrow"} "→"))

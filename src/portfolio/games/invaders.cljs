@@ -39,19 +39,21 @@
    :lives     3
    :phase     :playing
    :move-timer 0
-   :shoot-cooldown 0})
+   :shoot-cooldown 0
+   :invader-dir 1})
 
 (defn- fire-bullet [state]
   (let [p (:player state)]
     (update state :bullets conj
             {:x (+ (:x p) 14) :y (:y p) :w 4 :h 10})))
 
-(defn- update-game [state dt]
+(defn- update-game [state dt touch]
   (if (not= :playing (:phase state))
     state
-    (let [left   (or (eng/key-held? "ArrowLeft") (eng/key-held? "KeyA"))
-          right  (or (eng/key-held? "ArrowRight") (eng/key-held? "KeyD"))
-          shoot  (or (eng/key-held? "Space") (eng/key-held? "ArrowUp"))
+    (let [ts    @touch
+          left  (or (eng/key-held? "ArrowLeft") (eng/key-held? "KeyA") (:left ts))
+          right (or (eng/key-held? "ArrowRight") (eng/key-held? "KeyD") (:right ts))
+          shoot (or (eng/key-held? "Space") (eng/key-held? "ArrowUp") (:up ts) (:action ts))
           dx     (cond left -200 right 200 :else 0)
           player (-> (:player state)
                      (update :x #(max 0 (min (- W 32) (+ % (* dx dt))))))
@@ -62,14 +64,24 @@
                        vec)
           ;; move invaders
           mt (+ (:move-timer state) dt)
-          [invaders mt2] (if (> mt 0.8)
-                           [(mapv (fn [inv]
-                                    (if (:alive inv)
-                                      (update inv :x + (* (:dir inv) 20))
-                                      inv))
-                                  (:invaders state))
-                            0]
-                           [(:invaders state) mt])
+          cur-invaders (:invaders state)
+          cur-dir (or (:invader-dir state) 1)
+          [invaders mt2 new-dir]
+          (if (> mt 0.8)
+            (let [alive (filter :alive cur-invaders)
+                  min-x (apply min (map :x alive))
+                  max-x (apply max (map #(+ (:x %) (:w %)) alive))
+                  hit-edge (or (< (+ min-x (* cur-dir 20)) 0)
+                               (> (+ max-x (* cur-dir 20)) W))
+                  next-dir (if hit-edge (- cur-dir) cur-dir)
+                  moved (mapv (fn [inv]
+                                (if (:alive inv)
+                                  (cond-> (update inv :x + (* next-dir 20))
+                                    hit-edge (update :y + 12))
+                                  inv))
+                              cur-invaders)]
+              [moved 0 next-dir])
+            [cur-invaders mt cur-dir])
           ;; bullet-invader collision
           [invaders2 bullets2 score-add]
           (reduce
@@ -80,7 +92,7 @@
                  (+ sc 50)]
                 [invs (conj buls bullet) sc]))
             [invaders [] 0]
-            bullets2)
+            bullets)
           ;; shoot cooldown
           cd (- (:shoot-cooldown state) dt)
           [state2 cd2] (if (and shoot (< cd 0))
@@ -88,13 +100,15 @@
                                         :invaders invaders2 :score (+ (:score state) score-add)
                                         :lives (:lives state) :phase :playing
                                         :move-timer mt2 :shoot-cooldown 0.2
-                                        :powerups (:powerups state)})
+                                        :powerups (:powerups state)
+                                        :invader-dir new-dir})
                           0.2]
                          [{:player player :bullets bullets2
                            :invaders invaders2 :score (+ (:score state) score-add)
                            :lives (:lives state) :phase :playing
                            :move-timer mt2 :shoot-cooldown cd
-                           :powerups (:powerups state)}
+                           :powerups (:powerups state)
+                           :invader-dir new-dir}
                           cd])
           ;; check win
           all-dead (every? #(not (:alive %)) (:invaders state2))]
@@ -127,9 +141,9 @@
   (eng/init-keyboard!)
   (let [canvas  (eng/create-canvas W H)
         wrapper (core/create-el "div" {:class "game-wrapper"})
-        state   (atom (initial-state))]
+        state   (atom (initial-state))
+        touch   (eng/init-touch! wrapper)]
     (.appendChild wrapper canvas)
-    (eng/init-touch! wrapper)
     (core/mount!
       (ui/page-shell :invaders "/articles/space-invaders.html" "src/portfolio/games/invaders.cljs" wrapper))
-    (eng/game-loop canvas state update-game render-game)))
+    (eng/game-loop canvas state #(update-game %1 %2 touch) render-game)))

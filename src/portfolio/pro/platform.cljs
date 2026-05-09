@@ -52,12 +52,14 @@
   (let [panel (core/create-el "div" {:class "panel"})]
     (.appendChild panel (core/create-el "h3" {:class "panel-title"} "🤖 M365 Copilot Agents"))
     (doseq [agent copilot-agents]
-      (.appendChild panel
-        (core/create-el "div" {:class "agent-card"}
-          (core/create-el "span" {:class "agent-icon"} (:icon agent))
-          (core/create-el "div" {:class "agent-info"}
-            (core/create-el "div" {:class "agent-name"} (:name agent))
-            (core/create-el "div" {:class "agent-desc"} (:desc agent))))))
+      (let [card (core/create-el "div" {:class "agent-card"}
+                   (core/create-el "span" {:class "agent-icon"} (:icon agent))
+                   (core/create-el "div" {:class "agent-info"}
+                     (core/create-el "div" {:class "agent-name"} (:name agent))
+                     (core/create-el "div" {:class "agent-desc"} (:desc agent))))]
+        (.addEventListener card "click"
+          (fn [_] (core/toast! (str (:icon agent) " " (:name agent) " — " (:desc agent)))))
+        (.appendChild panel card)))
     panel))
 
 (defn- pim-panel []
@@ -75,6 +77,8 @@
           (let [row (core/create-el "tr" {})]
             (doseq [v [(:role r) (:scope r) (:duration r) (:justification r)]]
               (.appendChild row (core/create-el "td" {} v)))
+            (.addEventListener row "click"
+              (fn [_] (core/toast! (str "🔐 Activating " (:role r) " on " (:scope r) " for " (:duration r)))))
             (.appendChild tbody row)))
         (.appendChild table tbody))
       (.appendChild panel table))

@@ -46,6 +46,12 @@
     (.appendChild row (core/create-el "div" {:class "policy-scope"} (:scope policy)))
     (.appendChild row (compliance-bar (:compliance policy)))
     (.appendChild row (core/create-el "div" {:class "policy-pct"} (str (:compliance policy) "%")))
+    (.addEventListener row "click"
+      (fn [_]
+        (.toggle (.-classList row) "policy-expanded")
+        (core/toast!
+          (str (if (>= (:compliance policy) 90) "✅ " "⚠️ ")
+               (:name policy) " — " (:compliance policy) "% compliant across " (:scope policy)))))
     row))
 
 (defn- summary-cards []

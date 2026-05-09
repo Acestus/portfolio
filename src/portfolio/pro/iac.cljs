@@ -25,12 +25,17 @@
    :no-change "#888888"})
 
 (defn- step-card [{:keys [label icon color detail]} active]
-  (core/create-el "div" {:class (str "stage-card" (when active " active"))
-                          :style (str "border-left: 4px solid " color)}
-    (core/create-el "div" {:class "stage-header"}
-      (core/create-el "span" {:class "stage-icon"} icon)
-      (core/create-el "span" {:class "stage-label"} label))
-    (core/create-el "p" {:class "stage-desc"} detail)))
+  (let [el (core/create-el "div" {:class (str "stage-card" (when active " active"))
+                                   :style (str "border-left: 4px solid " color)}
+             (core/create-el "div" {:class "stage-header"}
+               (core/create-el "span" {:class "stage-icon"} icon)
+               (core/create-el "span" {:class "stage-label"} label))
+             (core/create-el "p" {:class "stage-desc"} detail))]
+    (.addEventListener el "click"
+      (fn [_]
+        (.toggle (.-classList el) "expanded")
+        (core/toast! (str icon " " label " — " detail))))
+    el))
 
 (defn- what-if-panel []
   (let [panel (core/create-el "div" {:class "whatif-panel"})]
@@ -55,6 +60,14 @@
               (.appendChild td change-badge)
               (.appendChild row td))
             (.appendChild row (core/create-el "td" {} (:detail r)))
+            (.addEventListener row "click"
+              (fn [_]
+                (doseq [el (array-seq (.querySelectorAll tbody ".row-selected"))]
+                  (.remove (.-classList el) "row-selected"))
+                (.add (.-classList row) "row-selected")
+                (core/toast! (str (case (:change r) :create "🟢" :modify "🟡" :delete "🔴" "⚪")
+                                  " " (:resource r) " → " (name (:change r))
+                                  (when (seq (:detail r)) (str " — " (:detail r)))))))
             (.appendChild tbody row)))
         (.appendChild table tbody))
       (.appendChild panel table))

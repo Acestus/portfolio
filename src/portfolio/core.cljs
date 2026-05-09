@@ -31,3 +31,10 @@
   "Current timestamp in milliseconds."
   []
   (.now js/Date))
+
+(defn toast!
+  "Show a brief toast notification that auto-dismisses."
+  [text]
+  (let [el (create-el "div" {:class "click-toast"} text)]
+    (.appendChild (.-body js/document) el)
+    (js/setTimeout #(when (.-parentNode el) (.removeChild (.-parentNode el) el)) 2500)))

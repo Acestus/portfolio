@@ -4,7 +4,7 @@
             [portfolio.components :as ui]))
 
 (def ^:private pipeline-nodes
-  [{:id :apps      :label "Spring Boot Apps"  :color "#FFB6C1" :icon "☕"}
+  [{:id :apps      :label "Clojure Functions"  :color "#FFB6C1" :icon "λ"}
    {:id :eventhub  :label "Event Hub"         :color "#ADD8E6" :icon "📡"}
    {:id :stream    :label "Eventstream"       :color "#E0FFFF" :icon "🌊"}
    {:id :raw       :label "transaction_raw"   :color "#F5DEB3" :icon "📥"}
@@ -44,11 +44,18 @@
       (doseq [log logs]
         (let [level-cls (case (:level log) "ERROR" "log-error" "WARN" "log-warn" "log-info")]
           (.appendChild stream
-            (core/create-el "div" {:class (str "log-line " level-cls)}
-              (core/create-el "span" {:class "log-ts"} (:ts log))
-              (core/create-el "span" {:class "log-level"} (:level log))
-              (core/create-el "span" {:class "log-app"} (:app log))
-              (core/create-el "span" {:class "log-msg"} (:msg log))))))
+            (let [line (core/create-el "div" {:class (str "log-line " level-cls)}
+                         (core/create-el "span" {:class "log-ts"} (:ts log))
+                         (core/create-el "span" {:class "log-level"} (:level log))
+                         (core/create-el "span" {:class "log-app"} (:app log))
+                         (core/create-el "span" {:class "log-msg"} (:msg log)))]
+              (.addEventListener line "click"
+                (fn [_]
+                  (doseq [el (array-seq (.querySelectorAll stream ".log-selected"))]
+                    (.remove (.-classList el) "log-selected"))
+                  (.add (.-classList line) "log-selected")
+                  (core/toast! (str "📋 " (:app log) " [" (:level log) "] " (:msg log)))))
+              line))))
       (.appendChild container stream))
     container))
 
@@ -57,19 +64,21 @@
     (doseq [[i node] (map-indexed vector pipeline-nodes)]
       (when (pos? i)
         (.appendChild flow (core/create-el "div" {:class "flow-arrow"} "→")))
-      (.appendChild flow
-        (core/create-el "div" {:class "stage-card"
-                                :style (str "border-left: 4px solid " (:color node))}
-          (core/create-el "div" {:class "stage-header"}
-            (core/create-el "span" {:class "stage-icon"} (:icon node))
-            (core/create-el "span" {:class "stage-label"} (:label node))))))
+      (let [card (core/create-el "div" {:class "stage-card"
+                                         :style (str "border-left: 4px solid " (:color node))}
+                   (core/create-el "div" {:class "stage-header"}
+                     (core/create-el "span" {:class "stage-icon"} (:icon node))
+                     (core/create-el "span" {:class "stage-label"} (:label node))))]
+        (.addEventListener card "click"
+          (fn [_] (core/toast! (str (:icon node) " " (:label node) " — stage " (inc i) " of " (count pipeline-nodes)))))
+        (.appendChild flow card)))
     flow))
 
 (defn- logs-content []
   (let [container (core/create-el "div" {:class "dashboard-container"})]
     (.appendChild container (core/create-el "h1" {:class "dashboard-title"} "Real-Time Log Pipeline"))
     (.appendChild container (core/create-el "p" {:class "dashboard-subtitle"}
-      "Spring Boot → Event Hub → Eventstream → Eventhouse (KQL) → Gold Lakehouse"))
+      "Clojure Functions → Event Hub → Eventstream → Eventhouse (KQL) → Gold Lakehouse"))
     (let [metrics (core/create-el "div" {:class "metrics-row"})]
       (doseq [[label value color] [["Events/sec" "247" "#0078d4"]
                                     ["Parse latency" "< 2s" "#00a86b"]

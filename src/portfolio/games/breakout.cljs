@@ -38,11 +38,12 @@
    :lives  3
    :phase  :playing})
 
-(defn- update-game [state dt]
+(defn- update-game [state dt touch]
   (if (not= :playing (:phase state))
     state
-    (let [left  (or (eng/key-held? "ArrowLeft") (eng/key-held? "KeyA"))
-          right (or (eng/key-held? "ArrowRight") (eng/key-held? "KeyD"))
+    (let [ts    @touch
+          left  (or (eng/key-held? "ArrowLeft") (eng/key-held? "KeyA") (:left ts))
+          right (or (eng/key-held? "ArrowRight") (eng/key-held? "KeyD") (:right ts))
           dx    (cond left -300 right 300 :else 0)
           paddle (update (:paddle state) :x
                          #(max 0 (min (- W 80) (+ % (* dx dt)))))
@@ -117,9 +118,9 @@
   (eng/init-keyboard!)
   (let [canvas  (eng/create-canvas W H)
         wrapper (core/create-el "div" {:class "game-wrapper"})
-        state   (atom (initial-state))]
+        state   (atom (initial-state))
+        touch   (eng/init-touch! wrapper)]
     (.appendChild wrapper canvas)
-    (eng/init-touch! wrapper)
     (core/mount!
       (ui/page-shell :breakout "/articles/tech-breakout.html" "src/portfolio/games/breakout.cljs" wrapper))
-    (eng/game-loop canvas state update-game render-game)))
+    (eng/game-loop canvas state #(update-game %1 %2 touch) render-game)))
