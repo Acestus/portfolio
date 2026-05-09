@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Thousands of particles with gravity wells and color trails — Rust + WASM">
+  <meta name="theme-color" content="#0a0a2a">
+  <meta property="og:title" content="Particle Storm — acestus.com">
+  <meta property="og:description" content="Thousands of particles with gravity wells and color trails — Rust + WASM">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://portfolio.acestus.com/particles.html">
+  <meta property="og:image" content="https://portfolio.acestus.com/favicon.svg">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>Particle Storm — acestus.com</title>
+  <link rel="stylesheet" href="/css/shared.css">
+  <link rel="stylesheet" href="/css/arcade.css">
+</head>
+<body class="arcade-theme">
+  <div id="app">
+    <div class="page-shell">
+      <nav class="site-nav" role="navigation">
+        <a class="site-name" href="https://acestus.com">acestus.com</a>
+        <div class="nav-links" id="nav-menu">
+          <a class="nav-link" href="/">Portfolio</a>
+          <a class="nav-link active" href="/particles.html">Particles</a>
+          <a class="nav-link" href="/raytracer.html">Raytracer</a>
+          <a class="nav-link" href="/life.html">Life</a>
+        </div>
+        <button class="nav-toggle" aria-label="Menu" onclick="document.getElementById('nav-menu').classList.toggle('open')">☰</button>
+      </nav>
+      <main class="main-content">
+        <div class="game-wrapper">
+          <h1 style="font-family:'Press Start 2P',monospace;color:#00d4ff;font-size:var(--step-2);text-align:center">🌀 Particle Storm</h1>
+          <p style="color:#888;text-align:center;margin-block-end:var(--space-m)">3,000 particles · 4 orbiting gravity wells · Click to create an attractor · <span style="color:#00ff41">Rust + WASM</span></p>
+          <canvas id="canvas" class="game-canvas"></canvas>
+          <p id="fps" style="color:#666;font-family:monospace;font-size:var(--step--2)"></p>
+        </div>
+        <div class="action-links">
+          <a class="action-btn" href="/articles/particle-storm.html">📄 Read Article</a>
+          <a class="action-btn" href="https://github.com/Acestus/portfolio/tree/main/rust/particles" target="_blank" rel="noopener noreferrer">⌨ Source Code</a>
+        </div>
+      </main>
+      <footer class="site-footer"><p>acestus.com — William Weeks-Balconi</p></footer>
+    </div>
+  </div>
+  <script type="module">
+    import init, { ParticleSystem } from '/wasm/particles/particles.js';
+    async function run() {
+      await init();
+      const canvas = document.getElementById('canvas');
+      const sys = new ParticleSystem(canvas);
+      const fpsEl = document.getElementById('fps');
+      canvas.addEventListener('click', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const sx = canvas.width / rect.width;
+        const sy = canvas.height / rect.height;
+        sys.add_well_at((e.clientX - rect.left) * sx, (e.clientY - rect.top) * sy);
+      });
+      canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const t = e.touches[0];
+        const rect = canvas.getBoundingClientRect();
+        const sx = canvas.width / rect.width;
+        const sy = canvas.height / rect.height;
+        sys.add_well_at((t.clientX - rect.left) * sx, (t.clientY - rect.top) * sy);
+      }, { passive: false });
+      let last = performance.now();
+      let frames = 0, fpsTime = 0;
+      function loop(now) {
+        const dt = (now - last) / 1000;
+        last = now;
+        frames++; fpsTime += dt;
+        if (fpsTime > 0.5) { fpsEl.textContent = `${(frames/fpsTime).toFixed(0)} fps · Rust WASM`; frames = 0; fpsTime = 0; }
+        sys.tick(dt);
+        sys.render();
+        requestAnimationFrame(loop);
+      }
+      requestAnimationFrame(loop);
+    }
+    run();
+  </script>
+</body>
+</html>

@@ -18,7 +18,10 @@
                {:key :iac         :label "IaC"        :href "/iac.html"}
                {:key :platform    :label "Platform"   :href "/platform.html"}
                {:key :repl        :label "REPL"       :href "/repl.html"}
-               {:key :architecture :label "Arch"       :href "/architecture.html"}]
+               {:key :architecture :label "Arch"       :href "/architecture.html"}
+               {:key :particles    :label "Particles"  :href "/particles.html"}
+               {:key :raytracer    :label "Raytracer"  :href "/raytracer.html"}
+               {:key :life         :label "Life"       :href "/life.html"}]
         nav (core/create-el "nav" {:class "site-nav" :role "navigation"})
         home (core/create-el "a" {:class "site-name" :href "https://acestus.com"} "acestus.com")]
     (.appendChild nav home)

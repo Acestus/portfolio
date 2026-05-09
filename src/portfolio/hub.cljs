@@ -1,5 +1,5 @@
 (ns portfolio.hub
-  "Portfolio hub — grid of all 10 SPAs."
+  "Portfolio hub — grid of all SPAs."
   (:require [portfolio.core :as core]
             [portfolio.components :as ui]))
 
@@ -16,7 +16,11 @@
             {:title "IaC Pipeline"          :href "/iac.html"        :icon "🏗"  :desc "Bicep AVM → Deployment Stacks"}
             {:title "Platform Console"      :href "/platform.html"   :icon "🎛"  :desc "Platform engineering workspace provisioning"}
             {:title "Clojure REPL"          :href "/repl.html"       :icon "λ"   :desc "Live ClojureScript in your browser"}
-            {:title "Architecture Studio"  :href "/architecture.html" :icon "🏛" :desc "C4 models and architecture decision records"}]}])
+            {:title "Architecture Studio"  :href "/architecture.html" :icon "🏛" :desc "C4 models and architecture decision records"}]}
+   {:category "🦀 Rust + WASM"
+    :items [{:title "Particle Storm"        :href "/particles.html"  :icon "🌀"  :desc "3,000 particles with orbiting gravity wells"}
+            {:title "Raytracer"             :href "/raytracer.html"  :icon "🔮"  :desc "Real-time ray-traced scene with reflections"}
+            {:title "Game of Life"          :href "/life.html"       :icon "🧬"  :desc "Massive Conway grid at 60fps"}]}])
 
 (defn- card [item]
   (core/create-el "a" {:class "hub-card" :href (:href item)}

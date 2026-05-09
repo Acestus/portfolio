@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <title>Game of Life — Conway's Cellular Automaton in Rust + WASM</title>
+  <style>
+    :root { --accent: #00d4ff; --bg: #0a0a2a; --text: #e0e0e0; }
+    * { box-sizing: border-box; }
+    body { margin: 0 auto; max-width: 900px; padding: 24px; background: var(--bg); color: var(--text); font-family: 'Consolas', 'Courier New', monospace; line-height: 1.7; }
+    a { color: var(--accent); }
+    .back-link { display: inline-block; margin-bottom: 1rem; font-weight: 600; }
+    h1 { color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 0.5rem; }
+    h2 { color: #00ff41; margin-top: 2rem; }
+    code { background: #1a1a4a; padding: 0.15rem 0.4rem; border-radius: 3px; }
+    pre { background: #1a1a4a; padding: 1rem; border-radius: 6px; overflow-x: auto; border-left: 3px solid var(--accent); }
+    .highlight { background: rgba(0,212,255,0.1); border-left: 3px solid var(--accent); padding: 0.75rem 1rem; border-radius: 4px; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+  <a class='back-link' href='/life.html'>← Back to Game of Life</a>
+  <h1>🧬 Game of Life — Rust + WASM</h1>
+
+  <div class='highlight'>
+    Conway's Game of Life on a <strong>200×150 grid</strong> (30,000 cells) running at
+    60fps. Color-coded by neighbor density. Seeded with a Gosper glider gun and
+    R-pentomino for emergent complexity.
+  </div>
+
+  <h2>The Rules</h2>
+  <p>Each cell follows four simple rules:</p>
+  <ol>
+    <li><strong>Underpopulation</strong> — A live cell with fewer than 2 neighbors dies</li>
+    <li><strong>Survival</strong> — A live cell with 2 or 3 neighbors lives</li>
+    <li><strong>Overpopulation</strong> — A live cell with more than 3 neighbors dies</li>
+    <li><strong>Reproduction</strong> — A dead cell with exactly 3 neighbors becomes alive</li>
+  </ol>
+
+  <h2>Why WASM?</h2>
+  <p>
+    The inner loop iterates 30,000 cells, each checking 8 neighbors = 240,000 reads
+    per generation. At 60 generations per second, that's 14.4 million cell reads per
+    second. Rust's tight memory layout (a flat <code>Vec&lt;bool&gt;</code>) and LLVM
+    optimization make this smooth even on mobile.
+  </p>
+
+  <h2>Visual Design</h2>
+  <p>
+    Cells are colored by neighbor count to reveal density patterns:
+  </p>
+  <ul>
+    <li><span style="color:#00d4ff">■ Cyan</span> — 0–1 neighbors (isolated/dying)</li>
+    <li><span style="color:#00ff41">■ Green</span> — 2 neighbors (stable)</li>
+    <li><span style="color:#ffaa00">■ Orange</span> — 3 neighbors (reproductive)</li>
+    <li><span style="color:#ff4444">■ Red</span> — 4+ neighbors (overcrowded)</li>
+  </ul>
+
+  <h2>Interaction</h2>
+  <p>
+    Click or tap any cell to toggle it alive/dead. Draw patterns and watch them evolve.
+    The Gosper glider gun at the top-left continuously emits gliders that traverse the
+    toroidal grid.
+  </p>
+
+  <h2>Seeded Patterns</h2>
+  <ul>
+    <li><strong>Gosper glider gun</strong> — The first known finite pattern that grows indefinitely</li>
+    <li><strong>R-pentomino</strong> — A 5-cell pattern that takes 1,103 generations to stabilize</li>
+    <li><strong>Random soup</strong> — 25% density random fill for chaotic emergence</li>
+  </ul>
+
+  <h2>Build</h2>
+  <pre>wasm-pack build rust/life --target web --out-dir ../../resources/public/wasm/life</pre>
+</body>
+</html>

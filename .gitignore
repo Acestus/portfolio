@@ -1,6 +1,9 @@
 node_modules/
 .shadow-cljs/
 resources/public/js/
+resources/public/wasm/
+rust/*/target/
+rust/target/
 .nrepl-port
 .env
 *.log

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <title>Architecture Studio — C4 Models &amp; ADRs</title>
+  <style>
+    :root { --accent: #0078d4; --accent-dark: #106ebe; --bg: #faf9f8; --text: #323130; --summary: #e1f5fe; }
+    * { box-sizing: border-box; }
+    body { margin: 0 auto; max-width: 1200px; padding: 24px; background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .back-link { display: inline-block; margin-bottom: 1rem; font-weight: 600; }
+    h1 { color: var(--accent); border-bottom: 3px solid var(--accent); padding-bottom: 0.5rem; margin-top: 0; }
+    h2 { color: var(--accent-dark); border-left: 4px solid var(--accent); padding-left: 15px; margin-top: 2.25rem; }
+    .summary { background: var(--summary); border-left: 5px solid var(--accent); border-radius: 4px; padding: 1rem; margin: 1rem 0 1.5rem; }
+    blockquote { border-left: 3px solid var(--accent); padding-left: 1rem; color: #605e5c; font-style: italic; margin: 1.5rem 0; }
+    code { background: #f3f2f1; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.9em; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #d2d0ce; padding: 0.5rem 0.75rem; text-align: left; }
+    th { background: var(--accent); color: white; }
+  </style>
+</head>
+<body>
+  <a class='back-link' href='/architecture.html'>← Back to Architecture Studio</a>
+  <h1>Architecture Studio — C4 Models &amp; ADRs</h1>
+
+  <div class='summary'>
+    <strong>Summary:</strong> An interactive architecture communication tool inspired by
+    Martin Fowler's emphasis on evolutionary architecture and Simon Brown's C4 model.
+    Drill into system context, containers, and browse Architecture Decision Records (ADRs)
+    that document the "why" behind platform decisions.
+  </div>
+
+  <h2>Why Architecture Communication Matters</h2>
+
+  <blockquote>
+    "The fundamental job of architecture is to manage complexity, and the best tool
+    we have for managing complexity is communication."
+    — Martin Fowler
+  </blockquote>
+
+  <p>
+    Most architecture diagrams rot. They're created in Visio or Lucidchart, exported
+    as PNGs, and forgotten. The Architecture Studio takes a different approach: the
+    diagrams are <em>code</em>. They live in ClojureScript data structures, render
+    interactively, and evolve with the platform.
+  </p>
+
+  <h2>C4 Model — Zoom Levels</h2>
+
+  <p>
+    The C4 model (Context, Containers, Components, Code) by Simon Brown gives us a
+    shared vocabulary for architecture diagrams. This demo implements two levels:
+  </p>
+
+  <table>
+    <tr><th>Level</th><th>Shows</th><th>Audience</th></tr>
+    <tr><td>System Context</td><td>Systems and their relationships to actors</td><td>Everyone</td></tr>
+    <tr><td>Container</td><td>Deployable units within a system</td><td>Developers &amp; architects</td></tr>
+  </table>
+
+  <p>
+    Click any system in the context view to drill down into its containers.
+    Each container shows its technology and responsibility.
+  </p>
+
+  <h2>Architecture Decision Records</h2>
+
+  <blockquote>
+    "Architecture is about the important stuff — whatever that is."
+    — Ralph Johnson (via Martin Fowler)
+  </blockquote>
+
+  <p>
+    ADRs capture the <em>decisions</em> that shape a system over time. They follow
+    Michael Nygard's lightweight format: Context → Decision → Consequences.
+    The ADR browser in this demo showcases 7 real platform decisions:
+  </p>
+
+  <table>
+    <tr><th>ADR</th><th>Decision</th><th>Status</th></tr>
+    <tr><td>001</td><td>ClojureScript + shadow-cljs for all SPAs</td><td>Accepted</td></tr>
+    <tr><td>002</td><td>Azure Static Web Apps for hosting</td><td>Accepted</td></tr>
+    <tr><td>003</td><td>CAF naming convention for all resources</td><td>Accepted</td></tr>
+    <tr><td>004</td><td>OIDC federation — no stored secrets in CI</td><td>Accepted</td></tr>
+    <tr><td>005</td><td>SCI for in-browser Clojure evaluation</td><td>Accepted</td></tr>
+    <tr><td>006</td><td>Trunk-based development with feature flags</td><td>Accepted</td></tr>
+    <tr><td>007</td><td>Rust + WASM for compute-heavy demos</td><td>Proposed</td></tr>
+  </table>
+
+  <h2>Implementation</h2>
+
+  <p>
+    The Studio is built in pure ClojureScript with no framework. State management
+    uses simple atoms — Rich Hickey's "just use data" philosophy. The C4 data is
+    a vector of maps; drilling down filters by <code>:system-id</code>. ADR content
+    is inline data that could be loaded from markdown files via a build step.
+  </p>
+
+  <p>
+    CSS uses the enterprise theme with custom properties for color, spacing, and
+    motion tokens — following Kevin Powell's modern CSS approach. Every interactive
+    element has <code>prefers-reduced-motion</code> support.
+  </p>
+
+  <h2>Further Reading</h2>
+
+  <ul>
+    <li><a href="https://c4model.com" target="_blank" rel="noopener noreferrer">C4 Model — Simon Brown</a></li>
+    <li><a href="https://www.cognitect.com/blog/2011/11/15/documenting-architecture-decisions" target="_blank" rel="noopener noreferrer">ADRs — Michael Nygard</a></li>
+    <li><a href="https://martinfowler.com/architecture/" target="_blank" rel="noopener noreferrer">Software Architecture Guide — Martin Fowler</a></li>
+  </ul>
+</body>
+</html>

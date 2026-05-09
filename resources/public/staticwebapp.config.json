@@ -14,7 +14,10 @@
     { "route": "/iac",        "rewrite": "/iac.html" },
     { "route": "/platform",   "rewrite": "/platform.html" },
     { "route": "/repl",         "rewrite": "/repl.html" },
-    { "route": "/architecture", "rewrite": "/architecture.html" }
+    { "route": "/architecture", "rewrite": "/architecture.html" },
+    { "route": "/particles",    "rewrite": "/particles.html" },
+    { "route": "/raytracer",    "rewrite": "/raytracer.html" },
+    { "route": "/life",         "rewrite": "/life.html" }
   ],
   "responseOverrides": {
     "404": {

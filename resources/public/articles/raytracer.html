@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <title>Raytracer — Real-Time Ray Tracing in Rust + WASM</title>
+  <style>
+    :root { --accent: #00d4ff; --bg: #0a0a2a; --text: #e0e0e0; }
+    * { box-sizing: border-box; }
+    body { margin: 0 auto; max-width: 900px; padding: 24px; background: var(--bg); color: var(--text); font-family: 'Consolas', 'Courier New', monospace; line-height: 1.7; }
+    a { color: var(--accent); }
+    .back-link { display: inline-block; margin-bottom: 1rem; font-weight: 600; }
+    h1 { color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 0.5rem; }
+    h2 { color: #00ff41; margin-top: 2rem; }
+    code { background: #1a1a4a; padding: 0.15rem 0.4rem; border-radius: 3px; }
+    pre { background: #1a1a4a; padding: 1rem; border-radius: 6px; overflow-x: auto; border-left: 3px solid var(--accent); }
+    .highlight { background: rgba(0,212,255,0.1); border-left: 3px solid var(--accent); padding: 0.75rem 1rem; border-radius: 4px; margin: 1rem 0; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #1a1a6a; padding: 0.5rem; text-align: left; }
+    th { background: #1a1a4a; color: var(--accent); }
+  </style>
+</head>
+<body>
+  <a class='back-link' href='/raytracer.html'>← Back to Raytracer</a>
+  <h1>🔮 Raytracer — Rust + WASM</h1>
+
+  <div class='highlight'>
+    A real-time ray tracer rendering a 640×480 scene with <strong>5 spheres</strong>,
+    <strong>reflections</strong>, <strong>shadows</strong>, and an orbiting camera —
+    all computed per-pixel in Rust, compiled to WASM.
+  </div>
+
+  <h2>How Ray Tracing Works</h2>
+  <p>
+    For each pixel, a ray is cast from the camera through the image plane into the scene.
+    The ray tests intersection against every sphere. At the hit point, we compute lighting
+    (diffuse + specular) from two point lights, check shadows, and recursively trace
+    reflected rays up to 3 bounces deep.
+  </p>
+
+  <h2>Scene</h2>
+  <table>
+    <tr><th>Object</th><th>Color</th><th>Specular</th><th>Reflective</th></tr>
+    <tr><td>Ground plane</td><td>Gray</td><td>10</td><td>15%</td></tr>
+    <tr><td>Azure sphere</td><td>Blue</td><td>80</td><td>40%</td></tr>
+    <tr><td>Green sphere</td><td>Green</td><td>200</td><td>60%</td></tr>
+    <tr><td>Red sphere</td><td>Red</td><td>50</td><td>20%</td></tr>
+    <tr><td>Gold sphere</td><td>Yellow</td><td>120</td><td>50%</td></tr>
+  </table>
+
+  <h2>Performance</h2>
+  <p>
+    At 640×480 = 307,200 pixels per frame, each requiring sphere intersections, shadow
+    rays, and reflection bounces, this is a <em>lot</em> of math. Rust compiles to
+    tight WASM that typically achieves 3-8 fps depending on device — impressive for a
+    brute-force per-pixel raytracer running in a browser tab.
+  </p>
+
+  <h2>Implementation Details</h2>
+  <ul>
+    <li><code>Vec3</code> — minimal vector math (dot, normalize, reflect, scale)</li>
+    <li><code>ImageData</code> — pixel buffer written directly to canvas via <code>put_image_data</code></li>
+    <li><code>Clamped&lt;&amp;[u8]&gt;</code> — zero-copy buffer transfer from Rust to Canvas API</li>
+    <li>Camera orbits the scene using <code>sin/cos</code> of elapsed time</li>
+  </ul>
+
+  <h2>Build</h2>
+  <pre>wasm-pack build rust/raytracer --target web --out-dir ../../resources/public/wasm/raytracer</pre>
+</body>
+</html>

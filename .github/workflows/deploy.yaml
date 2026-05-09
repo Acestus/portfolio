@@ -29,8 +29,22 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
+      - name: Install Rust + wasm-pack
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
       - name: Install dependencies
         run: npm ci
+
+      - name: Build Rust WASM crates
+        run: |
+          wasm-pack build rust/particles --target web --out-dir ../../resources/public/wasm/particles --no-typescript
+          wasm-pack build rust/raytracer --target web --out-dir ../../resources/public/wasm/raytracer --no-typescript
+          wasm-pack build rust/life --target web --out-dir ../../resources/public/wasm/life --no-typescript
 
       - name: Compile all builds
         run: npx shadow-cljs compile hub platformer invaders matcher breakout fabric policy logs iac platform repl architecture
