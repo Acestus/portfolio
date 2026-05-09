@@ -480,6 +480,24 @@ fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f
         a: Vec3::new(lk_x - rsx, lk_y, lk_z - rsz),
         b: Vec3::new(lf_x - rsx, lf_y, lf_z - rsz), radius: 0.05 * s, color: bc });
 
+    // Arms — swing for balance, offset to each side
+    let arm_side = 0.16 * s;
+    let sw = 0.12 * s * (time * 3.0 + phase).sin();
+    let (asx, asz) = (-fs * arm_side, fc * arm_side); // right offset
+    let (swx, swz) = (fc * sw, fs * sw); // forward swing
+
+    // Right arm: shoulder → elbow → hand
+    rider_c.push(Capsule {
+        a: Vec3::new(bx + asx, sh_y - 0.05 * s + bob, bz + asz),
+        b: Vec3::new(bx + asx + swx, sh_y - 0.3 * s + bob, bz + asz + swz),
+        radius: 0.045 * s, color: bc });
+
+    // Left arm
+    rider_c.push(Capsule {
+        a: Vec3::new(bx - asx, sh_y - 0.05 * s + bob, bz - asz),
+        b: Vec3::new(bx - asx - swx, sh_y - 0.3 * s + bob, bz - asz - swz),
+        radius: 0.045 * s, color: bc });
+
     let center_y = (wy + sh_y + 0.32 * s + bob) * 0.5;
     let bound = (sh_y + 0.32 * s + bob - (wy - wheel_r)) * 0.5 + 1.0;
     (Vec3::new(bx, center_y, bz), bound)
