@@ -86,6 +86,7 @@
      :seed s3
      :best 0
      :state :title
+     :dead-timer 0
      :level 1
      :keys #{}}))
 
@@ -387,6 +388,14 @@
           (update-particles dt)
           (add-rotor-particles)
           (check-win)))
+    :dead
+    (let [timer (+ (:dead-timer state) dt)]
+      (if (> timer 1.5)
+        (assoc (init-state) :state :playing :best (:best state))
+        (-> state
+            (assoc :dead-timer timer)
+            (update-explosions dt)
+            (update-particles dt))))
     state))
 
 ;; --- Drawing ---
