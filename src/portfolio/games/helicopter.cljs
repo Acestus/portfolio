@@ -772,7 +772,10 @@
         (fn [e]
           (when-let [k (get code-map (.-code e))]
             (.preventDefault e)
-            (set-key! k true))))
+            (case (:state @state)
+              (:dead :won :title)
+              (reset! state (assoc (init-state) :state :playing :best (:best @state)))
+              (set-key! k true)))))
       (.addEventListener js/document "keyup"
         (fn [e]
           (when-let [k (get code-map (.-code e))]
