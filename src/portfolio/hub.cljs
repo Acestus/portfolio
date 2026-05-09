@@ -9,7 +9,7 @@
             {:title "Space Invaders"        :href "/invaders.html"   :icon "👾"  :desc "Defend against security misconfigurations"}
             {:title "CAF Naming Puzzle"     :href "/matcher.html"    :icon "🧩"  :desc "Match resources to CAF-compliant names"}
             {:title "Tech Breakout"         :href "/breakout.html"   :icon "🧱"  :desc "Smash through tech-themed bricks"}
-            {:title "Choplifter"           :href "/helicopter.html" :icon "🚁"  :desc "Rescue hostages from enemy territory"}]}
+            {:title "Cloud Lift"            :href "/helicopter.html" :icon "☁️"  :desc "Migrate workloads to the cloud, one rescue at a time"}]}
    {:category "📊 Professional"
     :items [{:title "Fabric Pipeline"       :href "/fabric.html"     :icon "💎"  :desc "Medallion architecture — Bronze → Silver → Gold"}
             {:title "Policy Dashboard"      :href "/policy.html"     :icon "🛡"  :desc "Azure Policy governance at scale"}

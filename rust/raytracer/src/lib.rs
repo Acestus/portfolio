@@ -375,8 +375,7 @@ fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f
     let tube_r = 0.07 * s;
     let wy = ground_y + wheel_r + tube_r;
 
-    // Wheel segments — wheel plane is perpendicular to facing direction
-    // Local right = (-sin(facing), 0, cos(facing)), local up = (0, 1, 0)
+    // Wheel segments — wheel plane contains forward and up directions
     let n_segs: usize = 10;
     let tau = std::f64::consts::TAU;
     let spin = time * pedal_speed;
@@ -388,8 +387,8 @@ fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f
         let rc1 = wheel_r * a1.cos();
         let rs1 = wheel_r * a1.sin();
         rider_c.push(Capsule {
-            a: Vec3::new(bx - fs * rc0, wy + rs0, bz + fc * rc0),
-            b: Vec3::new(bx - fs * rc1, wy + rs1, bz + fc * rc1),
+            a: Vec3::new(bx + fc * rc0, wy + rs0, bz + fs * rc0),
+            b: Vec3::new(bx + fc * rc1, wy + rs1, bz + fs * rc1),
             radius: tube_r,
             color: Vec3::new(0.75, 0.75, 0.8),
         });
@@ -403,7 +402,7 @@ fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f
         let rs = wheel_r * a.sin();
         rider_c.push(Capsule {
             a: Vec3::new(bx, wy, bz),
-            b: Vec3::new(bx - fs * rc, wy + rs, bz + fc * rc),
+            b: Vec3::new(bx + fc * rc, wy + rs, bz + fs * rc),
             radius: 0.02 * s, color: Vec3::new(0.8, 0.8, 0.85),
         });
     }

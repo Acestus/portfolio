@@ -1,5 +1,5 @@
 (ns portfolio.games.helicopter
-  "Choplifter — rescue hostages from enemy territory and fly them to safety."
+  "Cloud Lift — migrate workloads from on-prem data centers to the cloud, one rescue at a time."
   (:require [portfolio.core :as core]
             [portfolio.components :as ui]))
 
@@ -16,7 +16,7 @@
 (def ^:private BASE-X 30)
 (def ^:private BASE-W 80)
 (def ^:private HOSTAGE-CAPACITY 8)
-(def ^:private HOSTAGES-PER-BUILDING 6)
+(def ^:private WORKLOADS-PER-DC 6)
 (def ^:private NUM-BUILDINGS 4)
 (def ^:private SCROLL-MARGIN 250)
 
@@ -36,7 +36,7 @@
             bx (+ 300 (* i 220) (* r1 60))]
         (recur (inc i) s1
                (conj buildings {:x bx :w 50 :alive true
-                                :hostages (vec (repeat HOSTAGES-PER-BUILDING
+                                :hostages (vec (repeat WORKLOADS-PER-DC
                                                        {:state :inside}))}))))))
 
 (defn- make-tanks [seed n]
@@ -73,7 +73,7 @@
      :landed false
      :onboard 0
      :rescued 0
-     :total-hostages (* NUM-BUILDINGS HOSTAGES-PER-BUILDING)
+     :total-hostages (* NUM-BUILDINGS WORKLOADS-PER-DC)
      :lost 0
      :buildings buildings
      :tanks tanks
@@ -419,45 +419,54 @@
 
 (defn- draw-base [ctx cam-x]
   (let [bx (- BASE-X cam-x)]
-    ;; Landing pad
-    (set! (.-fillStyle ctx) "#00ff41")
-    (set! (.-shadowColor ctx) "#00ff41")
-    (set! (.-shadowBlur ctx) 6)
+    ;; Cloud landing zone
+    (set! (.-fillStyle ctx) "#00b4d8")
+    (set! (.-shadowColor ctx) "#00b4d8")
+    (set! (.-shadowBlur ctx) 8)
     (.fillRect ctx bx (- GROUND-Y 3) BASE-W 3)
-    ;; H marker
+    ;; Cloud icon
     (set! (.-font ctx) "14px 'Press Start 2P', monospace")
     (set! (.-textAlign ctx) "center")
-    (.fillText ctx "H" (+ bx (/ BASE-W 2)) (+ GROUND-Y 18))
+    (.fillText ctx "☁" (+ bx (/ BASE-W 2)) (+ GROUND-Y 18))
     (set! (.-textAlign ctx) "left")
     (set! (.-shadowBlur ctx) 0)
-    ;; Rescued hostages as dots
-    (set! (.-fillStyle ctx) "#ffaa00")))
+    (set! (.-fillStyle ctx) "#00b4d8")))
 
 (defn- draw-buildings [ctx buildings cam-x]
   (doseq [b buildings]
     (when (:alive b)
       (let [bx (- (:x b) cam-x)
             bw (:w b)]
-        ;; Building body
-        (set! (.-fillStyle ctx) "#443")
+        ;; Data center body
+        (set! (.-fillStyle ctx) "#2a3a4a")
         (.fillRect ctx bx (- GROUND-Y 40) bw 40)
-        ;; Door
-        (set! (.-fillStyle ctx) "#221")
-        (.fillRect ctx (+ bx 18) (- GROUND-Y 20) 14 20)
-        ;; Windows
-        (set! (.-fillStyle ctx) "#ff8")
-        (doseq [wx [5 35] wy [(- GROUND-Y 35) (- GROUND-Y 22)]]
-          (.fillRect ctx (+ bx wx) wy 8 6))
-        ;; Hostages outside
+        ;; Server rack lines
+        (set! (.-strokeStyle ctx) "#4a5a6a")
+        (set! (.-lineWidth ctx) 1)
+        (doseq [ry [(- GROUND-Y 35) (- GROUND-Y 27) (- GROUND-Y 19) (- GROUND-Y 11)]]
+          (.beginPath ctx)
+          (.moveTo ctx (+ bx 4) ry)
+          (.lineTo ctx (+ bx bw -4) ry)
+          (.stroke ctx))
+        ;; Blinking status LEDs
+        (set! (.-fillStyle ctx) "#00ff41")
+        (doseq [wy [(- GROUND-Y 33) (- GROUND-Y 25) (- GROUND-Y 17) (- GROUND-Y 9)]]
+          (.fillRect ctx (+ bx 6) wy 3 2))
+        ;; "DC" label
+        (set! (.-fillStyle ctx) "#6a7a8a")
+        (set! (.-font ctx) "6px 'Press Start 2P', monospace")
+        (set! (.-textAlign ctx) "center")
+        (.fillText ctx "DC" (+ bx (/ bw 2)) (- GROUND-Y 2))
+        (set! (.-textAlign ctx) "left")
+        ;; Workloads outside (shown as container boxes)
         (doseq [h (:hostages b)]
           (when (= (:state h) :running)
             (let [hx (- (:x h) cam-x)]
-              (set! (.-fillStyle ctx) "#ffaa00")
-              ;; Little person: head + body
-              (.beginPath ctx)
-              (.arc ctx hx (- GROUND-Y 10) 3 0 (* 2 js/Math.PI))
-              (.fill ctx)
-              (.fillRect ctx (- hx 1.5) (- GROUND-Y 7) 3 7))))))))
+              (set! (.-fillStyle ctx) "#0078d4")
+              ;; Container box sprite
+              (.fillRect ctx (- hx 4) (- GROUND-Y 10) 8 10)
+              (set! (.-fillStyle ctx) "#00b4d8")
+              (.fillRect ctx (- hx 3) (- GROUND-Y 9) 6 3))))))))
 
 (defn- draw-tanks [ctx tanks cam-x]
   (doseq [t tanks]
@@ -466,12 +475,13 @@
         (set! (.-fillStyle ctx) "#ff4444")
         (set! (.-shadowColor ctx) "#ff4444")
         (set! (.-shadowBlur ctx) 4)
-        ;; Tank body
-        (.fillRect ctx (- tx 15) (- GROUND-Y 10) 30 10)
-        ;; Turret
-        (.fillRect ctx (- tx 5) (- GROUND-Y 16) 10 6)
-        ;; Barrel
-        (.fillRect ctx (- tx 1) (- GROUND-Y 22) 2 8)
+        ;; Firewall body
+        (.fillRect ctx (- tx 15) (- GROUND-Y 12) 30 12)
+        ;; Shield icon
+        (set! (.-fillStyle ctx) "#ff8866")
+        (.fillRect ctx (- tx 6) (- GROUND-Y 18) 12 8)
+        ;; Antenna
+        (.fillRect ctx (- tx 1) (- GROUND-Y 24) 2 8)
         (set! (.-shadowBlur ctx) 0)))))
 
 (defn- draw-jets [ctx jets cam-x]
@@ -483,13 +493,14 @@
         (set! (.-fillStyle ctx) "#ff0040")
         (set! (.-shadowColor ctx) "#ff0040")
         (set! (.-shadowBlur ctx) 6)
-        ;; Fuselage
-        (.fillRect ctx (- jx 18) (- jy 4) 36 8)
-        ;; Wings
-        (.fillRect ctx (- jx 8) (- jy 10) 16 20)
-        ;; Nose
+        ;; Outage drone body
+        (.fillRect ctx (- jx 14) (- jy 4) 28 8)
+        ;; Rotors
+        (.fillRect ctx (- jx 18) (- jy 8) 8 16)
+        (.fillRect ctx (+ jx 10) (- jy 8) 8 16)
+        ;; Warning light
         (set! (.-fillStyle ctx) "#ff4466")
-        (.fillRect ctx (+ jx (* d 16)) (- jy 3) 6 6)
+        (.fillRect ctx (+ jx (* d 10)) (- jy 2) 4 4)
         (set! (.-shadowBlur ctx) 0)))))
 
 (defn- draw-helicopter [ctx state]
@@ -564,16 +575,16 @@
 
 (defn- draw-hud [ctx state]
   (set! (.-font ctx) "14px 'Press Start 2P', monospace")
-  ;; Rescued
-  (set! (.-fillStyle ctx) "#00ff41")
-  (.fillText ctx (str "RESCUED " (:rescued state) "/" (:total-hostages state)) 15 28)
-  ;; Onboard
-  (set! (.-fillStyle ctx) "#ffaa00")
-  (.fillText ctx (str "ONBOARD " (:onboard state) "/" HOSTAGE-CAPACITY) 15 50)
+  ;; Migrated
+  (set! (.-fillStyle ctx) "#00b4d8")
+  (.fillText ctx (str "MIGRATED " (:rescued state) "/" (:total-hostages state)) 15 28)
+  ;; In transit
+  (set! (.-fillStyle ctx) "#0078d4")
+  (.fillText ctx (str "IN TRANSIT " (:onboard state) "/" HOSTAGE-CAPACITY) 15 50)
   ;; Lost
   (when (pos? (:lost state))
     (set! (.-fillStyle ctx) "#ff4444")
-    (.fillText ctx (str "LOST " (:lost state)) 15 72))
+    (.fillText ctx (str "DROPPED " (:lost state)) 15 72))
   ;; Best
   (when (pos? (:best state))
     (set! (.-fillStyle ctx) "#888")
@@ -621,12 +632,12 @@
     (draw-hud ctx state)
 
     (case (:state state)
-      :title (draw-overlay ctx state "CHOPLIFTER"
-                           "RESCUE HOSTAGES · FLY THEM HOME" "#00d4ff")
-      :dead (draw-overlay ctx state "SHOT DOWN!"
-                          (str "RESCUED: " (:rescued state)) "#ff4444")
-      :won (draw-overlay ctx state "MISSION COMPLETE!"
-                         (str "ALL " (:total-hostages state) " RESCUED!") "#00ff41")
+      :title (draw-overlay ctx state "CLOUD LIFT"
+                           "MIGRATE WORKLOADS · FLY THEM TO THE CLOUD" "#00b4d8")
+      :dead (draw-overlay ctx state "OUTAGE!"
+                          (str "MIGRATED: " (:rescued state)) "#ff4444")
+      :won (draw-overlay ctx state "MIGRATION COMPLETE!"
+                         (str "ALL " (:total-hostages state) " WORKLOADS IN THE CLOUD!") "#00b4d8")
       nil))
   (.restore ctx))
 
@@ -732,10 +743,10 @@
       (ui/page-shell :helicopter "/articles/helicopter.html" "src/portfolio/games/helicopter.cljs"
                      (let [wrapper (core/create-el "div" {:class "game-wrapper"})]
                        (.appendChild wrapper (core/create-el "h1"
-                                               {:style "font-family:'Press Start 2P',monospace;color:#00d4ff;font-size:var(--step-2);text-align:center"}
-                                               "🚁 Choplifter"))
+                                               {:style "font-family:'Press Start 2P',monospace;color:#00b4d8;font-size:var(--step-2);text-align:center"}
+                                               "☁️ Cloud Lift"))
                        (.appendChild wrapper (core/create-el "p"
                                                {:style "color:#888;text-align:center;margin-block-end:var(--space-m)"}
-                                               "Arrow keys/WASD to fly · Space to shoot · Land near buildings to rescue · Fly hostages to base"))
+                                               "Fly to data centers · Pick up workloads · Deliver them to the cloud · Avoid outages"))
                        (.appendChild wrapper canvas)
                        wrapper)))))
