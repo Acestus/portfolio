@@ -1,0 +1,176 @@
+/* ==========================================================================
+   Enterprise Theme — PUML-style pastels, Azure blue accent, clean cards
+   Palette from user's PlantUML diagrams + HTML document style guide
+   ========================================================================== */
+
+.enterprise-theme {
+  background: #faf9f8;
+  color: #323130;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+}
+
+.enterprise-theme .site-nav {
+  background: #fff;
+  border-bottom: 2px solid #0078d4;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+.enterprise-theme .site-name {
+  font-family: 'Segoe UI', sans-serif;
+  font-weight: 700; font-size: 0.9rem;
+  color: #0078d4;
+}
+.enterprise-theme .nav-link {
+  font-family: 'Segoe UI', sans-serif;
+  color: #605e5c;
+}
+.enterprise-theme .nav-link:hover { color: #0078d4; background: #f3f2f1; }
+.enterprise-theme .nav-link.active { color: #0078d4; font-weight: 600; }
+.enterprise-theme .nav-toggle { color: #323130; }
+
+.enterprise-theme .site-footer {
+  background: #fff; border-top: 1px solid #d2d0ce; color: #a19f9d;
+}
+
+/* --- Dashboard --- */
+.dashboard-container { max-width: 960px; margin: 0 auto; }
+
+.dashboard-title {
+  font-size: 1.5rem; font-weight: 700;
+  color: #0078d4; border-bottom: 3px solid #0078d4;
+  padding-bottom: 0.5rem; margin-bottom: 0.5rem;
+}
+.dashboard-subtitle { color: #605e5c; margin-bottom: 1.5rem; }
+
+/* --- Pipeline Flow --- */
+.pipeline-flow {
+  display: flex; align-items: center; gap: 0.25rem;
+  overflow-x: auto; padding: 1rem 0; flex-wrap: wrap;
+  justify-content: center;
+}
+.flow-arrow { color: #0078d4; font-size: 1.5rem; font-weight: 700; }
+
+.stage-card {
+  background: #fff; border-radius: 8px; padding: 0.75rem 1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1); min-width: 120px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.stage-card.active {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0,120,212,0.2);
+}
+.stage-header { display: flex; align-items: center; gap: 0.4rem; }
+.stage-icon { font-size: 1.2rem; }
+.stage-label { font-weight: 600; font-size: 0.85rem; color: #323130; }
+.stage-desc { font-size: 0.75rem; color: #605e5c; margin-top: 0.25rem; }
+
+/* --- Tables --- */
+.log-table {
+  width: 100%; border-collapse: collapse; font-size: 0.85rem;
+  margin: 0.5rem 0;
+}
+.log-table th {
+  background: #0078d4; color: #fff; padding: 0.5rem 0.75rem;
+  text-align: left; font-weight: 600;
+}
+.log-table td {
+  padding: 0.5rem 0.75rem; border-bottom: 1px solid #edebe9;
+}
+.log-table tr:nth-child(even) { background: #f8f8f8; }
+.log-table tr:hover { background: #e8f4fd; }
+.resource-name { font-family: 'Consolas', 'Courier New', monospace; font-size: 0.8rem; }
+
+/* --- Effect Badges --- */
+.effect-badge {
+  display: inline-block; padding: 0.15rem 0.5rem; border-radius: 10px;
+  color: #fff; font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+}
+
+/* --- Policy Dashboard --- */
+.policy-row {
+  display: grid; grid-template-columns: 1fr auto auto 120px auto;
+  align-items: center; gap: 0.75rem; padding: 0.5rem 0;
+  border-bottom: 1px solid #edebe9;
+}
+.policy-name { font-weight: 500; }
+.policy-scope { font-size: 0.8rem; color: #605e5c; }
+.policy-pct { font-size: 0.85rem; font-weight: 600; }
+.compliance-bar {
+  height: 8px; background: #edebe9; border-radius: 4px; overflow: hidden;
+}
+.compliance-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
+
+.filter-bar { display: flex; gap: 0.5rem; margin: 1rem 0; flex-wrap: wrap; }
+.filter-btn {
+  padding: 0.4rem 0.75rem; border-radius: 16px;
+  background: #f3f2f1; color: #323130; font-size: 0.8rem;
+  border: 1px solid #d2d0ce;
+}
+.filter-btn.active, .filter-btn:hover {
+  background: #0078d4; color: #fff; border-color: #0078d4;
+}
+
+/* --- What-If / Naming --- */
+.whatif-panel, .naming-panel, .kql-panel {
+  background: #fff; border-radius: 8px; padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 1rem 0;
+}
+.whatif-title, .naming-title, .kql-title {
+  font-size: 1rem; font-weight: 600; color: #106ebe; margin-bottom: 0.75rem;
+  border-left: 4px solid #0078d4; padding-left: 0.75rem;
+}
+.kql-code {
+  background: #1e1e1e; color: #d4d4d4; padding: 1rem;
+  border-radius: 6px; font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 0.8rem; overflow-x: auto; white-space: pre;
+}
+
+/* --- Log Stream --- */
+.log-stream { margin: 1rem 0; }
+.log-title { font-size: 1rem; font-weight: 600; color: #106ebe; margin-bottom: 0.5rem; }
+.stream-body {
+  background: #1e1e1e; border-radius: 6px; padding: 0.75rem;
+  max-height: 300px; overflow-y: auto; font-family: 'Consolas', monospace;
+  font-size: 0.8rem;
+}
+.log-line {
+  display: flex; gap: 0.75rem; padding: 0.15rem 0; color: #d4d4d4;
+}
+.log-line.log-new { animation: log-fade-in 0.5s ease-out; }
+.log-ts { color: #6a9955; min-width: 90px; }
+.log-level { min-width: 45px; font-weight: 700; }
+.log-info .log-level { color: #569cd6; }
+.log-warn .log-level { color: #ce9178; }
+.log-error .log-level { color: #f44747; }
+.log-app { color: #9cdcfe; min-width: 110px; }
+.log-msg { color: #d4d4d4; }
+
+@keyframes log-fade-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Agent Cards --- */
+.agent-card {
+  display: flex; gap: 0.75rem; padding: 0.75rem; margin-bottom: 0.5rem;
+  background: #f8f8f8; border-radius: 6px; align-items: flex-start;
+}
+.agent-icon { font-size: 1.5rem; }
+.agent-name { font-weight: 600; color: #323130; }
+.agent-desc { font-size: 0.85rem; color: #605e5c; }
+
+/* --- Action btn enterprise override --- */
+.enterprise-theme .action-btn {
+  background: #fff; border-color: #d2d0ce; color: #323130;
+}
+.enterprise-theme .action-btn:hover {
+  background: #e8f4fd; border-color: #0078d4; color: #0078d4;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .policy-row { grid-template-columns: 1fr; gap: 0.25rem; }
+  .pipeline-flow { flex-direction: column; }
+  .flow-arrow { transform: rotate(90deg); }
+  .stage-card { width: 100%; }
+}

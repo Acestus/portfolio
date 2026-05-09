@@ -1,0 +1,147 @@
+/* ==========================================================================
+   Shared CSS — Reset, layout, nav, footer, responsive, mobile-first
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+
+/* --- Reset --- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+body { min-height: 100vh; display: flex; flex-direction: column; }
+img, canvas { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; border: none; font: inherit; }
+
+/* --- Page Shell --- */
+.page-shell { display: flex; flex-direction: column; min-height: 100vh; }
+.main-content { flex: 1; padding: 1rem; max-width: 1200px; margin: 0 auto; width: 100%; }
+
+/* --- Nav --- */
+.site-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.5rem 1rem; background: #111; border-bottom: 2px solid #333;
+  position: sticky; top: 0; z-index: 100;
+}
+.site-name {
+  font-family: 'Press Start 2P', monospace; font-size: 0.75rem;
+  color: #00d4ff; white-space: nowrap;
+}
+.nav-links {
+  display: none; flex-wrap: wrap; gap: 0.25rem;
+}
+.nav-links.open { display: flex; }
+.nav-link {
+  font-family: 'VT323', monospace; font-size: 1rem;
+  color: #aaa; padding: 0.25rem 0.5rem; border-radius: 4px;
+  transition: color 0.2s, background 0.2s;
+}
+.nav-link:hover { color: #fff; background: #222; }
+.nav-link.active { color: #00ff41; }
+.nav-toggle {
+  display: block; background: none; color: #aaa; font-size: 1.5rem;
+  padding: 0.25rem;
+}
+
+@media (min-width: 768px) {
+  .nav-links { display: flex; }
+  .nav-toggle { display: none; }
+  .nav-link { font-size: 0.85rem; }
+}
+
+/* --- Footer --- */
+.site-footer {
+  text-align: center; padding: 1rem; font-size: 0.75rem;
+  color: #666; border-top: 1px solid #333; background: #111;
+}
+
+/* --- Action Links --- */
+.action-links {
+  display: flex; gap: 0.75rem; margin: 1.5rem 0; flex-wrap: wrap;
+}
+.action-btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.85rem;
+  background: #222; color: #ccc; border: 1px solid #444;
+  transition: background 0.2s, border-color 0.2s;
+}
+.action-btn:hover { background: #333; border-color: #666; color: #fff; }
+
+/* --- Metrics Row --- */
+.metrics-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem; margin: 1rem 0;
+}
+.metric-card {
+  background: #fff; border-radius: 8px; padding: 1rem; text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-bottom: 3px solid #0078d4;
+}
+.metric-value { font-size: 1.5rem; font-weight: 700; }
+.metric-label { font-size: 0.75rem; color: #605e5c; margin-top: 0.25rem; }
+
+/* --- Game Wrapper --- */
+.game-wrapper {
+  display: flex; flex-direction: column; align-items: center; gap: 1rem;
+}
+.game-canvas {
+  border: 2px solid #00d4ff; border-radius: 4px;
+  max-width: 100%; height: auto;
+  image-rendering: pixelated;
+}
+
+/* --- Touch Controls --- */
+.touch-controls {
+  display: flex; gap: 0.75rem; justify-content: center;
+}
+.touch-btn {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: rgba(0, 212, 255, 0.15); border: 2px solid #00d4ff;
+  color: #00d4ff; font-size: 1.25rem;
+  display: flex; align-items: center; justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.touch-btn:active { background: rgba(0, 212, 255, 0.4); }
+
+@media (min-width: 768px) {
+  .touch-controls { display: none; }
+}
+
+/* --- Hub --- */
+.hub-container { text-align: center; padding: 1rem 0; }
+.hub-heading {
+  font-family: 'Press Start 2P', monospace; font-size: 1.5rem;
+  color: #00d4ff; margin-bottom: 0.5rem;
+}
+.hub-intro { color: #aaa; margin-bottom: 2rem; font-size: 0.95rem; }
+.hub-category { margin-bottom: 2rem; }
+.hub-category-title {
+  font-family: 'Press Start 2P', monospace; font-size: 0.85rem;
+  color: #ffaa00; margin-bottom: 1rem; text-align: left;
+}
+.hub-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+.hub-card {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 1.25rem; border-radius: 8px; background: #1a1a2e;
+  border: 1px solid #333; transition: transform 0.2s, border-color 0.2s;
+}
+.hub-card:hover { transform: translateY(-4px); border-color: #00d4ff; }
+.hub-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+.hub-title { font-size: 0.9rem; font-weight: 700; color: #fff; margin-bottom: 0.25rem; }
+.hub-desc { font-size: 0.75rem; color: #999; }
+
+/* --- Tabs --- */
+.tab-bar { display: flex; gap: 0.5rem; margin: 1rem 0; flex-wrap: wrap; }
+.tab-btn {
+  padding: 0.5rem 1rem; border-radius: 6px 6px 0 0;
+  background: #f3f2f1; color: #323130; font-size: 0.85rem;
+  border: 1px solid #d2d0ce; border-bottom: none;
+}
+.tab-btn.active { background: #fff; color: #0078d4; font-weight: 600; }
+.tab-body { border: 1px solid #d2d0ce; border-radius: 0 0 6px 6px; padding: 1rem; background: #fff; }
+
+/* --- Panel --- */
+.panel { margin: 1rem 0; }
+.panel-title { font-size: 1.1rem; color: #323130; margin-bottom: 0.75rem; }

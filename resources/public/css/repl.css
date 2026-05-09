@@ -1,0 +1,97 @@
+/* ==========================================================================
+   REPL Theme — Dark terminal aesthetic for ClojureScript playground
+   ========================================================================== */
+
+.repl-theme {
+  background: #1a1b26;
+  color: #c0caf5;
+  font-family: 'Consolas', 'Courier New', monospace;
+}
+
+.repl-theme .site-nav {
+  background: #16161e;
+  border-bottom: 2px solid #7aa2f7;
+}
+.repl-theme .site-name { color: #7aa2f7; font-family: 'Consolas', monospace; }
+.repl-theme .nav-link { font-family: 'Consolas', monospace; color: #565f89; }
+.repl-theme .nav-link:hover { color: #c0caf5; }
+.repl-theme .nav-link.active { color: #9ece6a; }
+.repl-theme .nav-toggle { color: #c0caf5; }
+
+.repl-theme .site-footer {
+  background: #16161e; border-top: 1px solid #24283b; color: #565f89;
+}
+
+/* --- REPL Layout --- */
+.repl-container { max-width: 800px; margin: 0 auto; }
+
+.repl-title {
+  font-size: 1.5rem; color: #bb9af7;
+  margin-bottom: 0.25rem;
+}
+.repl-subtitle { color: #565f89; margin-bottom: 1.5rem; font-size: 0.9rem; }
+
+/* --- Examples Bar --- */
+.examples-bar {
+  display: flex; gap: 0.5rem; align-items: center;
+  flex-wrap: wrap; margin-bottom: 1rem;
+}
+.examples-label { color: #565f89; font-size: 0.85rem; }
+.example-btn {
+  padding: 0.25rem 0.6rem; border-radius: 4px;
+  background: #24283b; color: #7aa2f7; font-size: 0.8rem;
+  border: 1px solid #3b4261;
+}
+.example-btn:hover { background: #3b4261; color: #c0caf5; }
+
+/* --- Editor --- */
+.repl-editor {
+  width: 100%; min-height: 140px; padding: 1rem;
+  background: #24283b; color: #c0caf5; border: 1px solid #3b4261;
+  border-radius: 6px; font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 0.9rem; resize: vertical; line-height: 1.5;
+  tab-size: 2;
+}
+.repl-editor:focus { outline: none; border-color: #7aa2f7; }
+
+/* --- Buttons --- */
+.repl-btn-bar { display: flex; gap: 0.5rem; margin: 0.75rem 0; }
+
+.repl-run-btn {
+  padding: 0.5rem 1.25rem; border-radius: 6px;
+  background: #9ece6a; color: #1a1b26; font-weight: 700;
+  font-size: 0.9rem;
+}
+.repl-run-btn:hover { background: #73daca; }
+
+.repl-clear-btn {
+  padding: 0.5rem 1rem; border-radius: 6px;
+  background: #3b4261; color: #c0caf5; font-size: 0.9rem;
+}
+.repl-clear-btn:hover { background: #565f89; }
+
+/* --- Output --- */
+.repl-output-label {
+  font-size: 0.8rem; color: #565f89; margin-bottom: 0.25rem;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.repl-output {
+  width: 100%; min-height: 120px; max-height: 300px;
+  padding: 1rem; overflow-y: auto;
+  background: #16161e; color: #9ece6a; border: 1px solid #24283b;
+  border-radius: 6px; font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 0.85rem; line-height: 1.5; white-space: pre-wrap;
+}
+
+/* --- Action btn REPL override --- */
+.repl-theme .action-btn {
+  background: #24283b; border-color: #3b4261; color: #7aa2f7;
+}
+.repl-theme .action-btn:hover {
+  background: #3b4261; border-color: #7aa2f7;
+}
+
+.repl-theme .metric-card {
+  background: #24283b; border-bottom-color: #7aa2f7;
+}
+.repl-theme .metric-label { color: #565f89; }

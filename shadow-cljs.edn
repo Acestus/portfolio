@@ -1,0 +1,80 @@
+;; shadow-cljs configuration — one build per SPA
+;; All builds output to resources/public/js/<build-id>/main.js
+
+{:source-paths ["src"]
+
+ :dependencies [[org.babashka/sci "0.12.51"]]
+
+ :dev-http {3000 "resources/public"}
+
+ :builds
+ {;; Portfolio hub / landing page
+  :hub
+  {:target :browser
+   :output-dir "resources/public/js/hub"
+   :asset-path "/js/hub"
+   :modules {:main {:init-fn portfolio.hub/init}}}
+
+  ;; --- Retro Arcade Games ---
+
+  :platformer
+  {:target :browser
+   :output-dir "resources/public/js/platformer"
+   :asset-path "/js/platformer"
+   :modules {:main {:init-fn portfolio.games.platformer/init}}}
+
+  :invaders
+  {:target :browser
+   :output-dir "resources/public/js/invaders"
+   :asset-path "/js/invaders"
+   :modules {:main {:init-fn portfolio.games.invaders/init}}}
+
+  :matcher
+  {:target :browser
+   :output-dir "resources/public/js/matcher"
+   :asset-path "/js/matcher"
+   :modules {:main {:init-fn portfolio.games.matcher/init}}}
+
+  :breakout
+  {:target :browser
+   :output-dir "resources/public/js/breakout"
+   :asset-path "/js/breakout"
+   :modules {:main {:init-fn portfolio.games.breakout/init}}}
+
+  ;; --- Professional Dashboards ---
+
+  :fabric
+  {:target :browser
+   :output-dir "resources/public/js/fabric"
+   :asset-path "/js/fabric"
+   :modules {:main {:init-fn portfolio.pro.fabric/init}}}
+
+  :policy
+  {:target :browser
+   :output-dir "resources/public/js/policy"
+   :asset-path "/js/policy"
+   :modules {:main {:init-fn portfolio.pro.policy/init}}}
+
+  :logs
+  {:target :browser
+   :output-dir "resources/public/js/logs"
+   :asset-path "/js/logs"
+   :modules {:main {:init-fn portfolio.pro.logs/init}}}
+
+  :iac
+  {:target :browser
+   :output-dir "resources/public/js/iac"
+   :asset-path "/js/iac"
+   :modules {:main {:init-fn portfolio.pro.iac/init}}}
+
+  :platform
+  {:target :browser
+   :output-dir "resources/public/js/platform"
+   :asset-path "/js/platform"
+   :modules {:main {:init-fn portfolio.pro.platform/init}}}
+
+  :repl
+  {:target :browser
+   :output-dir "resources/public/js/repl"
+   :asset-path "/js/repl"
+   :modules {:main {:init-fn portfolio.pro.repl/init}}}}}

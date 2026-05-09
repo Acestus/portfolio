@@ -1,0 +1,13 @@
+{
+  "name": "portfolio",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "npx shadow-cljs watch hub platformer invaders matcher breakout fabric policy logs iac platform repl",
+    "release": "npx shadow-cljs release hub platformer invaders matcher breakout fabric policy logs iac platform repl",
+    "clean": "rm -rf resources/public/js"
+  },
+  "devDependencies": {
+    "shadow-cljs": "2.28.20"
+  }
+}
