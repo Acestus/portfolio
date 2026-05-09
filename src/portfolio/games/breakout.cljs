@@ -118,9 +118,12 @@
   (eng/init-keyboard!)
   (let [canvas  (eng/create-canvas W H)
         wrapper (core/create-el "div" {:class "game-wrapper"})
+        controls (core/create-el "div" {:class "touch-controls-container"})
         state   (atom (initial-state))
-        touch   (eng/init-touch! wrapper)]
+        touch   (eng/init-touch! controls)]
     (.appendChild wrapper canvas)
+    ;; place touch controls below the canvas
+    (.appendChild wrapper controls)
     (core/mount!
       (ui/page-shell :breakout "/articles/tech-breakout.html" "src/portfolio/games/breakout.cljs" wrapper))
     (eng/game-loop canvas state #(update-game %1 %2 touch) render-game)))

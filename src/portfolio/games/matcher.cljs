@@ -33,7 +33,7 @@
 
 (defn- initial-state []
   (merge (pick-round 5)
-         {:score 0 :round 1 :phase :playing :timer 30.0}))
+         {:score 0 :round 1 :phase :playing :timer 30.0 :connections []}))
 
 (defn- find-pair [resource caf-name pairs]
   (some #(when (and (= (:resource %) resource)
@@ -71,17 +71,28 @@
 
 (defn- update-game [state dt]
   (if (not= :playing (:phase state))
-    state
-    (let [new-timer (- (:timer state) dt)]
-      (cond
-        (<= new-timer 0)
-        (assoc state :phase :timeout :timer 0)
+    ;; still update connection timers even when paused/won
+    (let [conns (->> (:connections state)
+                     (map #(update % :elapsed + dt))
+                     (filter #(<= (:elapsed %) (:duration %)))
+                     vec)]
+      (assoc state :connections conns))
+    (let [new-timer (- (:timer state) dt)
+          base-state
+          (cond
+            (<= new-timer 0)
+            (assoc state :phase :timeout :timer 0)
 
-        (= (count (:matched state)) (count (:resources state)))
-        (assoc state :phase :win)
+            (= (count (:matched state)) (count (:resources state)))
+            (assoc state :phase :win)
 
-        :else
-        (assoc state :timer new-timer)))))
+            :else
+            (assoc state :timer new-timer))
+          conns (->> (:connections base-state)
+                     (map #(update % :elapsed + dt))
+                     (filter #(<= (:elapsed %) (:duration %)))
+                     vec)]
+      (assoc base-state :connections conns))))
 
 (defn- setup-click-handlers! [canvas state]
   (.addEventListener canvas "click"
@@ -106,10 +117,17 @@
                 (let [res (:selected-resource @state)
                       nam (nth (:names @state) idx)]
                   (if (find-pair res nam (:pairs @state))
-                    (swap! state #(-> %
-                                      (update :matched conj (find-pair res nam (:pairs %)))
-                                      (update :score + 200)
-                                      (assoc :selected-resource nil)))
+                    (let [pair (find-pair res nam (:pairs @state))
+                          res-idx (.indexOf (:resources @state) res)
+                          name-idx idx
+                          conn {:x1 20 :y1 (+ 100 (* res-idx 30))
+                                :x2 260 :y2 (+ 100 (* name-idx 30))
+                                :elapsed 0 :duration 1.2}]
+                      (swap! state #(-> %
+                                        (update :matched conj pair)
+                                        (update :score + 200)
+                                        (update :connections conj conn)
+                                        (assoc :selected-resource nil))))
                     (swap! state #(-> %
                                       (update :wrong inc)
                                       (assoc :selected-resource nil)))))))))))))

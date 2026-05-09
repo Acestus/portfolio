@@ -141,9 +141,9 @@
   (eng/init-keyboard!)
   (let [canvas  (eng/create-canvas W H)
         wrapper (core/create-el "div" {:class "game-wrapper"})
-        state   (atom (initial-state))
-        touch   (eng/init-touch! wrapper)]
+        state   (atom (initial-state))]
     (.appendChild wrapper canvas)
-    (core/mount!
-      (ui/page-shell :invaders "/articles/space-invaders.html" "src/portfolio/games/invaders.cljs" wrapper))
-    (eng/game-loop canvas state #(update-game %1 %2 touch) render-game)))
+    (let [touch (eng/init-touch! wrapper)]
+      (core/mount!
+        (ui/page-shell :invaders "/articles/space-invaders.html" "src/portfolio/games/invaders.cljs" wrapper))
+      (eng/game-loop canvas state #(update-game %1 %2 touch) render-game))))

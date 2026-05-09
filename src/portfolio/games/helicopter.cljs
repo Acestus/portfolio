@@ -782,8 +782,14 @@
             (.preventDefault e)
             (set-key! k false)))))
 
-    ;; Touch: left half = fly left, right half = fly right, double tap = shoot
-    (let [touch-start (atom nil)]
+    ;; Touch: use on-screen controls for iPhone + existing canvas gestures
+    (let [controls (core/create-el "div" {:class "touch-controls-container"})
+          touch-atom (eng/init-touch! controls)
+          touch-start (atom nil)]
+      ;; place controls below the canvas
+      (.insertBefore (.-parentNode canvas) controls (.-nextSibling canvas))
+
+      ;; keep existing gesture handlers for double-tap and upper-half thrust
       (.addEventListener canvas "touchstart"
         (fn [e]
           (.preventDefault e)
@@ -810,7 +816,19 @@
           (swap! state assoc :keys #{}))
         #js {:passive false})
       (.addEventListener canvas "touchcancel"
-        (fn [_] (swap! state assoc :keys #{}))))
+        (fn [_] (swap! state assoc :keys #{})))
+
+      ;; integrate the on-screen controls into game state each frame
+      (js/setInterval
+        (fn []
+          (let [ts @touch-atom]
+            (swap! state (fn [s]
+                           (let [k (cond-> #{}
+                                     (:left ts) (conj :left)
+                                     (:right ts) (conj :right)
+                                     (:up ts) (conj :up))
+                             s (assoc :keys k))))))
+        50))
 
     ;; Mouse
     (.addEventListener canvas "mousedown"
