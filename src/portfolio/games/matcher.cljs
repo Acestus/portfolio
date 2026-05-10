@@ -8,18 +8,18 @@
 (def ^:private H 400)
 
 (def ^:private caf-pairs
-  [{:resource "Function App"      :caf "func-project-dev-usw2-001"  :prefix "func"}
-   {:resource "Storage Account"   :caf "st-project-dev-usw2-001"    :prefix "st"}
-   {:resource "Key Vault"         :caf "kv-project-dev-usw2-001"    :prefix "kv"}
-   {:resource "Virtual Network"   :caf "vnet-project-dev-usw2-001"  :prefix "vnet"}
-   {:resource "Resource Group"    :caf "rg-project-dev-usw2-001"    :prefix "rg"}
-   {:resource "App Service Plan"  :caf "asp-project-dev-usw2-001"   :prefix "asp"}
-   {:resource "Managed Identity"  :caf "umi-project-dev-usw2-ctl"   :prefix "umi"}
-   {:resource "Event Hub"         :caf "evh-project-dev-usw2-001"   :prefix "evh"}
-   {:resource "Container Registry" :caf "cr-project-dev-usw2-001"   :prefix "cr"}
-   {:resource "App Insights"      :caf "appi-project-dev-usw2-001"  :prefix "appi"}
-   {:resource "Static Web App"    :caf "stapp-project-dev-usw2-001" :prefix "stapp"}
-   {:resource "Deployment Stack"  :caf "stack-project-dev-usw2-001" :prefix "stack"}])
+  [{:resource "Function App"      :caf "func-project-dev-scus-001"  :prefix "func"}
+   {:resource "Storage Account"   :caf "st-project-dev-scus-001"    :prefix "st"}
+   {:resource "Key Vault"         :caf "kv-project-dev-scus-001"    :prefix "kv"}
+   {:resource "Virtual Network"   :caf "vnet-project-dev-scus-001"  :prefix "vnet"}
+   {:resource "Resource Group"    :caf "rg-project-dev-scus-001"    :prefix "rg"}
+   {:resource "App Service Plan"  :caf "asp-project-dev-scus-001"   :prefix "asp"}
+   {:resource "Managed Identity"  :caf "umi-project-dev-scus-ctl"   :prefix "umi"}
+   {:resource "Event Hub"         :caf "evh-project-dev-scus-001"   :prefix "evh"}
+   {:resource "Container Registry" :caf "cr-project-dev-scus-001"   :prefix "cr"}
+   {:resource "App Insights"      :caf "appi-project-dev-scus-001"  :prefix "appi"}
+   {:resource "Static Web App"    :caf "stapp-project-dev-scus-001" :prefix "stapp"}
+   {:resource "Deployment Stack"  :caf "stack-project-dev-scus-001" :prefix "stack"}])
 
 (defn- shuffle-vec [v]
   (vec (sort-by (fn [_] (js/Math.random)) v)))
