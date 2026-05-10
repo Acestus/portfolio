@@ -25,7 +25,7 @@
                {:key :raytracer    :label "Raytracer"  :href "/raytracer.html"}
                {:key :life         :label "Life"       :href "/life.html"}]
         nav (core/create-el "nav" {:class "site-nav" :role "navigation"})
-        home (core/create-el "a" {:class "site-name" :href "https://acestus.com"} "acestus.com")]
+        home (core/create-el "a" {:class "site-name" :href "https://func-website-dev-scus-001.azurewebsites.net"} "acestus.com")]
     (.appendChild nav home)
     (let [menu (core/create-el "div" {:class "nav-links"})]
       (doseq [{:keys [key label href]} links]
