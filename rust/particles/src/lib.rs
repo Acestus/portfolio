@@ -170,9 +170,10 @@ impl ParticleSystem {
     }
 
     pub fn add_well_at(&mut self, x: f64, y: f64) {
-        // On click, apply a modest outward velocity impulse to existing particles.
-        // Do NOT add gravity wells or change hues/brightness drastically.
-        let impulse = 80.0; // impulse magnitude (pixels/sec)
+        // On click, apply an outward velocity impulse to existing particles
+        // and enter a short burst mode so impulses are visible (wells are ignored).
+        self.burst_timer = BURST_DURATION;
+        let impulse = 120.0; // stronger impulse for visible effect
         for p in self.particles.iter_mut() {
             let dx = p.x - x;
             let dy = p.y - y;
@@ -183,6 +184,12 @@ impl ParticleSystem {
             let rnd = 0.6 + pseudo_random(&mut self.seed) * 0.8;
             p.vx += nx * impulse * rnd;
             p.vy += ny * impulse * rnd;
+
+            // Shift hue toward a new random tint so particles change color on click
+            p.hue = (p.hue + pseudo_random(&mut self.seed) * 140.0 + 20.0) % 360.0;
+
+            // Boost life/brightness briefly so color change is visible
+            p.life = (p.life.max(0.2) + 0.6).min(3.0);
         }
     }
 }
