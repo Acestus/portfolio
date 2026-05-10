@@ -169,27 +169,14 @@ impl ParticleSystem {
         }
     }
 
-    pub fn add_well_at(&mut self, x: f64, y: f64) {
-        // On click, apply an outward velocity impulse to existing particles
-        // and enter a short burst mode so impulses are visible (wells are ignored).
-        self.burst_timer = BURST_DURATION;
-        let impulse = 60.0; // reduced impulse for a gentler effect
+    pub fn add_well_at(&mut self, _x: f64, _y: f64) {
+        // On click, reverse particle velocities and shift hue by 120 degrees.
+        // No impulse or burst mode — simple, immediate visual change.
+        self.burst_timer = 0.0;
         for p in self.particles.iter_mut() {
-            let dx = p.x - x;
-            let dy = p.y - y;
-            let dist = (dx * dx + dy * dy).sqrt().max(0.0001);
-            let nx = dx / dist;
-            let ny = dy / dist;
-            // small per-particle randomness so bursts look organic
-            let rnd = 0.6 + pseudo_random(&mut self.seed) * 0.8;
-            p.vx += nx * impulse * rnd;
-            p.vy += ny * impulse * rnd;
-
-            // Shift hue toward a new random tint so particles change color on click (softer)
-            p.hue = (p.hue + pseudo_random(&mut self.seed) * 60.0 + 10.0) % 360.0;
-
-            // Small boost to life/brightness so color change is noticeable but subtle
-            p.life = (p.life.max(0.15) + 0.3).min(3.0);
+            p.vx = -p.vx;
+            p.vy = -p.vy;
+            p.hue = (p.hue + 120.0) % 360.0;
         }
     }
 }
