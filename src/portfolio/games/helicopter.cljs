@@ -303,9 +303,8 @@
                         (update :lost + newly-dead))))
                 state (:buildings state))]
     (if hit-by-enemy
-      (-> state (assoc :state :dead)
-          (update :best #(max % (:rescued state)))
-          (update :explosions conj {:x hx :y hy :life 1.2}))
+      ;; Immediately reset game when cloud is destroyed
+      (assoc (init-state) :state :playing :best (:best state))
       state)))
 
 (defn- update-explosions [state dt]
@@ -419,21 +418,28 @@
           cam-target (max 0 cam-target)
           cam (+ (:camera-x state) (* (- cam-target (:camera-x state)) 3 dt))]
 
-      (-> state
-          (assoc :heli-x nx :heli-y ny :heli-vx vx :heli-vy vy
-                 :landed landed :facing facing :camera-x cam)
-          (update-hostage-release)
-          (update-hostages dt)
-          (update-unload)
-          (update-tanks dt)
-          (update-jets dt)
-          (spawn-enemy-bullets)
-          (update-bullets dt)
-          (check-collisions)
-          (update-explosions dt)
-          (update-particles dt)
-          (add-rotor-particles)
-          (check-win)))
+      (let [last-shot-rem (max 0 (- (:last-shot state) dt))
+            base-st (-> state
+                        (assoc :heli-x nx :heli-y ny :heli-vx vx :heli-vy vy
+                               :landed landed :facing facing :camera-x cam))
+            st (-> base-st
+                   (update-hostage-release)
+                   (update-hostages dt)
+                   (update-unload)
+                   (update-tanks dt)
+                   (update-jets dt)
+                   (spawn-enemy-bullets)
+                   (update-bullets dt)
+                   (check-collisions)
+                   (update-explosions dt)
+                   (update-particles dt)
+                   (add-rotor-particles)
+                   (check-win))]
+        (cond
+          (and shooting (<= last-shot-rem 0.0))
+            (-> st fire-bullet (assoc :last-shot 0.25))
+          :else
+            (assoc st :last-shot last-shot-rem))))
     :dead
     (let [ts (if (nil? touch) {:left false :right false :up false :action false} @touch)
           any-touch (some true? (vals ts))]
