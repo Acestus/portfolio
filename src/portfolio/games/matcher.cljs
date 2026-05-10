@@ -196,7 +196,10 @@
                                              (update :score + 200)
                                              (assoc :selected-resource nil))))
                     ;; wrong selection: flash
-                    (do (set! (.-className (nth @res-els sel)) "matcher-item")
+                    (do ;; wrong selection: clear selection but preserve matched styling if present
+                        (let [res-name (nth (:resources @state-atom) sel)
+                              was-matched? (some #(= (:resource %) res-name) (:matched @state-atom))]
+                          (set! (.-className (nth @res-els sel)) (if was-matched? "matcher-item matched" "matcher-item")))
                         (swap! state-atom update :wrong inc)
                         (swap! state-atom assoc :selected-resource nil))))))))
         (swap! name-els conj el)
