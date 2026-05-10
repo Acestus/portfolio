@@ -97,6 +97,7 @@
      :state :title
      :dead-timer 0
      :level 1
+     :last-shot 0
      :keys #{}}))
 
 (defn- rect-overlap? [ax ay aw ah bx by bw bh]
@@ -332,11 +333,21 @@
                :life 0.3}))))
 
 (defn- fire-bullet [state]
-  (let [dir (if (= (:facing state) :right) 1 -1)
-        hx (:heli-x state) hy (:heli-y state)]
-    (update state :bullets conj
-            {:x (+ hx (* dir 25)) :y hy
-             :vx (* dir 400) :vy 0 :life 1.5})))
+  ;; Fire direction based on recent movement: prefer the dominant velocity axis.
+  (let [hx (:heli-x state) hy (:heli-y state)
+        vx (:heli-vx state) vy (:heli-vy state)
+        abs-vx (js/Math.abs vx) abs-vy (js/Math.abs vy)
+        speed 420
+        ;; Decide direction: vertical dominates -> shoot up/down, otherwise left/right
+        dir-x (if (> abs-vx abs-vy) (if (> vx 0) 1 -1) 0)
+        dir-y (if (>= abs-vy abs-vx) (if (> vy 0) 1 -1) 0)
+        ;; Fallback to facing if no movement
+        dir-x (if (and (= dir-x 0) (= dir-y 0)) (if (= (:facing state) :right) 1 -1) dir-x)
+        vx-b (* dir-x speed)
+        vy-b (* dir-y speed)
+        x-start (+ hx (if (not= dir-x 0) (* dir-x 25) 0))
+        y-start (+ hy (if (not= dir-y 0) (* dir-y 12) 0))]
+    (update state :bullets conj {:x x-start :y y-start :vx vx-b :vy vy-b :life 1.5})))
 
 (defn- check-win [state]
   (if (and (>= (:rescued state) (:total-hostages state))
@@ -766,9 +777,7 @@
                      (:dead :won) (when v
                                     (reset! state (assoc (init-state) :state :playing :best (:best @state))))
                      :playing (if v
-                                (do (swap! state update :keys conj k)
-                                    (when (= k :shoot)
-                                      (swap! state fire-bullet)))
+                                (swap! state update :keys conj k)
                                 (swap! state update :keys disj k))
                      nil))]
 
