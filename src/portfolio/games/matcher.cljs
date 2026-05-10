@@ -165,7 +165,12 @@
             (swap! state-atom assoc :selected-resource i)
             ;; update selected classes
             (doseq [[j e] (map-indexed vector @res-els)]
-              (let [cls (if (= j i) "matcher-item selected" "matcher-item")]
+              (let [res-name (nth (:resources @state-atom) j)
+                    matched? (some #(= (:resource %) res-name) (:matched @state-atom))
+                    cls (cond
+                          matched? "matcher-item matched"
+                          (= j i) "matcher-item selected"
+                          :else "matcher-item")]
                 (set! (.-className e) cls)))))
         (swap! res-els conj el)
         (.appendChild left-col el)))
