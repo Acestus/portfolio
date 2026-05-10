@@ -75,9 +75,10 @@ impl ParticleSystem {
     pub fn tick(&mut self, dt: f64) {
         self.time += dt;
 
-        // Orbit gravity wells slowly
+        // Orbit gravity wells slowly (use dynamic count so new wells behave)
+        let n_wells = if self.wells.len() == 0 { 1 } else { self.wells.len() } as f64;
         for (i, well) in self.wells.iter_mut().enumerate() {
-            let angle = self.time * 0.3 + (i as f64) * std::f64::consts::TAU / NUM_WELLS as f64;
+            let angle = self.time * 0.3 + (i as f64) * std::f64::consts::TAU / n_wells;
             let cx = W * 0.5;
             let cy = H * 0.5;
             let r = 120.0 + 60.0 * ((self.time * 0.1 + i as f64).sin());
@@ -155,12 +156,17 @@ impl ParticleSystem {
     }
 
     pub fn add_well_at(&mut self, x: f64, y: f64) {
-        // Replace the repulsor well with a new attractor at click position
-        if let Some(well) = self.wells.last_mut() {
-            well.x = x;
-            well.y = y;
-            well.strength = 120.0;
-            well.hue = (self.time * 30.0) % 360.0;
+        // Add a new attractor well at click position
+        let hue = (self.time * 30.0) % 360.0;
+        self.wells.push(GravityWell { x, y, strength: 120.0, hue });
+
+        // Change particle hues and reverse their directions on click
+        for p in self.particles.iter_mut() {
+            // jitter hue using PRNG
+            p.hue = (p.hue + pseudo_random(&mut self.seed) * 360.0) % 360.0;
+            // reverse velocity
+            p.vx = -p.vx;
+            p.vy = -p.vy;
         }
     }
 }

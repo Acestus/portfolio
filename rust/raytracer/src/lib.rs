@@ -368,7 +368,7 @@ fn gamma(v: f64) -> u8 { (v.max(0.0).min(1.0).powf(1.0/2.2) * 255.0) as u8 }
 fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f64, bz: f64, ground_y: f64, time: f64, phase: f64, hue: usize, facing: f64) -> (Vec3, f64) {
     let s = 3.0;
     let pedal_speed = 2.5;
-    let pa = time * pedal_speed + phase;
+    let pa = -time * pedal_speed + phase;
     let (fc, fs) = (facing.cos(), facing.sin());
 
     let wheel_r = 0.45 * s;
