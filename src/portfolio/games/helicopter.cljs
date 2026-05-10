@@ -141,11 +141,13 @@
                 (fn [h]
                   (case (:state h)
                     :running
-                    (let [speed (or (:speed h) 40)
+                    (let [base-speed (or (:speed h) 40)
+                          speed base-speed ; original speed
                           dx (* (if (< (:x h) hx) 1 -1) speed dt)
                           nx (+ (:x h) dx)
-                          close-enough (and (< (js/Math.abs (- nx hx)) 15)
-                                            (< hy (- GROUND-Y 10)))]
+                          ;; Larger boarding radius and more permissive altitude
+                          close-enough (and (< (js/Math.abs (- nx hx)) 40)
+                                            (< hy (- GROUND-Y 5)))]
                       (if close-enough
                         (assoc h :state :boarding)
                         (assoc h :x nx)))
@@ -283,24 +285,11 @@
                              (rect-overlap? (- hx (/ HELI-W 2)) (- hy (/ HELI-H 2)) HELI-W HELI-H
                                             (- (:x b) 3) (- (:y b) 3) 6 6))
                            (:enemy-bullets state))
-        ;; Enemy bullets kill running hostages
+        ;; Enemy bullets no longer kill running hostages — dropping removed
         state (reduce-kv
                 (fn [st bi bldg]
-                  (let [hostages (mapv (fn [h]
-                                         (if (not= (:state h) :running) h
-                                           (if (some (fn [b]
-                                                       (< (js/Math.abs (- (:x h) (:x b))) 8))
-                                                     (:enemy-bullets st))
-                                             (assoc h :state :dead)
-                                             h)))
-                                       (:hostages bldg))
-                        newly-dead (count (filter (fn [[new-h old-h]]
-                                                        (and (= (:state new-h) :dead)
-                                                             (not= (:state old-h) :dead)))
-                                                      (map vector hostages (:hostages bldg))))]
-                    (-> st
-                        (assoc-in [:buildings bi :hostages] hostages)
-                        (update :lost + newly-dead))))
+                  ;; Preserve hostages unchanged; do not mark dead or increment :lost
+                  (assoc-in st [:buildings bi :hostages] (:hostages bldg)))
                 state (:buildings state))]
     (if hit-by-enemy
       ;; Immediately reset game when cloud is destroyed
@@ -714,10 +703,7 @@
   ;; In transit
   (set! (.-fillStyle ctx) "#0078d4")
   (.fillText ctx (str "IN TRANSIT " (:onboard state) "/" HOSTAGE-CAPACITY) 15 50)
-  ;; Lost
-  (when (pos? (:lost state))
-    (set! (.-fillStyle ctx) "#ff4444")
-    (.fillText ctx (str "DROPPED " (:lost state)) 15 72))
+  ;; Lost (drops disabled)
   ;; Best
   (when (pos? (:best state))
     (set! (.-fillStyle ctx) "#888")

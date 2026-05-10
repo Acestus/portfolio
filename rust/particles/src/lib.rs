@@ -5,6 +5,7 @@ const W: f64 = 800.0;
 const H: f64 = 600.0;
 const NUM_PARTICLES: usize = 3000;
 const NUM_WELLS: usize = 4;
+const BURST_DURATION: f64 = 3.0; // seconds particles ignore gravity and radiate outward on tap
 
 struct Particle {
     x: f64,
@@ -29,6 +30,7 @@ pub struct ParticleSystem {
     ctx: CanvasRenderingContext2d,
     time: f64,
     seed: u32,
+    burst_timer: f64, // when > 0, ignore gravity wells and radiate outward
 }
 
 fn pseudo_random(seed: &mut u32) -> f64 {
@@ -69,7 +71,7 @@ impl ParticleSystem {
             GravityWell { x: W * 0.5,  y: H * 0.4,  strength: -40.0, hue: 130.0 },
         ];
 
-        Ok(ParticleSystem { particles, wells, ctx, time: 0.0, seed })
+        Ok(ParticleSystem { particles, wells, ctx, time: 0.0, seed, burst_timer: 0.0 })
     }
 
     pub fn tick(&mut self, dt: f64) {
@@ -86,15 +88,27 @@ impl ParticleSystem {
             well.y = cy + r * angle.sin();
         }
 
+        // Decrease burst timer if active
+        if self.burst_timer > 0.0 {
+            self.burst_timer -= dt;
+            if self.burst_timer < 0.0 { self.burst_timer = 0.0; }
+        }
+
         for p in self.particles.iter_mut() {
-            // Gravity from wells
-            for well in &self.wells {
-                let dx = well.x - p.x;
-                let dy = well.y - p.y;
-                let dist_sq = dx * dx + dy * dy + 100.0;
-                let force = well.strength / dist_sq;
-                p.vx += dx * force * dt;
-                p.vy += dy * force * dt;
+            if self.burst_timer <= 0.0 {
+                // Gravity from wells
+                for well in &self.wells {
+                    let dx = well.x - p.x;
+                    let dy = well.y - p.y;
+                    let dist_sq = dx * dx + dy * dy + 100.0;
+                    let force = well.strength / dist_sq;
+                    p.vx += dx * force * dt;
+                    p.vy += dy * force * dt;
+                }
+            } else {
+                // During burst, lightly preserve outward velocity (no well forces)
+                p.vx *= 0.995;
+                p.vy *= 0.995;
             }
 
             // Damping
@@ -110,7 +124,7 @@ impl ParticleSystem {
             if p.y < 0.0 { p.y += H; }
             if p.y > H { p.y -= H; }
 
-            // Color shift towards nearest well
+            // Color shift towards nearest well (still update hue)
             let mut min_dist = f64::MAX;
             let mut nearest_hue = p.hue;
             for well in &self.wells {
@@ -160,13 +174,24 @@ impl ParticleSystem {
         let hue = (self.time * 30.0) % 360.0;
         self.wells.push(GravityWell { x, y, strength: 120.0, hue });
 
-        // Change particle hues and reverse their directions on click
+        // Trigger burst: particles ignore gravity for a few seconds and radiate outward from tap
+        self.burst_timer = BURST_DURATION;
+
+        // Compute a burst speed so particles will move toward edges within the burst duration
+        let max_dim = if W > H { W } else { H };
+        let burst_speed = (max_dim * 0.8) / BURST_DURATION; // pixels per second
+
         for p in self.particles.iter_mut() {
             // jitter hue using PRNG
             p.hue = (p.hue + pseudo_random(&mut self.seed) * 360.0) % 360.0;
-            // reverse velocity
-            p.vx = -p.vx;
-            p.vy = -p.vy;
+            // Radiate away from the tap point
+            let dx = p.x - x;
+            let dy = p.y - y;
+            let dist = (dx * dx + dy * dy).sqrt().max(0.0001);
+            let nx = dx / dist;
+            let ny = dy / dist;
+            p.vx = nx * burst_speed * (0.5 + pseudo_random(&mut self.seed));
+            p.vy = ny * burst_speed * (0.5 + pseudo_random(&mut self.seed));
         }
     }
 }

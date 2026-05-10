@@ -176,10 +176,28 @@ fn hit_road_top(origin: Vec3, dir: Vec3, maze: &[bool; MAZE_CELLS]) -> Option<Hi
 
 // --- Daylight sky ---
 
-fn daylight_sky(dir: Vec3) -> Vec3 {
+fn smoothstep(a: f64, b: f64, x: f64) -> f64 {
+    let t = ((x - a) / (b - a)).max(0.0).min(1.0);
+    t * t * (3.0 - 2.0 * t)
+}
+
+fn daylight_sky(dir: Vec3, time: f64) -> Vec3 {
     let d = dir.norm();
     let t = (d.y * 0.5 + 0.5).max(0.0).min(1.0);
-    Vec3::new(0.75, 0.82, 0.88).lerp(Vec3::new(0.35, 0.55, 0.92), t)
+    // Base gradient sky
+    let base = Vec3::new(0.75, 0.82, 0.88).lerp(Vec3::new(0.35, 0.55, 0.92), t);
+
+    // Procedural cloud layer using low-frequency sin waves (cheap noise)
+    let u = (d.x * 8.0 + time * 0.15).sin() * 0.5 + 0.5;
+    let v = (d.z * 6.0 - time * 0.12).cos() * 0.5 + 0.5;
+    let mut cloud_raw = u * v;
+    // Add another octave for variation
+    cloud_raw = cloud_raw * 0.7 + ((d.x * 18.0 + d.z * 12.0 + time * 0.3).sin() * 0.5 + 0.5) * 0.3;
+    let cloud_density = smoothstep(0.45, 0.8, cloud_raw.powf(1.2));
+
+    // Cloud color (slightly bluish white) and blend over sky
+    let cloud_col = Vec3::new(0.95, 0.96, 0.98);
+    base.lerp(cloud_col, cloud_density * 0.85)
 }
 
 // --- Maze generation ---
@@ -332,10 +350,10 @@ impl Scene {
 
 // --- Trace ---
 
-fn trace(origin: Vec3, dir: Vec3, scene: &Scene, light: &Light) -> Vec3 {
+fn trace(origin: Vec3, dir: Vec3, scene: &Scene, light: &Light, time: f64) -> Vec3 {
     let hit = match scene.closest_hit(origin, dir) {
         Some(h) => h,
-        None => return daylight_sky(dir),
+        None => return daylight_sky(dir, time),
     };
 
     let p = origin.add(dir.scale(hit.t));
@@ -579,7 +597,7 @@ impl Raytracer {
                 let px = (2.0 * (x as f64 + 0.5) / W as f64 - 1.0) * aspect * fov;
                 let py = (1.0 - 2.0 * (y as f64 + 0.5) / H as f64) * fov;
                 let dir = forward.add(right.scale(px)).add(up.scale(py)).norm();
-                let color = trace(origin, dir, &scene, &self.light);
+                let color = trace(origin, dir, &scene, &self.light, time);
                 let idx = ((y * W + x) * 4) as usize;
                 self.buf[idx]   = gamma(color.x);
                 self.buf[idx + 1] = gamma(color.y);
