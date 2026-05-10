@@ -118,6 +118,7 @@
   (when (= :timeout (:phase state))
     (eng/draw-text! ctx "TIME'S UP!" (/ W 2) (/ H 2)
                     :color "#ff0040" :font "22px 'Press Start 2P'" :align "center"))
+  )
 
 (defn- update-game [state dt]
   (if (not= :playing (:phase state))
