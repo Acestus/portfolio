@@ -1,5 +1,10 @@
 # Portfolio — acestus.com
 
+[![Build Status](https://github.com/Acestus/portfolio/actions/workflows/deploy-dev.yaml/badge.svg)](https://github.com/Acestus/portfolio/actions/workflows/deploy-dev.yaml)
+[![Azure Static Web Apps](https://img.shields.io/badge/Deployed%20on-Azure%20Static%20Web%20Apps-blue?logo=azure-static-web-apps)](https://portfolio.acestus.com)
+
+**Live Demo:** 👉 [portfolio.acestus.com](https://portfolio.acestus.com)
+
 Interactive portfolio showcasing Azure, Microsoft Fabric, Clojure, Rust+WASM, and cloud platform engineering. Refreshed for **Microsoft Build 2026** with new SPAs and deep-dive articles on file-driven AI ops, Fabric capacity tuning, and FinOps across Azure + Fabric + AI Foundry.
 
 ## 21 SPAs
