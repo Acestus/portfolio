@@ -105,7 +105,7 @@
        (< ay (+ by bh)) (< by (+ ay ah))))
 
 (defn- update-hostage-release [state]
-  ;; When cloud is near a building, workloads run out spread apart
+  ;; When cloud is near a building, workloads run out spread apart and run toward the cloud
   (let [hx (:heli-x state)
         hy (:heli-y state)]
     (reduce-kv
@@ -120,11 +120,14 @@
                     released (mapv (fn [h]
                                     (if (= (:state h) :inside)
                                       (let [idx (or (:idx h) 0)
-                                            spread (* (- idx 2.5) 10)]
+                                            spread (* (- idx 2.5) 12)
+                                            tx (+ hx spread)
+                                            ty 80.0]
                                         (assoc h :state :running
                                                :x (+ bx (/ bw 2) spread)
                                                :y GROUND-Y
-                                               :target-x hx))
+                                               :target-x tx
+                                               :target-y ty))
                                       h))
                                    hostages)]
                 (assoc-in st [:buildings bi :hostages] released))))))
@@ -141,24 +144,33 @@
                 (fn [h]
                   (case (:state h)
                     :running
-                    (let [base-speed (or (:speed h) 40)
-                          speed base-speed ; original speed
-                          dx (* (if (< (:x h) hx) 1 -1) speed dt)
-                          nx (+ (:x h) dx)
-                          ;; Larger boarding radius and more permissive altitude
-                          close-enough (and (< (js/Math.abs (- nx hx)) 40)
-                                            (< hy (- GROUND-Y 5)))]
+                    (let [tx (or (:target-x h) hx)
+                          ty (or (:target-y h) (- GROUND-Y 120))
+                          x0 (:x h) y0 (:y h)
+                          dx (- tx x0) dy (- ty y0)
+                          dist (max 0.0001 (js/Math.sqrt (+ (* dx dx) (* dy dy))))
+                          speed (or (:speed h) 40)
+                          step (* speed dt)
+                          nx (if (> dist step) (+ x0 (* dx (/ step dist))) tx)
+                          ny (if (> dist step) (+ y0 (* dy (/ step dist))) ty)
+                          close-enough (< dist 6.0)]
                       (if close-enough
-                        (assoc h :state :boarding)
-                        (assoc h :x nx)))
+                        (assoc h :state :safe :x tx :y ty)
+                        (assoc h :x nx :y ny)))
                     :at-base (assoc h :state :safe)
                     h))
                 (:hostages bldg))
-              boarding (count (filter #(= (:state %) :boarding) hostages))
+              ;; Count hostages that newly reached :safe
+              newly-rescued (count (filter (fn [[new-h old-h]]
+                                              (and (= (:state new-h) :safe)
+                                                   (not= (:state old-h) :safe)))
+                                            (map vector hostages (:hostages bldg))))
+              ;; Keep boarding -> boarded logic (for heli pickups)
               hostages (mapv (fn [h] (if (= (:state h) :boarding) (assoc h :state :boarded) h)) hostages)
-              new-onboard (min HOSTAGE-CAPACITY (+ (:onboard st) boarding))]
+              new-onboard (min HOSTAGE-CAPACITY (+ (:onboard st) (count (filter #(= (:state %) :boarding) hostages))))]
           (-> st
               (assoc-in [:buildings bi :hostages] hostages)
+              (update :rescued + newly-rescued)
               (assoc :onboard new-onboard))))
       state (:buildings state))))
 
