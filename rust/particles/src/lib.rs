@@ -173,7 +173,7 @@ impl ParticleSystem {
         // On click, apply an outward velocity impulse to existing particles
         // and enter a short burst mode so impulses are visible (wells are ignored).
         self.burst_timer = BURST_DURATION;
-        let impulse = 120.0; // stronger impulse for visible effect
+        let impulse = 60.0; // reduced impulse for a gentler effect
         for p in self.particles.iter_mut() {
             let dx = p.x - x;
             let dy = p.y - y;
@@ -185,11 +185,11 @@ impl ParticleSystem {
             p.vx += nx * impulse * rnd;
             p.vy += ny * impulse * rnd;
 
-            // Shift hue toward a new random tint so particles change color on click
-            p.hue = (p.hue + pseudo_random(&mut self.seed) * 140.0 + 20.0) % 360.0;
+            // Shift hue toward a new random tint so particles change color on click (softer)
+            p.hue = (p.hue + pseudo_random(&mut self.seed) * 60.0 + 10.0) % 360.0;
 
-            // Boost life/brightness briefly so color change is visible
-            p.life = (p.life.max(0.2) + 0.6).min(3.0);
+            // Small boost to life/brightness so color change is noticeable but subtle
+            p.life = (p.life.max(0.15) + 0.3).min(3.0);
         }
     }
 }
