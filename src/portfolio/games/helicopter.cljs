@@ -435,9 +435,14 @@
           (add-rotor-particles)
           (check-win)))
     :dead
-    (-> state
-        (update-explosions dt)
-        (update-particles dt))
+    (let [ts (if (nil? touch) {:left false :right false :up false :action false} @touch)
+          any-touch (some true? (vals ts))]
+      (if any-touch
+        ;; Reset immediately when any touch/button is pressed
+        (assoc (init-state) :state :playing :best (:best state))
+        (-> state
+            (update-explosions dt)
+            (update-particles dt))))
     state))
 
 ;; --- Drawing ---

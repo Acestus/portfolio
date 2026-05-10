@@ -64,6 +64,16 @@
                         (.addEventListener b "touchend"
                           (fn [e] (.preventDefault e) (swap! touch-state assoc key false))
                           #js {:passive false})
+                        ;; Desktop mouse support: mousedown/up and mouseleave
+                        (.addEventListener b "mousedown"
+                          (fn [e] (.preventDefault e) (swap! touch-state assoc key true)))
+                        (.addEventListener b "mouseup"
+                          (fn [e] (.preventDefault e) (swap! touch-state assoc key false)))
+                        (.addEventListener b "mouseleave"
+                          (fn [e] (.preventDefault e) (swap! touch-state assoc key false)))
+                        ;; Support click as a short tap (useful for action/shoot button)
+                        (.addEventListener b "click"
+                          (fn [e] (.preventDefault e) (swap! touch-state assoc key true) (js/setTimeout #(swap! touch-state assoc key false) 120)))
                         b))]
     (.appendChild dpad (btn "◀" "t-left" :left))
     (.appendChild dpad (btn "▶" "t-right" :right))
