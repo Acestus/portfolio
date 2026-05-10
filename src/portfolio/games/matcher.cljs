@@ -39,86 +39,42 @@
   (some #(when (and (= (:resource %) resource)
                     (= (:caf %) caf-name)) %) pairs))
 
-(defn- render-game [ctx state]
-  (eng/clear! ctx W H)
-  ;; Title
-  (eng/draw-text! ctx "CAF NAMING PUZZLE" (/ W 2) 30
-                  :color "#00d4ff" :font "26px 'Press Start 2P'" :align "center")
-  ;; Timer / score
-  (eng/draw-text! ctx (str "TIME: " (int (:timer state))) (- W 10) 36
-                  :color (if (< (:timer state) 10) "#ff0040" "#ffaa00")
-                  :font "15px 'Press Start 2P'" :align "right")
-  (eng/draw-text! ctx (str "SCORE: " (:score state)) 10 36
-                  :color "#ffaa00" :font "15px 'Press Start 2P'")
-  ;; resources column (larger font for readability)
-  (eng/draw-text! ctx "RESOURCE" 20 82 :color "#00d4ff" :font "14px 'Press Start 2P'")
-  (doseq [[i r] (map-indexed vector (:resources state))]
-    (let [matched (some #(= r (:resource %)) (:matched state))
-          selected (= r (:selected-resource state))
-          color (cond matched "#00ff41" selected "#ffaa00" :else "#ffffff")
-          y (+ 110 (* i 52))]
-      ;; set canvas font to measure text width accurately and draw
-      (set! (.-font ctx) "22px 'VT323'")
-      (eng/draw-text! ctx r 20 y :color color :font "22px 'VT323'")))
-  ;; names column (larger font)
-  (eng/draw-text! ctx "CAF NAME" 260 82 :color "#00d4ff" :font "14px 'Press Start 2P'")
-  (doseq [[i n] (map-indexed vector (:names state))]
-    (let [matched (some #(= n (:caf %)) (:matched state))
-          color (if matched "#00ff41" "#ffffff")
-          y (+ 110 (* i 52))]
-      (eng/draw-text! ctx n 260 y :color color :font "20px 'VT323'")))
+(defn- create-style-el []
+  (core/create-el "style" {}
+".matcher-game{position:relative;width:480px;margin:0 auto;display:flex;gap:12px;font-family:'VT323',monospace}
+.matcher-col{flex:1;display:flex;flex-direction:column;gap:10px;padding:8px}
+.matcher-item{background:#0b0b16;color:#ffffff;padding:10px;border-radius:6px;font-size:20px;cursor:pointer;user-select:none}
+.matcher-item.selected{outline:2px solid #ffaa00}
+.matcher-item.matched{background:#002b07;color:#00ff41}
+.match-line{position:absolute;height:4px;background:rgba(0,255,65,0.95);transform-origin:left center;border-radius:2px;transition:transform .35s ease}
+.matcher-header{color:#00d4ff;text-align:center;font-size:20px;margin-bottom:8px}
+@media (max-width:480px){.matcher-game{width:100%;padding:8px}.matcher-item{font-size:18px}}"))
 
-  ;; Draw connections: persistent lines start from end of resource text
-  (doseq [c (:connections state)]
-    (let [{:keys [res-idx name-idx elapsed duration persist]} c
-          res-text (nth (:resources state) res-idx)
-          name-text (nth (:names state) name-idx)
-          ;; measure resource text width
-          _ (set! (.-font ctx) "22px 'VT323'")
-          res-w (.-width (.measureText ctx res-text))
-          x1 (+ 20 res-w 6)
-          y1 (+ 110 (* res-idx 52))
-          x2 260
-          y2 (+ 110 (* name-idx 52))
-          prog (min 1 (if (and duration (> duration 0)) (/ elapsed duration) 1))
-          x-mid (+ x1 (* (- x2 x1) prog))
-          y-mid (+ y1 (* (- y2 y1) prog))
-          alpha (if persist 0.95 (+ 0.15 (* 0.85 prog)))]
-      ;; draw line (animated if not yet fully progressed)
-      (set! (.-strokeStyle ctx) (str "rgba(0,255,65," alpha ")"))
-      (set! (.-lineWidth ctx) (* 2 (+ 0.5 prog)))
-      (.beginPath ctx)
-      (.moveTo ctx x1 y1)
-      (.lineTo ctx (if persist x2 x-mid) (if persist y2 y-mid))
-      (.stroke ctx)
-      ;; draw pulsing dot for animation; if persistent and fully drawn, draw a fixed dot at target
-      (if (and persist (>= prog 1))
-        (do (set! (.-fillStyle ctx) "rgba(0,255,65,0.9)")
-            (.beginPath ctx)
-            (.arc ctx x2 y2 4 0 (* 2 js/Math.PI))
-            (.fill ctx))
-        (do (set! (.-fillStyle ctx) (str "rgba(0,255,65," (+ 0.3 (* 0.7 (/ (js/Math.sin (* 6.28 prog)) 2))) ")"))
-            (.beginPath ctx)
-            (.arc ctx x-mid y-mid (+ 2 (* 4 prog)) 0 (* 2 js/Math.PI))
-            (.fill ctx)))))
+(defn- make-item-el [text cls]
+  (core/create-el "div" {:class cls} text))
 
-  ;; Win animation: pulsing green rings
-  (when (= :win (:phase state))
-    (let [t (* 0.002 (js/Date.now))
-          r1 (+ 20 (* 30 (js/Math.abs (.sin js/Math t))))]
-      (set! (.-strokeStyle ctx) "rgba(0,255,65,0.9)")
-      (set! (.-lineWidth ctx) 3)
-      (.beginPath ctx)
-      (.arc ctx (/ W 2) (/ H 2) r1 0 (* 2 js/Math.PI))
-      (.stroke ctx)
-      (eng/draw-text! ctx "ALL MATCHED!" (/ W 2) (/ H 2)
-                      :color "#00ff41" :font "26px 'Press Start 2P'" :align "center")))
-
-  ;; Timeout message
-  (when (= :timeout (:phase state))
-    (eng/draw-text! ctx "TIME'S UP!" (/ W 2) (/ H 2)
-                    :color "#ff0040" :font "22px 'Press Start 2P'" :align "center"))
-  )
+(defn- draw-connection! [container a b]
+  (let [rA (.getBoundingClientRect a)
+        rB (.getBoundingClientRect b)
+        cR (.getBoundingClientRect container)
+        x1 (- (.-right rA) (.-left cR))
+        y1 (- (+ (.-top rA) (/ (.-height rA) 2)) (.-top cR))
+        x2 (- (.-left rB) (.-left cR))
+        y2 (- (+ (.-top rB) (/ (.-height rB) 2)) (.-top cR))
+        dx (- x2 x1)
+        dy (- y2 y1)
+        len (js/Math.hypot dx dy)
+        ang (* 180 (/ (js/Math.atan2 dy dx) js/Math.PI))
+        line (core/create-el "div" {:class "match-line"})]
+    (set! (.-left (.-style line)) (str x1 "px"))
+    (set! (.-top (.-style line)) (str (- y1 2) "px"))
+    (set! (.-width (.-style line)) (str len "px"))
+    ;; start collapsed and animate to full length using scaleX
+    (set! (.-transform (.-style line)) (str "rotate(" ang "deg) scaleX(0)"))
+    (.appendChild container line)
+    (js/requestAnimationFrame
+      (fn [] (set! (.-transform (.-style line)) (str "rotate(" ang "deg) scaleX(1)"))))
+    line))
 
 (defn- update-game [state dt]
   (if (not= :playing (:phase state))
@@ -184,11 +140,63 @@
                                       (assoc :selected-resource nil)))))))))))))
 
 (defn init []
-  (let [canvas  (eng/create-canvas W H)
-        wrapper (core/create-el "div" {:class "game-wrapper"})
-        state   (atom (initial-state))]
-    (.appendChild wrapper canvas)
-    (setup-click-handlers! canvas state)
+  (let [wrapper (core/create-el "div" {:class "game-wrapper"})
+        style-el (create-style-el)
+        header (core/create-el "h1" {:class "matcher-header"} "CAF NAMING PUZZLE")
+        container (core/create-el "div" {:class "matcher-game"})
+        left-col (core/create-el "div" {:class "matcher-col left-col"})
+        right-col (core/create-el "div" {:class "matcher-col right-col"})
+        state-atom (atom (initial-state))
+        res-els (atom [])
+        name-els (atom [])]
+
+    ;; assemble DOM
+    (.appendChild wrapper style-el)
+    (.appendChild wrapper header)
+    (.appendChild container left-col)
+    (.appendChild container right-col)
+    (.appendChild wrapper container)
+
+    ;; create resource and name items
+    (doseq [[i r] (map-indexed vector (:resources @state-atom))]
+      (let [el (make-item-el r "matcher-item resource-item")]
+        (.addEventListener el "click"
+          (fn [_]
+            (swap! state-atom assoc :selected-resource i)
+            ;; update selected classes
+            (doseq [[j e] (map-indexed vector @res-els)]
+              (let [cls (if (= j i) "matcher-item selected" "matcher-item")]
+                (set! (.-className e) cls)))))
+        (swap! res-els conj el)
+        (.appendChild left-col el)))
+
+    (doseq [[i n] (map-indexed vector (:names @state-atom))]
+      (let [el (make-item-el n "matcher-item name-item")]
+        (.addEventListener el "click"
+          (fn [_]
+            (let [sel (:selected-resource @state-atom)]
+              (when (some? sel)
+                (let [res (nth (:resources @state-atom) sel)
+                      nam (nth (:names @state-atom) i)]
+                  (if (find-pair res nam (:pairs @state-atom))
+                    (do
+                      ;; mark matched visually
+                      (set! (.-className (nth @res-els sel)) "matcher-item matched")
+                      (set! (.-className el) "matcher-item matched")
+                      ;; draw persistent connection
+                      (draw-connection! container (nth @res-els sel) el)
+                      ;; update state: matched pairs and score
+                      (swap! state-atom #(-> %
+                                             (update :matched conj (find-pair res nam (:pairs %)))
+                                             (update :score + 200)
+                                             (assoc :selected-resource nil))))
+                    ;; wrong selection: flash
+                    (do (set! (.-className (nth @res-els sel)) "matcher-item")
+                        (swap! state-atom update :wrong inc)
+                        (swap! state-atom assoc :selected-resource nil))))))))
+        (swap! name-els conj el)
+        (.appendChild right-col el)))
+
+    ;; mount into page
     (core/mount!
-      (ui/page-shell :matcher "/articles/caf-matcher.html" "src/portfolio/games/matcher.cljs" wrapper))
-    (eng/game-loop canvas state update-game render-game)))
+      (ui/page-shell :matcher "/articles/caf-matcher.html" "src/portfolio/games/matcher.cljs" wrapper))))
