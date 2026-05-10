@@ -170,28 +170,30 @@ impl ParticleSystem {
     }
 
     pub fn add_well_at(&mut self, x: f64, y: f64) {
-        // Add a new attractor well at click position
-        let hue = (self.time * 30.0) % 360.0;
-        self.wells.push(GravityWell { x, y, strength: 120.0, hue });
-
         // Trigger burst: particles ignore gravity for a few seconds and radiate outward from tap
+        // (Do NOT add a new gravity well on click; behave like fireworks)
         self.burst_timer = BURST_DURATION;
 
         // Compute a burst speed so particles will move toward edges within the burst duration
         let max_dim = if W > H { W } else { H };
-        let burst_speed = (max_dim * 0.8) / BURST_DURATION; // pixels per second
+        let burst_speed = (max_dim * 0.9) / BURST_DURATION; // pixels per second (slightly faster)
 
         for p in self.particles.iter_mut() {
-            // jitter hue using PRNG
-            p.hue = (p.hue + pseudo_random(&mut self.seed) * 360.0) % 360.0;
-            // Radiate away from the tap point
+            // small hue jitter for color variation (avoid massive hue shifts that brighten background)
+            p.hue = (p.hue + pseudo_random(&mut self.seed) * 60.0) % 360.0;
+
+            // Radiate away from the tap point with per-particle randomness
             let dx = p.x - x;
             let dy = p.y - y;
             let dist = (dx * dx + dy * dy).sqrt().max(0.0001);
             let nx = dx / dist;
             let ny = dy / dist;
-            p.vx = nx * burst_speed * (0.5 + pseudo_random(&mut self.seed));
-            p.vy = ny * burst_speed * (0.5 + pseudo_random(&mut self.seed));
+            let mag = burst_speed * (0.8 + pseudo_random(&mut self.seed) * 1.2);
+            p.vx = nx * mag;
+            p.vy = ny * mag - (pseudo_random(&mut self.seed) * 60.0 - 30.0); // some vertical variance
+
+            // Make burst particles brighter initially by giving them higher life through speed
+            // life will also be recomputed from velocity each tick, so high speed -> bright
         }
     }
 }
