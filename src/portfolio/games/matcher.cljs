@@ -43,12 +43,12 @@
   (core/create-el "style" {}
 ".matcher-game{position:relative;width:480px;margin:0 auto;display:flex;gap:12px;font-family:'VT323',monospace}
 .matcher-col{flex:1;display:flex;flex-direction:column;gap:10px;padding:8px}
-.matcher-item{background:#0b0b16;color:#ffffff;padding:10px;border-radius:6px;font-size:20px;cursor:pointer;user-select:none}
+.matcher-item{background:#0b0b16;color:#ffffff;height:52px;display:flex;align-items:center;padding:0 12px;border-radius:6px;font-size:20px;cursor:pointer;user-select:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .matcher-item.selected{outline:2px solid #ffaa00}
 .matcher-item.matched{background:#002b07;color:#00ff41}
 .match-line{position:absolute;height:4px;background:rgba(0,255,65,0.95);transform-origin:left center;border-radius:2px;transition:transform .35s ease}
 .matcher-header{color:#00d4ff;text-align:center;font-size:20px;margin-bottom:8px}
-@media (max-width:480px){.matcher-game{width:100%;padding:8px}.matcher-item{font-size:18px}}"))
+@media (max-width:480px){.matcher-game{width:100%;padding:8px}.matcher-item{font-size:18px;height:48px}}"))
 
 (defn- make-item-el [text cls]
   (core/create-el "div" {:class cls} text))
