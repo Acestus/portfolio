@@ -7,7 +7,7 @@
 (defn nav-bar
   "Top navigation bar. `active` is the current page keyword."
   [active]
-  (let [links [{:key :hub         :label "Portfolio"  :href "/"}
+  (let [links [{:key :hub         :label "Portfolio"  :href "https://portfolio.acestus.com"}
                {:key :platformer  :label "Platformer" :href "/platformer.html"}
                {:key :invaders    :label "Invaders"   :href "/invaders.html"}
                {:key :matcher     :label "CAF Puzzle"  :href "/matcher.html"}
