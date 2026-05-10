@@ -14,6 +14,7 @@ pub struct Life {
     ctx: CanvasRenderingContext2d,
     generation: u32,
     population: u32,
+    seed: u32, // simple LCG for click-directed randomness
 }
 
 fn idx(x: u32, y: u32) -> usize {
@@ -69,7 +70,7 @@ impl Life {
             }
         }
 
-        Ok(Life { cells, next, ctx, generation: 0, population: 0 })
+        Ok(Life { cells, next, ctx, generation: 0, population: 0, seed: 0xC0FF_EE })
     }
 
     pub fn tick(&mut self) {
@@ -134,12 +135,48 @@ impl Life {
         }
     }
 
+    // simple LCG for local randomness
+    fn next_rand(&mut self) -> u32 {
+        // constants from Numerical Recipes
+        self.seed = self.seed.wrapping_mul(1664525).wrapping_add(1013904223);
+        self.seed
+    }
+
+    fn rotate_offset(dx: i32, dy: i32, rot: u8) -> (i32, i32) {
+        match rot & 3 {
+            0 => (dx, dy),            // 0°
+            1 => (dy, -dx),           // 90°
+            2 => (-dx, -dy),          // 180°
+            3 => (-dy, dx),           // 270°
+            _ => (dx, dy),
+        }
+    }
+
     pub fn toggle_at(&mut self, canvas_x: f64, canvas_y: f64) {
-        let x = (canvas_x / CELL_SIZE as f64) as u32;
-        let y = (canvas_y / CELL_SIZE as f64) as u32;
-        if x < GRID_W && y < GRID_H {
-            let i = idx(x, y);
-            self.cells[i] = !self.cells[i];
+        let x = (canvas_x / CELL_SIZE as f64) as i32;
+        let y = (canvas_y / CELL_SIZE as f64) as i32;
+        if x < 0 || y < 0 { return; }
+        // On tap, plant a Gosper glider gun rotated in a random cardinal direction.
+        // Pattern taken from constructor; coordinates are relative to an origin.
+        let gun = vec![
+            (0,4),(0,5),(1,4),(1,5),
+            (10,4),(10,5),(10,6),(11,3),(11,7),(12,2),(12,8),(13,2),(13,8),
+            (14,5),(15,3),(15,7),(16,4),(16,5),(16,6),(17,5),
+            (20,2),(20,3),(20,4),(21,2),(21,3),(21,4),(22,1),(22,5),
+            (24,0),(24,1),(24,5),(24,6),(34,2),(34,3),(35,2),(35,3),
+        ];
+
+        // choose rotation 0..3
+        let rot = (self.next_rand() & 3) as u8;
+        // choose an offset so gun doesn't overflow; origin at tapped cell
+        for (dx, dy) in gun.iter() {
+            let (rx, ry) = Self::rotate_offset(*dx as i32, *dy as i32, rot);
+            let tx = x + rx;
+            let ty = y + ry;
+            if tx >= 0 && ty >= 0 && (tx as u32) < GRID_W && (ty as u32) < GRID_H {
+                let i = idx(tx as u32, ty as u32);
+                self.cells[i] = true;
+            }
         }
     }
 

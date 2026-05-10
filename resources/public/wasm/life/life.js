@@ -1,5 +1,3 @@
-/* @ts-self-types="./life.d.ts" */
-
 export class Life {
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
