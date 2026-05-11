@@ -29,9 +29,13 @@ export class Raytracer {
     }
     /**
      * @param {number} t
+     * @param {number} sx
+     * @param {number} sy
+     * @param {number} cx
+     * @param {number} cy
      */
-    tap(t) {
-        wasm.raytracer_tap(this.__wbg_ptr, t);
+    tap(t, sx, sy, cx, cy) {
+        wasm.raytracer_tap(this.__wbg_ptr, t, sx, sy, cx, cy);
     }
 }
 if (Symbol.dispose) Raytracer.prototype[Symbol.dispose] = Raytracer.prototype.free;
@@ -40,6 +44,12 @@ function __wbg_get_imports() {
         __proto__: null,
         __wbg___wbindgen_throw_9c31b086c2b26051: function(arg0, arg1) {
             throw new Error(getStringFromWasm0(arg0, arg1));
+        },
+        __wbg_arc_7f6431be39dd28c1: function() { return handleError(function (arg0, arg1, arg2, arg3, arg4, arg5) {
+            arg0.arc(arg1, arg2, arg3, arg4, arg5);
+        }, arguments); },
+        __wbg_beginPath_0362b3134ed67152: function(arg0) {
+            arg0.beginPath();
         },
         __wbg_getContext_e1463ff7aa682d57: function() { return handleError(function (arg0, arg1, arg2) {
             const ret = arg0.getContext(getStringFromWasm0(arg1, arg2));
@@ -65,8 +75,17 @@ function __wbg_get_imports() {
         __wbg_set_height_bdd58e6b04e88cca: function(arg0, arg1) {
             arg0.height = arg1 >>> 0;
         },
+        __wbg_set_lineWidth_e101692cb4fcf2b8: function(arg0, arg1) {
+            arg0.lineWidth = arg1;
+        },
+        __wbg_set_strokeStyle_c6ed1f71bc678b73: function(arg0, arg1, arg2) {
+            arg0.strokeStyle = getStringFromWasm0(arg1, arg2);
+        },
         __wbg_set_width_25112eb6bf1148df: function(arg0, arg1) {
             arg0.width = arg1 >>> 0;
+        },
+        __wbg_stroke_82139a335b371e81: function(arg0) {
+            arg0.stroke();
         },
         __wbindgen_init_externref_table: function() {
             const table = wasm.__wbindgen_externrefs;

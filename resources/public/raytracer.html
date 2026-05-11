@@ -74,9 +74,16 @@
       await init();
       const canvas = document.getElementById('canvas');
       const rt = new Raytracer(canvas);
-      // knock rider over on click/tap
-      canvas.addEventListener('click', ()=> rt.tap(performance.now()/1000));
-      canvas.addEventListener('touchstart', (e)=>{ e.preventDefault(); rt.tap(performance.now()/1000); }, {passive:false});
+      // knock rider over on click/tap — send normalized screen vector and pixel coords
+      canvas.addEventListener('click', (e)=>{
+        const rect = canvas.getBoundingClientRect();
+        const cx = e.clientX - rect.left;
+        const cy = e.clientY - rect.top;
+        const sx = (cx - canvas.width/2) / (canvas.width/2);
+        const sy = (cy - canvas.height/2) / (canvas.height/2);
+        rt.tap(performance.now()/1000, sx, sy, cx, cy);
+      });
+      canvas.addEventListener('touchstart', (e)=>{ e.preventDefault(); const t = e.touches[0]; const rect = canvas.getBoundingClientRect(); const cx = t.clientX - rect.left; const cy = t.clientY - rect.top; const sx = (cx - canvas.width/2) / (canvas.width/2); const sy = (cy - canvas.height/2) / (canvas.height/2); rt.tap(performance.now()/1000, sx, sy, cx, cy); }, {passive:false});
       const fpsEl = document.getElementById('fps');
 
       let frames = 0, fpsTime = 0, last = performance.now();
