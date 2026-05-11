@@ -424,7 +424,7 @@ fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f
     let reassemble = if fall > 0.0 { fall.min(1.0) } else { 0.0 };
     // vertical offset for collapse / levitation
     let collapse_offset = -0.8 * s * collapse; // sink down when collapsed
-    let levitate_offset = 1.8 * s * reassemble; // lift up when reassembling
+    let levitate_offset = 0.6 * s * reassemble; // reduced levitation peak when reassembling
     let extra_y = collapse_offset + levitate_offset;
     // lateral offset based on tap direction (fall_dx, fall_dz are normalized screen coords mapped to world)
     let lateral_strength = 1.6 * s; // how far rider moves horizontally when knocked
@@ -486,13 +486,14 @@ fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f
 
     // vertical offset for collapse / levitation
     let collapse_offset = -0.8 * s * collapse; // sink down when collapsed
-    let levitate_offset = 1.8 * s * reassemble; // lift up when reassembling
+    let levitate_offset = 0.6 * s * reassemble; // reduced levitation peak when reassembling
     let extra_y = collapse_offset + levitate_offset;
 
     // lateral offset based on tap direction (fall_dx, fall_dz are normalized screen coords mapped to world)
     let lateral_strength = 1.6 * s; // how far rider moves horizontally when knocked
-    let lat_x = fall_dx * lateral_strength * collapse; // only during collapse
-    let lat_z = fall_dz * lateral_strength * collapse;
+    // invert: tap on right should push rider left
+    let lat_x = -fall_dx * lateral_strength * collapse; // only during collapse
+    let lat_z = -fall_dz * lateral_strength * collapse;
 
     // Seat post and seat (apply collapse/levitate offset)
     let seat_y = wy + 0.9 * s + extra_y;
