@@ -1,39 +1,11 @@
-export function init(){
-  const root = document.getElementById('spa-root');
-  fetch('/static/mock/m365.json').then(r=>r.json()).then(data=>{
-    const container = document.createElement('div');
-    container.style.color = '#dfefff';
+var shadow$provide = {};
+(function(){
+'use strict';/*
 
-    const title = document.createElement('h3'); title.textContent = 'Job Title → Access Packages';
-    const select = document.createElement('select'); select.style.marginRight='8px';
-    Object.keys(data.job_titles).forEach(jt=>{
-      const o = document.createElement('option'); o.value = jt; o.textContent = jt; select.appendChild(o);
-    });
-    const show = document.createElement('div'); show.style.marginTop='10px';
-
-    const workflows = document.createElement('div'); workflows.style.marginTop='16px';
-    workflows.innerHTML = '<strong>JML Workflows</strong><br>';
-    Object.keys(data.jml_workflows).forEach(w=>{
-      const btn = document.createElement('button'); btn.textContent = w; btn.style.marginRight='8px';
-      btn.addEventListener('click', ()=>{
-        alert('Workflow ' + w + ':\n' + data.jml_workflows[w].steps.join('\n'));
-      });
-      workflows.appendChild(btn);
-    });
-
-    const groupsDiv = document.createElement('div'); groupsDiv.style.marginTop='12px';
-
-    function update(){
-      const jt = select.value; const cfg = data.job_titles[jt];
-      show.innerHTML = `<div>Access Packages: <pre style="display:inline;white-space:pre-wrap">${JSON.stringify(cfg.access_packages)}</pre></div>`;
-      // find groups that have roles matching packages—mock heuristic
-      const matched = Object.keys(data.entra_groups).filter(g=> data.entra_groups[g].roles && data.entra_groups[g].roles.length>0);
-      groupsDiv.innerHTML = '<div>Entra groups (mock): ' + matched.join(', ') + '</div>';
-    }
-
-    container.appendChild(title); container.appendChild(select); container.appendChild(show); container.appendChild(groupsDiv); container.appendChild(workflows);
-    root.innerHTML=''; root.appendChild(container);
-    select.addEventListener('change', update);
-    update();
-  });
-}
+ Copyright The Closure Library Authors.
+ SPDX-License-Identifier: Apache-2.0
+*/
+var a={};
+function b(){document.getElementById("spa-root").innerHTML='\x3ch2\x3eM365 Administration (demo)\x3c/h2\x3e\x3cdiv id\x3d"m365-ui"\x3eLoading mock data...\x3c/div\x3e';fetch("/static/mock/m365.json").then(function(c){return c.json()}).then(function(c){var g=document.getElementById("m365-ui");c=JSON.stringify(c,a.g,2);return g.innerHTML='\x3cpre style\x3d"white-space:pre-wrap;color:#bfefff"\x3e'+(c==null?"":c.toString())+"\x3c/pre\x3e"});return console.log("portfolio.enterprise.m365 initialized")}
+var d=["portfolio","enterprise","m365","init"],e=this||self;d[0]in e||typeof e.execScript=="undefined"||e.execScript("var "+d[0]);for(var f;d.length&&(f=d.shift());)d.length||b===void 0?e=e[f]&&e[f]!==Object.prototype[f]?e[f]:e[f]={}:e[f]=b;b();
+}).call(this);

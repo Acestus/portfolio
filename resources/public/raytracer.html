@@ -74,6 +74,9 @@
       await init();
       const canvas = document.getElementById('canvas');
       const rt = new Raytracer(canvas);
+      // knock rider over on click/tap
+      canvas.addEventListener('click', ()=> rt.tap(performance.now()/1000));
+      canvas.addEventListener('touchstart', (e)=>{ e.preventDefault(); rt.tap(performance.now()/1000); }, {passive:false});
       const fpsEl = document.getElementById('fps');
 
       let frames = 0, fpsTime = 0, last = performance.now();

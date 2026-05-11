@@ -27,6 +27,12 @@ export class Raytracer {
     render_frame(time) {
         wasm.raytracer_render_frame(this.__wbg_ptr, time);
     }
+    /**
+     * @param {number} t
+     */
+    tap(t) {
+        wasm.raytracer_tap(this.__wbg_ptr, t);
+    }
 }
 if (Symbol.dispose) Raytracer.prototype[Symbol.dispose] = Raytracer.prototype.free;
 function __wbg_get_imports() {
