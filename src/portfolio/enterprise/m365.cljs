@@ -38,9 +38,9 @@
     (let [update (fn []
                    (let [jt (.-value sel)
                          cfg (aget (clj->js (:job_titles data)) jt)]
-                     (set! (.-innerHTML out) (str "Access packages: <pre>" (js/JSON.stringify (.-access_packages cfg) null 2) "</pre>")) ))
+                     (set! (.-innerHTML out) (str "Access packages: <pre>" (js/JSON.stringify (.-access_packages cfg) null 2) "</pre>"))))]
       (.addEventListener sel "change" (fn [_] (update)))
-      (js/setTimeout update 10))))
+      (js/setTimeout update 10)))))
 
 (defn ^:export init []
   (-> (js/fetch "/static/mock/m365.json")

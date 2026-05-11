@@ -27,7 +27,7 @@
                         sel))
         container (.createElement js/document "div")]
     (set! (.-innerHTML root) "")
-    (set! (.-style container -color) "#dfefff")
+    (set! (.-backgroundColor (.-style container)) "#dfefff")
     (doseq [svc services]
       (let [box (.createElement js/document "div")
             title (.createElement js/document "div")]
@@ -51,11 +51,15 @@
 
     ;; JML & scenario controls
     (let [jml-sel (.createElement js/document "select")
-          opt-n (.createElement js/document "option") (set! (.-value opt-n) "none") (set! (.-textContent opt-n) "none")
-          opt-h (.createElement js/document "option") (set! (.-value opt-h) "hire") (set! (.-textContent opt-h) "hire")
-          opt-t (.createElement js/document "option") (set! (.-value opt-t) "transfer") (set! (.-textContent opt-t) "transfer")
-          opt-l (.createElement js/document "option") (set! (.-value opt-l) "leave") (set! (.-textContent opt-l) "leave")
+          opt-n (.createElement js/document "option")
+          opt-h (.createElement js/document "option")
+          opt-t (.createElement js/document "option")
+          opt-l (.createElement js/document "option")
           total-div (.createElement js/document "div")]
+      (set! (.-value opt-n) "none") (set! (.-textContent opt-n) "none")
+      (set! (.-value opt-h) "hire") (set! (.-textContent opt-h) "hire")
+      (set! (.-value opt-t) "transfer") (set! (.-textContent opt-t) "transfer")
+      (set! (.-value opt-l) "leave") (set! (.-textContent opt-l) "leave")
       (.appendChild jml-sel opt-n) (.appendChild jml-sel opt-h) (.appendChild jml-sel opt-t) (.appendChild jml-sel opt-l)
       (set! (.-id total-div) "pricing-total")
       (.appendChild container jml-sel)
