@@ -391,6 +391,17 @@ fn trace(origin: Vec3, dir: Vec3, scene: &Scene, light: &Light, time: f64) -> Ve
 
 fn gamma(v: f64) -> u8 { (v.max(0.0).min(1.0).powf(1.0/2.2) * 255.0) as u8 }
 
+// pseudo-scatter generator (deterministic-ish) for knockdown
+fn scatter_vec(idx: usize, collapse: f64, time: f64) -> Vec3 {
+    let id = idx as f64;
+    let px = (id * 12.9898 + time * 8.0).sin();
+    let py = (id * 78.233 + time * 7.0).cos();
+    let pz = (id * 37.719 + time * 9.0).sin();
+    let strength = collapse * 1.8; // global strength
+    // downward bias during collapse
+    Vec3::new(px * strength, -collapse * 1.2 + py * strength * 0.6, pz * strength)
+}
+
 // --- Unicyclist builder ---
 
 fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f64, bz: f64, ground_y: f64, time: f64, phase: f64, fall: f64, fall_dx: f64, fall_dz: f64, hue: usize, facing: f64) -> (Vec3, f64) {
@@ -498,6 +509,24 @@ fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f
     // Head
     rider_s.push(Sphere { center: Vec3::new(bx, sh_y + 0.32 * s + bob, bz),
         radius: 0.16 * s, color: Vec3::new(0.9, 0.75, 0.65) });
+
+    // After building parts, apply per-part scatter offsets when collapsing
+    let mut part_idx = 0usize;
+    for s in rider_s.iter_mut() {
+        if collapse > 0.0 {
+            let off = scatter_vec(part_idx, collapse, time);
+            s.center = s.center.add(off);
+        }
+        part_idx += 1;
+    }
+    for c in rider_c.iter_mut() {
+        if collapse > 0.0 {
+            let off = scatter_vec(part_idx, collapse, time);
+            c.a = c.a.add(off);
+            c.b = c.b.add(off);
+        }
+        part_idx += 1;
+    }
 
     // Pedal crank radius
     let cr = 0.25 * s;
