@@ -41,6 +41,7 @@
                      (set! (.-innerHTML out) (str "Access packages: <pre>" (js/JSON.stringify (.-access_packages cfg) null 2) "</pre>"))))]
       (.addEventListener sel "change" (fn [_] (update)))
       (js/setTimeout update 10))
+)
 
 (defn ^:export init []
   (-> (js/fetch "/static/mock/m365.json")
