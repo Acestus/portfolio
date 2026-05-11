@@ -23,6 +23,14 @@ struct GravityWell {
     hue: f64,
 }
 
+struct Ripple {
+    x: f64,
+    y: f64,
+    age: f64,
+    duration: f64,
+    max_radius: f64,
+}
+
 #[wasm_bindgen]
 pub struct ParticleSystem {
     particles: Vec<Particle>,
@@ -31,6 +39,7 @@ pub struct ParticleSystem {
     time: f64,
     seed: u32,
     burst_timer: f64, // when > 0, ignore gravity wells and radiate outward
+    ripples: Vec<Ripple>,
 }
 
 fn pseudo_random(seed: &mut u32) -> f64 {
@@ -71,7 +80,7 @@ impl ParticleSystem {
             GravityWell { x: W * 0.5,  y: H * 0.4,  strength: -40.0, hue: 130.0 },
         ];
 
-        Ok(ParticleSystem { particles, wells, ctx, time: 0.0, seed, burst_timer: 0.0 })
+        Ok(ParticleSystem { particles, wells, ctx, time: 0.0, seed, burst_timer: 0.0, ripples: Vec::new() })
     }
 
     pub fn tick(&mut self, dt: f64) {
@@ -93,6 +102,12 @@ impl ParticleSystem {
             self.burst_timer -= dt;
             if self.burst_timer < 0.0 { self.burst_timer = 0.0; }
         }
+
+        // Update ripples (expanding circles) and remove finished ones
+        for r in self.ripples.iter_mut() {
+            r.age += dt;
+        }
+        self.ripples.retain(|r| r.age < r.duration);
 
         for p in self.particles.iter_mut() {
             if self.burst_timer <= 0.0 {
@@ -167,16 +182,41 @@ impl ParticleSystem {
             self.ctx.set_fill_style_str(&color);
             self.ctx.fill();
         }
+
+        // Draw retro neon green ripples emitted on tap
+        for rip in &self.ripples {
+            let t = (rip.age / rip.duration).min(1.0);
+            let r = rip.max_radius * t;
+            let alpha = f64::max(1.0 - t, 0.0);
+            for i in 0..3 {
+                let ring_r = r * (1.0 + i as f64 * 0.12);
+                let lw = 8.0 / (i as f64 + 1.0);
+                self.ctx.begin_path();
+                let _ = self.ctx.arc(rip.x, rip.y, ring_r, 0.0, std::f64::consts::TAU);
+                let color = format!("rgba(0,255,65,{:.3})", alpha * (1.0 - i as f64 * 0.25));
+                self.ctx.set_stroke_style_str(&color);
+                self.ctx.set_line_width(lw);
+                self.ctx.stroke();
+            }
+        }
     }
 
-    pub fn add_well_at(&mut self, _x: f64, _y: f64) {
-        // On click, reverse particle velocities and shift hue by 120 degrees.
-        // No impulse or burst mode — simple, immediate visual change.
-        self.burst_timer = 0.0;
+    pub fn add_well_at(&mut self, x: f64, y: f64) {
+        // Trigger burst and add a retro neon green ripple at tap location.
+        self.burst_timer = BURST_DURATION;
+        // Add ripple
+        self.ripples.push(Ripple { x, y, age: 0.0, duration: 1.2, max_radius: 420.0 });
+        // Apply outward impulse to particles from tap point
         for p in self.particles.iter_mut() {
-            p.vx = -p.vx;
-            p.vy = -p.vy;
-            p.hue = (p.hue + 120.0) % 360.0;
+            let dx = p.x - x;
+            let dy = p.y - y;
+            let dist = (dx*dx + dy*dy).sqrt() + 0.0001;
+            let nx = dx / dist;
+            let ny = dy / dist;
+            let force = 60.0 / (1.0 + dist*0.02);
+            p.vx += nx * force;
+            p.vy += ny * force;
+            p.hue = (p.hue + 60.0) % 360.0;
         }
     }
 }

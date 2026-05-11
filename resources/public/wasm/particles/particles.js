@@ -1,5 +1,3 @@
-/* @ts-self-types="./particles.d.ts" */
-
 export class ParticleSystem {
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
@@ -82,8 +80,17 @@ function __wbg_get_imports() {
         __wbg_set_height_bdd58e6b04e88cca: function(arg0, arg1) {
             arg0.height = arg1 >>> 0;
         },
+        __wbg_set_lineWidth_e101692cb4fcf2b8: function(arg0, arg1) {
+            arg0.lineWidth = arg1;
+        },
+        __wbg_set_strokeStyle_c6ed1f71bc678b73: function(arg0, arg1, arg2) {
+            arg0.strokeStyle = getStringFromWasm0(arg1, arg2);
+        },
         __wbg_set_width_25112eb6bf1148df: function(arg0, arg1) {
             arg0.width = arg1 >>> 0;
+        },
+        __wbg_stroke_82139a335b371e81: function(arg0) {
+            arg0.stroke();
         },
         __wbindgen_init_externref_table: function() {
             const table = wasm.__wbindgen_externrefs;
