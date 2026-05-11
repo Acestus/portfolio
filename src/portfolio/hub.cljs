@@ -59,3 +59,4 @@
 (defn init []
   (core/mount!
     (ui/page-shell :hub "/articles/hub.html" "" (hub-content))))
+)
