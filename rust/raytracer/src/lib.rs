@@ -392,14 +392,17 @@ fn trace(origin: Vec3, dir: Vec3, scene: &Scene, light: &Light, time: f64) -> Ve
 fn gamma(v: f64) -> u8 { (v.max(0.0).min(1.0).powf(1.0/2.2) * 255.0) as u8 }
 
 // pseudo-scatter generator (deterministic-ish) for knockdown
-fn scatter_vec(idx: usize, collapse: f64, time: f64) -> Vec3 {
+// dx,dz are the knock direction (screen-normalized) mapped to world; pieces scatter opposite the tap
+fn scatter_vec(idx: usize, collapse: f64, time: f64, dx: f64, dz: f64) -> Vec3 {
     let id = idx as f64;
     let px = (id * 12.9898 + time * 8.0).sin();
     let py = (id * 78.233 + time * 7.0).cos();
     let pz = (id * 37.719 + time * 9.0).sin();
-    let strength = collapse * 1.8; // global strength
-    // downward bias during collapse
-    Vec3::new(px * strength, -collapse * 1.2 + py * strength * 0.6, pz * strength)
+    let strength = collapse * 1.6; // global strength
+    // bias pieces away from the tap (opposite direction), with downward impulse
+    let bias_x = -dx * strength * 0.9;
+    let bias_z = -dz * strength * 0.9;
+    Vec3::new(px * strength + bias_x, -collapse * 0.9 + py * strength * 0.5, pz * strength + bias_z)
 }
 
 // --- Unicyclist builder ---
@@ -425,8 +428,9 @@ fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f
     let extra_y = collapse_offset + levitate_offset;
     // lateral offset based on tap direction (fall_dx, fall_dz are normalized screen coords mapped to world)
     let lateral_strength = 1.6 * s; // how far rider moves horizontally when knocked
-    let lat_x = fall_dx * lateral_strength * collapse; // only during collapse
-    let lat_z = fall_dz * lateral_strength * collapse;
+    // invert: tap on right (positive fall_dx) should push rider left (negative world x)
+    let lat_x = -fall_dx * lateral_strength * collapse; // only during collapse
+    let lat_z = -fall_dz * lateral_strength * collapse;
 
     // Wheel segments — wheel plane contains forward and up directions
     let n_segs: usize = 10;
@@ -514,14 +518,14 @@ fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f
     let mut part_idx = 0usize;
     for s in rider_s.iter_mut() {
         if collapse > 0.0 {
-            let off = scatter_vec(part_idx, collapse, time);
+            let off = scatter_vec(part_idx, collapse, time, fall_dx, fall_dz);
             s.center = s.center.add(off);
         }
         part_idx += 1;
     }
     for c in rider_c.iter_mut() {
         if collapse > 0.0 {
-            let off = scatter_vec(part_idx, collapse, time);
+            let off = scatter_vec(part_idx, collapse, time, fall_dx, fall_dz);
             c.a = c.a.add(off);
             c.b = c.b.add(off);
         }
@@ -603,6 +607,8 @@ pub struct Raytracer {
     // normalized screen tap vector (-1..1), set by JS on tap
     knock_sx: f64,
     knock_sy: f64,
+    // store paused path parameter when knocked to freeze motion
+    knocked_path_t: f64,
     // ripple overlay for Minds Eye effect (pixel coords)
     ripples: Vec<Ripple>,
 }
@@ -618,7 +624,7 @@ impl Raytracer {
         let light = Light { pos: Vec3::new(10.0, 20.0, 8.0), intensity: 2.5 };
         let (maze_grid, maze_path) = generate_maze();
 
-        Ok(Raytracer { ctx, buf: vec![0u8; (W*H*4) as usize], light, maze_grid, maze_path, knocked_time: -1.0, knock_sx: 0.0, knock_sy: 0.0, ripples: Vec::new() })
+        Ok(Raytracer { ctx, buf: vec![0u8; (W*H*4) as usize], light, maze_grid, maze_path, knocked_time: -1.0, knock_sx: 0.0, knock_sy: 0.0, knocked_path_t: -1.0, ripples: Vec::new() })
     }
 
     // Called from JS on canvas tap to knock the rider over
@@ -627,6 +633,9 @@ impl Raytracer {
         self.knocked_time = t;
         self.knock_sx = sx;
         self.knock_sy = sy;
+        // pause path traversal at current parameter so rider stops moving
+        let speed = 3.5;
+        self.knocked_path_t = t * speed;
         // add Minds Eye neon ripple at canvas pixel coords
         self.ripples.push(Ripple { x: cx, y: cy, age: 0.0, duration: 1.2, max_radius: 220.0 });
     }
@@ -652,18 +661,23 @@ impl Raytracer {
         }
 
         let speed = 3.5;
-        let t = time * speed;
-        let (px, pz, facing) = path_pos(&self.maze_path, t);
+        // freeze path traversal while knocked (until reassembled)
+        let mut dtk = f64::MAX;
+        if self.knocked_time >= 0.0 { dtk = time - self.knocked_time; }
+        let mut t_param = time * speed;
+        if self.knocked_time >= 0.0 && dtk < 2.0 {
+            t_param = self.knocked_path_t;
+        }
+        let (px, pz, facing) = path_pos(&self.maze_path, t_param);
 
-        // compute fall state based on recent taps (knock over -> levitate back -> reassemble)
+        // compute fall state based on recent taps (knock over -> reassemble back -> done)
         let mut fall = 0.0;
         if self.knocked_time >= 0.0 {
-            let dtk = time - self.knocked_time;
             if dtk < 0.8 {
                 // collapsing: fall ranges from 0 to -1
                 fall = - (dtk / 0.8);
             } else if dtk < 2.0 {
-                // reassembling / levitating: 0 -> 1
+                // reassembling: 0 -> 1
                 fall = (dtk - 0.8) / (2.0 - 0.8);
             } else {
                 // done
@@ -675,10 +689,10 @@ impl Raytracer {
         // place a goal flag at the maze end
         if let Some(&(gx, gz)) = self.maze_path.last() {
             let (wx, wz) = maze_to_world(gx, gz);
-            // pole
-            pillars.push(Capsule { a: Vec3::new(wx, FLOOR_Y, wz), b: Vec3::new(wx, ROAD_Y + 1.2, wz), radius: 0.04, color: Vec3::new(0.2, 0.2, 0.2) });
-            // flag cloth as short horizontal capsule
-            pillars.push(Capsule { a: Vec3::new(wx, ROAD_Y + 1.2, wz), b: Vec3::new(wx + 0.5, ROAD_Y + 1.0, wz), radius: 0.08, color: Vec3::new(0.9, 0.1, 0.1) });
+            // pole (5x bigger)
+            pillars.push(Capsule { a: Vec3::new(wx, FLOOR_Y, wz), b: Vec3::new(wx, ROAD_Y + 6.0, wz), radius: 0.2, color: Vec3::new(0.2, 0.2, 0.2) });
+            // flag cloth as a larger horizontal capsule (scaled)
+            pillars.push(Capsule { a: Vec3::new(wx, ROAD_Y + 6.0, wz), b: Vec3::new(wx + 2.5, ROAD_Y + 5.0, wz), radius: 0.4, color: Vec3::new(0.9, 0.1, 0.1) });
         }
 
         let (center, bound) = build_unicyclist(&mut rider_spheres, &mut rider_capsules, px, pz, ROAD_Y, time, 0.0, fall, self.knock_sx, self.knock_sy, 0, facing);
