@@ -1,7 +1,8 @@
 (ns portfolio.hub
   "Portfolio hub — grid of all SPAs."
   (:require [portfolio.core :as core]
-            [portfolio.components :as ui]))
+            [portfolio.components :as ui]
+            [clojure.string :as str]))
 
 (def ^:private apps
   [{:category "🕹 Retro Arcade"
@@ -27,10 +28,13 @@
             {:title "Game of Life"          :href "/life.html"       :icon "🧬"  :desc "Massive Conway grid at 60fps"}]}])
 
 (defn- card [item]
-  (core/create-el "a" {:class "hub-card" :href (:href item)}
-    (core/create-el "span" {:class "hub-icon"} (:icon item))
-    (core/create-el "span" {:class "hub-title"} (:title item))
-    (core/create-el "span" {:class "hub-desc"} (:desc item))))
+  (let [id (-> (:title item)
+               (str/lower-case)
+               (str/replace " " "-"))]
+    (core/create-el "a" {:class "hub-card" :href (:href item) :data-id id}
+      (core/create-el "span" {:class "hub-icon"} (:icon item))
+      (core/create-el "span" {:class "hub-title"} (:title item))
+      (core/create-el "span" {:class "hub-desc"} (:desc item))))
 
 (defn- category-section [{:keys [category items]}]
   (let [section (core/create-el "section" {:class "hub-category"})]
