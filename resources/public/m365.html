@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>M365 Administration — acestus.com</title>
+  <link rel="stylesheet" href="/css/shared.css">
+</head>
+<body class="arcade-theme">
+  <div id="app">
+    <main class="main-content">
+      <div class="game-wrapper">
+        <h1 style="font-family:'Press Start 2P',monospace;color:#00d4ff;text-align:center">🔐 M365 Administration</h1>
+        <p style="color:#888;text-align:center">Entra &amp; Intune configuration · Job-title driven access packages · JML workflows · Role/PIM mapping (mock data)</p>
+        <div id="spa-root" style="max-width:1000px;margin:20px auto;padding:16px;background:#081020;color:#dfefff;border-radius:8px;">
+          <p>Loading SPA... If nothing appears, build the ClojureScript bundle.</p>
+        </div>
+        <p id="status" style="color:#666;font-family:monospace;text-align:center"></p>
+      </div>
+    </main>
+  </div>
+  <script type="module">
+    try {
+      import('/js/enterprise/m365/main.js').then(m=>{ if(m && m.init) m.init(); document.getElementById('status').textContent='SPA initialized'; }).catch(e=>console.warn(e));
+    } catch(e) { console.warn('Module load failed', e); }
+  </script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "job_titles": {
+    "engineer": { "access_packages": ["dev-basic","storage-reader"] },
+    "manager": { "access_packages": ["management","reports"] },
+    "hr": { "access_packages": ["hr-onboard","hr-reports"] }
+  },
+  "jml_workflows": {
+    "onboard": { "steps": ["create-user","assign-licenses","add-entra-groups"] },
+    "offboard": { "steps": ["remove-licenses","remove-entra-groups","archive-account"] }
+  },
+  "entra_groups": {
+    "eng-team": { "roles": ["azure.vm.admin","fabric.reader","m365.user"] },
+    "hr-team": { "roles": ["m365.hr","copilot.user"] }
+  }
+}
