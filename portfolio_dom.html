@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="Interactive portfolio showcasing Azure, Fabric, Clojure, Rust, and cloud platform engineering">
@@ -19,7 +17,7 @@
 <body>
   <div id="app"></div>
   <!-- Load Shadow CLJS runtime modules in order (development fallback) -->
-  <script src="/js/hub/cljs-runtime/goog.base.js"></script>
+  <script src="/js/hub/cljs-runtime/goog.base.js"></script><script src="http://localhost:8000/js/hub/cljs-runtime/goog.deps.js" id="script-0.fe8glfgce88"></script><script>goog.Dependency.callback_('0.fe8glfgce88', document.getElementById('script-0.fe8glfgce88'));</script>
   <script src="/js/hub/cljs-runtime/cljs.core.js"></script>
   <script src="/js/hub/cljs-runtime/portfolio.core.js"></script>
   <script src="/js/hub/cljs-runtime/portfolio.components.js"></script>
@@ -29,5 +27,6 @@
   <script>
     try { if (typeof portfolio !== 'undefined' && portfolio.hub && typeof portfolio.hub.init === 'function') { portfolio.hub.init(); } else { console.error('portfolio.hub.init missing'); } } catch(e) { console.error('init error', e); }
   </script>
-</body>
-</html>
+
+
+</body></html>

@@ -172,13 +172,6 @@ button { cursor: pointer; border: none; font: inherit; background: none; }
   .nav-link { font-size: var(--step--1); }
 }
 
-/* Desktop: make Cloud Lift appear first within Retro Arcade category */
-@media (min-width: 1024px) {
-  .hub-category .hub-grid .hub-card[data-id="cloud-lift"] {
-    grid-row: 1;
-    grid-column: 1;
-  }
-}
 
 /* --- Footer --- */
 .site-footer {
