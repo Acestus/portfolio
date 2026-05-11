@@ -12,6 +12,8 @@
             {:title "Cloud Lift"            :href "/helicopter.html" :icon "☁️"  :desc "Migrate workloads to the cloud, one rescue at a time"}]}
    {:category "📊 Professional"
     :items [{:title "Fabric Pipeline"       :href "/fabric.html"     :icon "💎"  :desc "Medallion architecture — Bronze → Silver → Gold"}
+            {:title "Pricing Optimizer"    :href "/pricing.html"    :icon "💰"  :desc "Optimize SKUs, tagging, naming, and cost transparency"}
+            {:title "M365 Administration"  :href "/m365.html"       :icon "🛠"  :desc "Entra, Intune, JML workflows and access packages"}
             {:title "Policy Dashboard"      :href "/policy.html"     :icon "🛡"  :desc "Azure Policy governance at scale"}
             {:title "Log Pipeline"          :href "/logs.html"       :icon "📡"  :desc "Real-time Event Hub → Eventhouse flow"}
             {:title "IaC Pipeline"          :href "/iac.html"        :icon "🏗"  :desc "Bicep AVM → Deployment Stacks"}
