@@ -424,7 +424,7 @@ fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f
     let reassemble = if fall > 0.0 { fall.min(1.0) } else { 0.0 };
     // vertical offset for collapse / levitation
     let collapse_offset = -0.8 * s * collapse; // sink down when collapsed
-    let levitate_offset = 0.6 * s * reassemble; // reduced levitation peak when reassembling
+    let levitate_offset = 0.3 * s * reassemble; // further reduced levitation peak when reassembling
     let extra_y = collapse_offset + levitate_offset;
     // lateral offset based on tap direction (fall_dx, fall_dz are normalized screen coords mapped to world)
     let lateral_strength = 1.6 * s; // how far rider moves horizontally when knocked
@@ -486,7 +486,7 @@ fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f
 
     // vertical offset for collapse / levitation
     let collapse_offset = -0.8 * s * collapse; // sink down when collapsed
-    let levitate_offset = 0.6 * s * reassemble; // reduced levitation peak when reassembling
+    let levitate_offset = 0.3 * s * reassemble; // further reduced levitation peak when reassembling
     let extra_y = collapse_offset + levitate_offset;
 
     // lateral offset based on tap direction (fall_dx, fall_dz are normalized screen coords mapped to world)
@@ -687,6 +687,11 @@ impl Raytracer {
             }
         }
 
+        // freeze time-based rider animations while knocked so everything (camera, spin, bob)
+        // appears paused during collapse/reassemble; reassembly progress still driven by dtk/fall
+        let rider_time = if self.knocked_time >= 0.0 && dtk < 2.0 { self.knocked_time } else { time };
+
+
         // place a goal flag at the maze end
         if let Some(&(gx, gz)) = self.maze_path.last() {
             let (wx, wz) = maze_to_world(gx, gz);
@@ -696,7 +701,7 @@ impl Raytracer {
             pillars.push(Capsule { a: Vec3::new(wx, ROAD_Y + 6.0, wz), b: Vec3::new(wx + 2.5, ROAD_Y + 5.0, wz), radius: 0.4, color: Vec3::new(0.9, 0.1, 0.1) });
         }
 
-        let (center, bound) = build_unicyclist(&mut rider_spheres, &mut rider_capsules, px, pz, ROAD_Y, time, 0.0, fall, self.knock_sx, self.knock_sy, 0, facing);
+        let (center, bound) = build_unicyclist(&mut rider_spheres, &mut rider_capsules, px, pz, ROAD_Y, rider_time, 0.0, fall, self.knock_sx, self.knock_sy, 0, facing);
 
         Scene { rider_spheres, rider_capsules, rider_center: center, rider_bound: bound, pillars, maze: self.maze_grid }
     }
@@ -705,11 +710,18 @@ impl Raytracer {
         let scene = self.build_scene(time);
 
         let speed = 3.5;
-        let (rx, rz, _) = path_pos(&self.maze_path, time * speed);
+        // freeze camera tracking while knocked so the view doesn't follow the rider during collapse/reassemble
+        let mut dtk = f64::MAX;
+        if self.knocked_time >= 0.0 { dtk = time - self.knocked_time; }
+        let mut cam_t_param = time * speed;
+        if self.knocked_time >= 0.0 && dtk < 2.0 { cam_t_param = self.knocked_path_t; }
+        let (rx, rz, _) = path_pos(&self.maze_path, cam_t_param);
 
-        let ca = time * 0.3;
+        let cam_time = if self.knocked_time >= 0.0 && dtk < 2.0 { self.knocked_time } else { time };
+
+        let ca = cam_time * 0.3;
         let cr = 12.0;
-        let cy = ROAD_Y + 8.0 + 2.0 * (time * 0.1).sin();
+        let cy = ROAD_Y + 8.0 + 2.0 * (cam_time * 0.1).sin();
         let origin = Vec3::new(rx + cr * ca.sin(), cy, rz + cr * ca.cos());
         let look_at = Vec3::new(rx, ROAD_Y + 3.0, rz);
 
@@ -724,7 +736,7 @@ impl Raytracer {
                 let px = (2.0 * (x as f64 + 0.5) / W as f64 - 1.0) * aspect * fov;
                 let py = (1.0 - 2.0 * (y as f64 + 0.5) / H as f64) * fov;
                 let dir = forward.add(right.scale(px)).add(up.scale(py)).norm();
-                let color = trace(origin, dir, &scene, &self.light, time);
+                let color = trace(origin, dir, &scene, &self.light, cam_time);
                 let idx = ((y * W + x) * 4) as usize;
                 self.buf[idx]   = gamma(color.x);
                 self.buf[idx + 1] = gamma(color.y);
