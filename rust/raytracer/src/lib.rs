@@ -383,7 +383,7 @@ fn gamma(v: f64) -> u8 { (v.max(0.0).min(1.0).powf(1.0/2.2) * 255.0) as u8 }
 
 // --- Unicyclist builder ---
 
-fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f64, bz: f64, ground_y: f64, time: f64, phase: f64, hue: usize, facing: f64) -> (Vec3, f64) {
+fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f64, bz: f64, ground_y: f64, time: f64, phase: f64, fall: f64, hue: usize, facing: f64) -> (Vec3, f64) {
     let s = 3.0;
     let pedal_speed = 2.5;
     let pa = -time * pedal_speed + phase;
@@ -430,16 +430,9 @@ fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f
         color: Vec3::new(0.85, 0.85, 0.9) });
 
     // Seat post (vertical — no rotation needed)
-    let seat_y = wy + 0.9 * s;
-    rider_c.push(Capsule { a: Vec3::new(bx, wy + 0.15 * s, bz), b: Vec3::new(bx, seat_y, bz),
-        radius: 0.04 * s, color: Vec3::new(0.7, 0.7, 0.75) });
 
     // Seat — spans perpendicular to facing (along right vector)
     let seat_hw = 0.1 * s;
-    rider_c.push(Capsule {
-        a: Vec3::new(bx + fs * seat_hw, seat_y + 0.05 * s, bz - fc * seat_hw),
-        b: Vec3::new(bx - fs * seat_hw, seat_y + 0.05 * s, bz + fc * seat_hw),
-        radius: 0.06 * s, color: Vec3::new(0.3, 0.3, 0.35) });
 
     let colors = [
         Vec3::new(0.0, 0.5, 0.9), Vec3::new(0.9, 0.2, 0.4), Vec3::new(0.0, 0.8, 0.4),
@@ -447,6 +440,24 @@ fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f
     ];
     let bc = colors[hue % colors.len()];
     let bob = 0.06 * s * (time * 4.0 + phase).sin();
+
+    // fall < 0: collapsing (0 -> 1), fall > 0: reassembling/levitating (0 -> 1)
+    let collapse = if fall < 0.0 { (-fall).min(1.0) } else { 0.0 };
+    let reassemble = if fall > 0.0 { fall.min(1.0) } else { 0.0 };
+
+    // vertical offset for collapse / levitation
+    let collapse_offset = -0.8 * s * collapse; // sink down when collapsed
+    let levitate_offset = 1.8 * s * reassemble; // lift up when reassembling
+    let extra_y = collapse_offset + levitate_offset;
+
+    // Seat post and seat (apply collapse/levitate offset)
+    let seat_y = wy + 0.9 * s + extra_y;
+    rider_c.push(Capsule { a: Vec3::new(bx, wy + 0.15 * s + extra_y, bz), b: Vec3::new(bx, seat_y, bz),
+        radius: 0.04 * s, color: Vec3::new(0.7, 0.7, 0.75) });
+    rider_c.push(Capsule {
+        a: Vec3::new(bx + fs * seat_hw, seat_y + 0.05 * s, bz - fc * seat_hw),
+        b: Vec3::new(bx - fs * seat_hw, seat_y + 0.05 * s, bz + fc * seat_hw),
+        radius: 0.06 * s, color: Vec3::new(0.3, 0.3, 0.35) });
 
     // Torso (vertical)
     let hip_y = seat_y + 0.25 * s;
@@ -471,7 +482,7 @@ fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f
 
     let rf_x = bx + rpx_w;
     let rf_z = bz + rpz_w;
-    let rf_y = wy + rpy;
+    let rf_y = wy + rpy + extra_y;
     let rk_x = bx + fc * 0.12 * s * pa.cos();
     let rk_z = bz + fs * 0.12 * s * pa.cos();
     let rk_y = (rf_y + hip_y + bob) * 0.5 + 0.1 * s;
@@ -486,7 +497,7 @@ fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f
     // Left leg — opposite pedal, opposite side
     let lf_x = bx - rpx_w;
     let lf_z = bz - rpz_w;
-    let lf_y = wy - rpy;
+    let lf_y = wy - rpy + extra_y;
     let lk_x = bx - fc * 0.12 * s * pa.cos();
     let lk_z = bz - fs * 0.12 * s * pa.cos();
     let lk_y = (lf_y + hip_y + bob) * 0.5 + 0.1 * s;
@@ -530,6 +541,7 @@ pub struct Raytracer {
     light: Light,
     maze_grid: [bool; MAZE_CELLS],
     maze_path: Vec<(usize, usize)>,
+    knocked_time: f64,
 }
 
 #[wasm_bindgen]
@@ -543,10 +555,15 @@ impl Raytracer {
         let light = Light { pos: Vec3::new(10.0, 20.0, 8.0), intensity: 2.5 };
         let (maze_grid, maze_path) = generate_maze();
 
-        Ok(Raytracer { ctx, buf: vec![0u8; (W*H*4) as usize], light, maze_grid, maze_path })
+        Ok(Raytracer { ctx, buf: vec![0u8; (W*H*4) as usize], light, maze_grid, maze_path, knocked_time: -1.0 })
     }
 
-    fn build_scene(&self, time: f64) -> Scene {
+    // Called from JS on canvas tap to knock the rider over
+    pub fn tap(&mut self, t: f64) {
+        self.knocked_time = t;
+    }
+
+    fn build_scene(&mut self, time: f64) -> Scene {
         let mut rider_spheres = Vec::with_capacity(4);
         let mut rider_capsules = Vec::with_capacity(30);
         let mut pillars = Vec::with_capacity(16);
@@ -569,7 +586,25 @@ impl Raytracer {
         let speed = 3.5;
         let t = time * speed;
         let (px, pz, facing) = path_pos(&self.maze_path, t);
-        let (center, bound) = build_unicyclist(&mut rider_spheres, &mut rider_capsules, px, pz, ROAD_Y, time, 0.0, 0, facing);
+
+        // compute fall state based on recent taps (knock over -> levitate back -> reassemble)
+        let mut fall = 0.0;
+        if self.knocked_time >= 0.0 {
+            let dtk = time - self.knocked_time;
+            if dtk < 0.8 {
+                // collapsing: fall ranges from 0 to -1
+                fall = - (dtk / 0.8);
+            } else if dtk < 2.0 {
+                // reassembling / levitating: 0 -> 1
+                fall = (dtk - 0.8) / (2.0 - 0.8);
+            } else {
+                // done
+                fall = 0.0;
+                self.knocked_time = -1.0;
+            }
+        }
+
+        let (center, bound) = build_unicyclist(&mut rider_spheres, &mut rider_capsules, px, pz, ROAD_Y, time, 0.0, fall, 0, facing);
 
         Scene { rider_spheres, rider_capsules, rider_center: center, rider_bound: bound, pillars, maze: self.maze_grid }
     }
