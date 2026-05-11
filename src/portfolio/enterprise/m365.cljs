@@ -46,4 +46,4 @@
 (defn ^:export init []
   (-> (js/fetch "/static/mock/m365.json")
       (.then (fn [resp] (.json resp)))
-      (.then (fn [data] (render-ui data)))))
+      (.then (fn [data] (render-ui data))))))
