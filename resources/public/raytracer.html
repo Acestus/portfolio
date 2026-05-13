@@ -90,27 +90,46 @@
       const fpsEl = document.getElementById('fps');
 
       function resizeOverlay(){
-        // match canvas drawing buffer size and CSS size
-        overlay.width = canvas.width || canvas.clientWidth || 320;
-        overlay.height = canvas.height || canvas.clientHeight || 240;
-        overlay.style.width = (canvas.clientWidth || overlay.width) + 'px';
-        overlay.style.height = (canvas.clientHeight || overlay.height) + 'px';
+        const rect = canvas.getBoundingClientRect();
+        const wrapRect = wrapper.getBoundingClientRect();
+        const cssW = rect.width || canvas.clientWidth || 320;
+        const cssH = rect.height || canvas.clientHeight || 240;
+        const dpr = window.devicePixelRatio || 1;
+        // position overlay relative to wrapper
+        overlay.style.left = (rect.left - wrapRect.left) + 'px';
+        overlay.style.top = (rect.top - wrapRect.top) + 'px';
+        // set CSS size
+        overlay.style.width = cssW + 'px';
+        overlay.style.height = cssH + 'px';
+        // set backing store size for high-DPI
+        overlay.width = Math.max(1, Math.round(cssW * dpr));
+        overlay.height = Math.max(1, Math.round(cssH * dpr));
+        // scale drawing operations so coordinates are in CSS pixels
+        if (octx) { octx.setTransform(dpr,0,0,dpr,0,0); }
       }
       // sync sizes if needed
       resizeOverlay();
+      // Observe size changes to canvas and reposition overlay
+      const mo = new ResizeObserver(()=>resizeOverlay());
+      mo.observe(canvas);
       window.addEventListener('resize', resizeOverlay);
 
       function animateMindsEye(cx, cy){
         if (!octx) return;
+        const rect = canvas.getBoundingClientRect();
+        const cssW = rect.width || canvas.clientWidth;
+        const cssH = rect.height || canvas.clientHeight;
         const start = performance.now();
         const duration = 1600;
         const slices = 7;
         function frame(){
           const now = performance.now();
           const t = (now - start) / duration;
-          // clear with source-over to reset previous content
+          // clear using CSS pixel coords
+          octx.save();
           octx.globalCompositeOperation = 'source-over';
-          octx.clearRect(0,0,overlay.width, overlay.height);
+          octx.clearRect(0,0,cssW, cssH);
+          octx.restore();
           if (t >= 1.0) return;
           octx.globalCompositeOperation = 'lighter';
           for (let i=0;i<slices;i++){
@@ -120,7 +139,7 @@
             octx.rotate(angle);
             octx.beginPath();
             octx.moveTo(0,0);
-            octx.arc(0,0, Math.min(overlay.width, overlay.height)*0.4, -0.35, 0.35);
+            octx.arc(0,0, Math.min(cssW, cssH)*0.4, -0.35, 0.35);
             octx.closePath();
             const hue = (i*360/slices + t*360) % 360;
             octx.fillStyle = `hsla(${hue},90%,60%,${0.25*(1-t)})`;
@@ -128,7 +147,7 @@
             octx.restore();
           }
           // neon ring
-          const maxR = Math.max(overlay.width, overlay.height);
+          const maxR = Math.max(cssW, cssH);
           const r = maxR * 0.25 * (0.5 + t);
           octx.lineWidth = 8 * (1 - t);
           octx.strokeStyle = `rgba(0,255,65,${1 - t})`;
