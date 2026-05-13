@@ -56,11 +56,11 @@ jobs:
           wasm-pack build rust/life --target web --out-dir ../../resources/public/wasm/life --no-typescript
 
       - name: Compile all builds
-        run: npx shadow-cljs compile hub platformer invaders matcher breakout helicopter fabric policy logs iac platform repl architecture agentic enterprise-pricing enterprise-m365
+        run: npx shadow-cljs compile hub platformer invaders matcher breakout helicopter fabric policy logs iac platform repl architecture agentic pricing m365
 
       - name: Verify output artifacts
         run: |
-          for build in hub platformer invaders matcher breakout helicopter fabric policy logs iac platform repl architecture agentic enterprise/pricing enterprise/m365; do
+          for build in hub platformer invaders matcher breakout helicopter fabric policy logs iac platform repl architecture agentic pricing m365; do
             test -f "resources/public/js/${build}/main.js" || { echo "❌ Missing: ${build}/main.js"; exit 1; }
             echo "✅ ${build}/main.js exists"
           done

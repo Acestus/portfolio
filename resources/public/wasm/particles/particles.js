@@ -10,11 +10,11 @@ export class ParticleSystem {
         wasm.__wbg_particlesystem_free(ptr, 0);
     }
     /**
-     * @param {number} _x
-     * @param {number} _y
+     * @param {number} x
+     * @param {number} y
      */
-    add_well_at(_x, _y) {
-        wasm.particlesystem_add_well_at(this.__wbg_ptr, _x, _y);
+    add_well_at(x, y) {
+        wasm.particlesystem_add_well_at(this.__wbg_ptr, x, y);
     }
     /**
      * @param {HTMLCanvasElement} canvas

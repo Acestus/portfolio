@@ -1,6 +1,7 @@
 node_modules/
 .shadow-cljs/
 resources/public/js/
+!resources/public/js/nav.js
 resources/public/wasm/*/*.d.ts
 resources/public/wasm/*/package.json
 rust/*/target/

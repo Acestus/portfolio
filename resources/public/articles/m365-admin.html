@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <title>M365 Administration — JML Lifecycle, Entra ID Governance, Copilot Agents</title>
+  <style>
+    :root { --accent: #0078d4; --accent-dark: #106ebe; --bg: #faf9f8; --text: #323130; --summary: #e1f5fe; }
+    * { box-sizing: border-box; }
+    body { margin: 0 auto; max-width: 1200px; padding: 24px; background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .back-link { display: inline-block; margin-bottom: 1rem; font-weight: 600; }
+    h1 { color: var(--accent); border-bottom: 3px solid var(--accent); padding-bottom: 0.5rem; margin-top: 0; }
+    h2 { color: var(--accent-dark); border-left: 4px solid var(--accent); padding-left: 15px; margin-top: 2.25rem; }
+    h3 { color: var(--accent-dark); margin-top: 1.5rem; }
+    .summary { background: var(--summary); border-left: 5px solid var(--accent); border-radius: 4px; padding: 1rem; margin: 1rem 0 1.5rem; }
+    .metrics { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0; }
+    .metric-card { background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-bottom: 3px solid var(--accent); padding: 1rem; flex: 1 1 180px; min-width: 170px; }
+    .metric-value { color: var(--accent); font-size: 1.6rem; font-weight: 700; }
+    .metric-label { color: #605e5c; font-size: 0.95rem; }
+    .flow { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.5rem; margin: 1.5rem 0; }
+    .pill { background: var(--accent); color: #fff; padding: 0.65rem 1rem; border-radius: 999px; font-weight: 600; }
+    .pill.green { background: #107c10; }
+    .pill.orange { background: #ca5010; }
+    .pill.red { background: #d13438; }
+    .arrow { color: var(--accent-dark); font-size: 1.25rem; font-weight: 700; }
+    .code-block { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 6px; overflow: auto; white-space: pre; font-family: Consolas, Monaco, 'Courier New', monospace; font-size: 0.92rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; background: #fff; }
+    th, td { border: 1px solid #d2d0ce; padding: 0.8rem; text-align: left; vertical-align: top; }
+    th { background: var(--accent); color: #fff; }
+    tbody tr:nth-child(even) { background: #f3f2f1; }
+    tbody tr:hover { background: #deecf9; }
+    .callout { background: #fff3cd; border-left: 5px solid #ffc107; border-radius: 4px; padding: 1rem; margin: 1rem 0; }
+    .callout.info { background: var(--summary); border-left-color: var(--accent); }
+    .footer-link { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #d2d0ce; }
+    @media (max-width: 768px) {
+      body { padding: 16px; }
+      .metrics { flex-direction: column; }
+      .flow { flex-direction: column; }
+      .arrow { transform: rotate(90deg); }
+      .table-wrap { overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <a class='back-link' href='/m365.html'>← Back to Demo</a>
+  <h1>M365 Administration — Identity Governance &amp; Copilot Agents</h1>
+
+  <div class='summary'>
+    Interactive dashboard modeling Microsoft 365 identity governance through the Joiner-Mover-Leaver (JML) lifecycle. The SPA covers Entra ID security group management, access package governance, Intune compliance enforcement, and custom Copilot agents — the operational surface that connects workforce events to cloud resource provisioning and license management.
+  </div>
+
+  <div class='metrics'>
+    <div class='metric-card'><div class='metric-value'>3</div><div class='metric-label'>JML Workflows</div></div>
+    <div class='metric-card'><div class='metric-value'>$30</div><div class='metric-label'>Copilot Add-on /user/mo</div></div>
+    <div class='metric-card'><div class='metric-value'>3</div><div class='metric-label'>Custom Copilot Agents</div></div>
+    <div class='metric-card'><div class='metric-value'>29</div><div class='metric-label'>Policy Assignments</div></div>
+  </div>
+
+  <h2>1. Joiner-Mover-Leaver Lifecycle</h2>
+  <p>Every workforce event — onboarding, transfer, or offboarding — triggers a cascade of identity and access changes. The JML system is built as an event-driven pipeline using Microsoft-native services: <strong>Entra ID Governance</strong> (Lifecycle Workflows) → <strong>Azure Functions</strong> → <strong>Service Bus</strong> → <strong>Entra Provisioning</strong>. Three Azure Functions handle event classification, workflow orchestration, and account provisioning respectively.</p>
+
+  <div class='flow'>
+    <span class='pill'>HRIS Event</span><span class='arrow'>→</span>
+    <span class='pill'>Lifecycle Workflows</span><span class='arrow'>→</span>
+    <span class='pill'>Event Listener (Function)</span><span class='arrow'>→</span>
+    <span class='pill'>Service Bus Topic</span><span class='arrow'>→</span>
+    <span class='pill'>Entra Provisioning</span>
+  </div>
+
+  <div class='callout info'>
+    <strong>Why Service Bus over Event Hub?</strong> Service Bus is the right choice for JML: it's a message broker with topics/subscriptions, exactly-once delivery, dead-letter queues, and per-message acknowledgment. Event Hub is designed for high-throughput streaming (millions of events/sec) — overkill for JML where each hire/termination event must be individually processed and guaranteed.
+  </div>
+
+  <h3>Event Classification</h3>
+  <p>The Event Listener (Function App #1) receives HRIS events, classifies them, normalizes worker details, and publishes to the Service Bus topic. Downstream consumers filter by classification.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Classification</th><th>Trigger</th><th>Creates Workflow</th><th>Provisions Account</th></tr></thead>
+      <tbody>
+        <tr><td><strong>NEW_HIRE</strong></td><td><code>worker.hire</code>, <code>worker.rehire</code></td><td>✅ Onboarding</td><td>✅ Yes</td></tr>
+        <tr><td><strong>TERMINATION</strong></td><td><code>worker.terminate</code></td><td>✅ Offboarding</td><td>✅ Disable + revoke</td></tr>
+        <tr><td><strong>CHANGE</strong></td><td>Worker type, job title, manager, department, position</td><td>✅ Transfer review</td><td>⚠ Attribute update (planned)</td></tr>
+        <tr><td><strong>OTHER_CHANGE</strong></td><td><code>worker.*</code> (catch-all)</td><td>❌ Logged only</td><td>❌ No</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>End-to-End Timing</h3>
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Step</th><th>Delay</th><th>Cumulative</th></tr></thead>
+      <tbody>
+        <tr><td>HR submits event in HRIS</td><td>User action</td><td>—</td></tr>
+        <tr><td>Event Listener processes + publishes to Service Bus</td><td>Seconds–5 min</td><td>~5 min</td></tr>
+        <tr><td>Service Bus → Entra Provisioning (push trigger)</td><td>Near-instant</td><td>~5 min</td></tr>
+        <tr><td>SCIM bulk upload → on-prem AD sync</td><td>Up to 40 min</td><td>~45 min</td></tr>
+        <tr><td>Azure AD Connect / Cloud Sync back to Entra</td><td>Up to 30 min</td><td>~75 min</td></tr>
+        <tr><td colspan='2'><strong>Event → Entra provisioning initiated</strong></td><td><strong>~5 min</strong></td></tr>
+        <tr><td colspan='2'><strong>Event → Hybrid AD account ready</strong></td><td><strong>~45–75 min</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Guest invitations (B2B) are near-instant since they go directly to the Microsoft Graph API with no AD sync required. Entra-only (cloud) accounts are also immediate.</p>
+
+  <h3>Account Type Routing</h3>
+  <p>The Entra Provisioning function determines the provisioning method based on employee type and work location:</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Priority</th><th>Condition</th><th>Account Type</th><th>Mechanism</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>External partner / outsourced</td><td>B2B Guest Invite</td><td>Graph API <code>/invitations</code></td></tr>
+        <tr><td>2</td><td>Offshore + external domain</td><td>B2B Guest Invite</td><td>Graph API <code>/invitations</code></td></tr>
+        <tr><td>3</td><td>Offshore + direct employee</td><td>Hybrid AD</td><td>SCIM 2.0 bulk upload → on-prem AD</td></tr>
+        <tr><td>4</td><td>Department in cloud migration list</td><td>Entra-Only</td><td>Graph API <code>POST /users</code> (cloud-only member)</td></tr>
+        <tr><td>5</td><td>Direct / Contractor (default)</td><td>Hybrid AD</td><td>SCIM 2.0 bulk upload → on-prem AD</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Onboard (Joiner)</h3>
+  <div class='flow'>
+    <span class='pill green'>HRIS Event</span><span class='arrow'>→</span>
+    <span class='pill green'>Lifecycle Workflow</span><span class='arrow'>→</span>
+    <span class='pill green'>Service Bus</span><span class='arrow'>→</span>
+    <span class='pill green'>Entra Provisioning</span><span class='arrow'>→</span>
+    <span class='pill green'>AD Sync</span><span class='arrow'>→</span>
+    <span class='pill green'>Groups + License</span>
+  </div>
+  <p>When HR submits a new hire, the Event Listener normalizes 15+ fields (name, department, manager, employee type, work location, exempt status) and publishes to the Service Bus topic. The Entra Provisioning function routes to the appropriate method — most commonly, SCIM 2.0 bulk upload for Hybrid AD provisioning via an on-premises provisioning agent. Post-provisioning steps include security group assignment, M365 license allocation, and Intune device enrollment.</p>
+
+  <h3>Transfer (Mover)</h3>
+  <div class='flow'>
+    <span class='pill orange'>HRIS Change Event</span><span class='arrow'>→</span>
+    <span class='pill orange'>Classify CHANGE</span><span class='arrow'>→</span>
+    <span class='pill orange'>Access Review</span><span class='arrow'>→</span>
+    <span class='pill orange'>Update Groups</span><span class='arrow'>→</span>
+    <span class='pill orange'>Update Packages</span>
+  </div>
+  <p>Change events for worker type, job title, manager, department, and position are classified and trigger transfer workflows. The risk is <strong>access accumulation</strong>: over time, transferred employees retain permissions from previous roles. <a href='https://learn.microsoft.com/entra/id-governance/access-reviews-overview'>Entra ID access reviews</a> and time-bound access packages mitigate this.</p>
+
+  <h3>Offboard (Leaver)</h3>
+  <div class='flow'>
+    <span class='pill red'>HRIS Termination</span><span class='arrow'>→</span>
+    <span class='pill red'>Lifecycle Workflow</span><span class='arrow'>→</span>
+    <span class='pill red'>Disable Sign-in</span><span class='arrow'>→</span>
+    <span class='pill red'>Revoke Access</span><span class='arrow'>→</span>
+    <span class='pill red'>Reclaim Licenses</span><span class='arrow'>→</span>
+    <span class='pill red'>Archive</span>
+  </div>
+  <p><a href='https://learn.microsoft.com/entra/id-governance/lifecycle-workflow-extensibility'>Entra ID Lifecycle Workflows</a> can automate offboarding: disable sign-in, revoke active sessions, remove group memberships, and trigger a Logic App for mailbox conversion and OneDrive archival. License reclamation is the most common source of cost waste — a Copilot add-on at $30/user/month left on a disabled account for six months costs $180 for nothing.</p>
+
+  <h2>2. Day-1 Access Checklist</h2>
+  <p>Access is provisioned via a single Jira ticket filed to the Infrastructure team. The checklist is role-based:</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Requirement</th><th>All Roles</th><th>Engineers</th><th>Infrastructure</th></tr></thead>
+      <tbody>
+        <tr><td>Entra ID account + MFA</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>Entra security group membership</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>VPN access (private endpoints)</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>Confluence space access (IPM)</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>Fabric workspace (Viewer/Contributor)</td><td>—</td><td>✅</td><td>—</td></tr>
+        <tr><td>GitHub org membership (B2B guest)</td><td>—</td><td>✅</td><td>✅</td></tr>
+        <tr><td>Codespace access</td><td>—</td><td>✅</td><td>—</td></tr>
+        <tr><td>Azure subscription (Reader)</td><td>—</td><td>✅</td><td>—</td></tr>
+        <tr><td>PIM-eligible roles (Contributor)</td><td>—</td><td>—</td><td>✅</td></tr>
+        <tr><td>Key Vault Secrets User</td><td>—</td><td>—</td><td>✅</td></tr>
+        <tr><td>Deployment pipeline environments</td><td>—</td><td>—</td><td>✅</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>3. Entra ID Security Groups</h2>
+  <p>Access is always granted via team membership — never individual grants. Entra security groups map to role boundaries: an engineer's group membership determines their Fabric workspace access, GitHub team assignment, and Azure subscription visibility. B2B guest users are provisioned in Entra ID and added to the GitHub organization through team membership.</p>
+
+  <div class='callout info'>
+    <strong>Confluence permissions</strong> are mapped to Entra security groups. The Copilot architecture uses Entra ID delegated permissions and OBO (On-Behalf-Of) flow, ensuring that agents only return data the user has access to — security-trimmed search results, not unfiltered indexes.
+  </div>
+
+  <h2>4. Intune Compliance</h2>
+  <p>Device compliance policies enforce security baselines at the endpoint level. Intune evaluates devices against policies for encryption, OS version, antivirus status, and screen lock. Non-compliant devices are blocked from accessing M365 resources via Conditional Access policies — the enforcement boundary is Entra ID, not the device itself.</p>
+  <p>The SPA models compliance policies with percentage bars showing fleet-wide compliance. In production, the key insight is that compliance is not binary: a device can be "compliant" for encryption but "non-compliant" for OS version. Conditional Access policies can be configured to require specific compliance claims, not just overall compliance status.</p>
+
+  <h2>5. Microsoft 365 Copilot Agents</h2>
+  <p>Custom agents extend <a href='https://learn.microsoft.com/office365/servicedescriptions/office-365-platform-service-description/microsoft-365-copilot'>Microsoft 365 Copilot</a> with domain-specific capabilities. Each agent is accessible directly from the M365 Copilot chat interface at <a href='https://m365.cloud.microsoft/chat'>m365.cloud.microsoft/chat</a>.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Agent</th><th>Capability</th><th>Access</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong><a href='https://m365.cloud.microsoft/chat/?titleId=P_7c69ad60-9565-29c7-8bd9-d83f454ee238'>Confluence Cloud</a></strong></td>
+          <td>Searches and summarizes Confluence Cloud pages inside M365 Copilot. Find wiki articles, pull up runbook steps, or get page summaries without leaving the chat window.</td>
+          <td>Basic Copilot Chat — no paid add-on required</td>
+        </tr>
+        <tr>
+          <td><strong><a href='https://m365.cloud.microsoft/chat/?titleId=T_d9cda51e-3f77-e62c-7ee6-ad679bac42ce&source=embedded-builder'>Project Planner</a></strong></td>
+          <td>Interactive project scoping agent. Prompt: "Interview me until you have 95% about what I actually want, not what I think I should want."</td>
+          <td>Basic Copilot Chat</td>
+        </tr>
+        <tr>
+          <td><strong><a href='https://m365.cloud.microsoft/chat/?titleId=T_807e00ed-cace-ba5f-04e1-12afb68fba24&source=embedded-builder'>Teams Meetings</a></strong></td>
+          <td>Recaps Teams meeting transcripts, extracts action items and decisions. Search across past meeting notes for specific topics.</td>
+          <td>Basic Copilot Chat</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class='callout info'>
+    <strong>Works with basic Copilot Chat</strong> — no paid Microsoft 365 Copilot add-on license required. These agents are accessible to anyone with a standard M365 subscription that includes Copilot Chat. The paid Copilot add-on ($30/user/month) is required for the full work-grounded experience across Teams and Microsoft 365 apps, with eligible base licenses including <strong>M365 E3/E5</strong> or <strong>O365 E3/E5</strong>.
+  </div>
+
+  <h3>How to Add Agents</h3>
+  <ol>
+    <li><strong>Direct link (quickest):</strong> Click any agent link above — it opens directly in the Copilot chat interface. No installation needed.</li>
+    <li><strong>Agent store:</strong> Open M365 Copilot → click <strong>Get agents</strong> → search by name → click the agent tile.</li>
+    <li><strong>Microsoft Teams:</strong> Open the Copilot app in Teams sidebar → <strong>Get agents</strong> → browse or search.</li>
+  </ol>
+  <p>Agents remember context within a conversation. Tag an agent with <code>@AgentName</code> to direct a question to a specific agent mid-conversation. Pin frequently used agents for quick access.</p>
+
+  <h2>6. Licensing and Cost</h2>
+  <p>Microsoft 365 licensing for the Copilot experience has two tiers. Understanding the boundary is important for JML cost modeling — the Copilot add-on is a per-user cost that must be assigned at onboarding and reclaimed at offboarding.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Tier</th><th>Access</th><th>Cost</th><th>Prerequisites</th></tr></thead>
+      <tbody>
+        <tr><td>Copilot Chat (included)</td><td>Custom agents, web-grounded chat</td><td>Included with eligible M365 license</td><td>M365 E3/E5 or O365 E3/E5</td></tr>
+        <tr><td><a href='https://learn.microsoft.com/microsoft-365/copilot/microsoft-365-copilot-licensing'>Copilot Enterprise Add-on</a></td><td>Work-grounded Copilot across Teams, Word, Excel, etc.</td><td>$30/user/month</td><td>Eligible base license + Entra ID + Exchange Online</td></tr>
+        <tr><td>Copilot Business Add-on</td><td>Same capabilities for SMB (≤300 users)</td><td>$21/user/month</td><td>M365 Business Standard or Business Premium</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>7. Architecture Integration</h2>
+  <p>The M365 Copilot agents connect to a broader platform architecture. The Foundry agent uses Entra ID token authentication, Microsoft Graph for user context, Jira for work item queries, and Fabric SQL for business data. Data sources span SharePoint, JIRA, Teams calls, Azure portal, Grafana, and Power BI.</p>
+  <p>The <a href='https://learn.microsoft.com/en-us/microsoft-365/copilot/connectors/confluence-cloud-deployment'>Confluence Cloud connector</a> for Microsoft 365 Copilot enables the Confluence agent to index and search Confluence pages. The Graph connector powers natural-language queries over security alerts and operational data.</p>
+
+  <div class='flow'>
+    <span class='pill'>Entra ID (Auth)</span><span class='arrow'>→</span>
+    <span class='pill'>Microsoft Graph</span><span class='arrow'>→</span>
+    <span class='pill'>Foundry Agent</span><span class='arrow'>→</span>
+    <span class='pill'>Confluence / Jira / Fabric</span><span class='arrow'>→</span>
+    <span class='pill'>M365 Copilot Chat</span>
+  </div>
+
+  <h2>8. JML Infrastructure (Azure Resources)</h2>
+  <p>The JML pipeline runs on Azure Deployment Stacks (Bicep). Three Function Apps share a Service Bus namespace, Key Vault, Application Insights, and a User Managed Identity with Microsoft Graph API permissions.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Resource</th><th>Type</th><th>SKU</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td>Event Listener</td><td>Azure Function</td><td>EP1 (shared ASP)</td><td>Receives HRIS events, classifies, normalizes worker data</td></tr>
+        <tr><td>Workflow Orchestrator</td><td>Azure Function</td><td>EP1 (shared ASP)</td><td>Triggers Lifecycle Workflows, manages task completion</td></tr>
+        <tr><td>Entra Provisioning</td><td>Azure Function</td><td>EP1 (shared ASP)</td><td>SCIM/Guest/Cloud account creation via Graph API</td></tr>
+        <tr><td>Service Bus</td><td>Service Bus Namespace</td><td>Standard</td><td>Topic: <code>jml-events</code> — zone-redundant, managed identity only</td></tr>
+        <tr><td>Key Vault</td><td>Key Vault</td><td>Standard</td><td>HRIS certificates, OAuth tokens — RBAC auth, soft-delete 90 days</td></tr>
+        <tr><td>Application Insights</td><td>App Insights</td><td>—</td><td>365-day retention, workspace: Log Analytics</td></tr>
+        <tr><td>Managed Identity</td><td>User Assigned MI</td><td>—</td><td>Graph API: User.ReadWrite.All, User.Invite.All, Directory.ReadWrite.All, SCIM upload</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Authentication Model</h3>
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Integration</th><th>Method</th><th>Details</th></tr></thead>
+      <tbody>
+        <tr><td>Azure resources</td><td>User Managed Identity</td><td>Storage, Service Bus, Key Vault — no SAS keys, local auth disabled</td></tr>
+        <tr><td>Microsoft Graph</td><td>DefaultAzureCredential</td><td>Resolves to UMI — application-level permissions</td></tr>
+        <tr><td>HRIS API</td><td>OAuth2 + X.509 mTLS</td><td>Client credentials grant with certificate mutual TLS from Key Vault</td></tr>
+        <tr><td>Hybrid AD</td><td>SCIM 2.0</td><td>API-driven provisioning via on-prem provisioning agent</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>9. Known Gaps &amp; Automation Roadmap</h2>
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Gap</th><th>Current State</th><th>Impact</th></tr></thead>
+      <tbody>
+        <tr><td>Termination deprovisioning</td><td>Manual via ITSM ticket</td><td>License waste if offboarding delayed</td></tr>
+        <tr><td>Mover attribute updates</td><td>ITSM ticket only — no Entra automation</td><td>Stale department/title in directory</td></tr>
+        <tr><td>Group membership assignment</td><td>Manual post-provisioning</td><td>Delayed Day-1 access</td></tr>
+        <tr><td>License assignment</td><td>Manual or group-based after manual group add</td><td>Delayed M365 access</td></tr>
+        <tr><td>Account enablement</td><td>Accounts created disabled; no scheduled enable</td><td>Requires manual action on start date</td></tr>
+        <tr><td>Dead-letter queue</td><td>Disabled on all Service Bus subscriptions</td><td>Failed messages lost after 10 retries</td></tr>
+        <tr><td>Rehire detection</td><td>Classified as NEW_HIRE; no reactivation logic</td><td>May create duplicate instead of reactivating</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class='footer-link'>
+    <strong>References:</strong>
+    <a href='https://learn.microsoft.com/office365/servicedescriptions/office-365-platform-service-description/microsoft-365-copilot'>Microsoft 365 Copilot</a> ·
+    <a href='https://learn.microsoft.com/microsoft-365/copilot/microsoft-365-copilot-licensing'>Copilot Licensing</a> ·
+    <a href='https://learn.microsoft.com/microsoft-365/copilot/microsoft-365-copilot-chat-requirements'>Copilot Chat Requirements</a> ·
+    <a href='https://learn.microsoft.com/en-us/microsoft-365/copilot/connectors/confluence-cloud-deployment'>Confluence Connector</a> ·
+    <a href='https://m365.cloud.microsoft/chat'>M365 Copilot Chat</a> ·
+    <a href='/m365.html'>Back to Demo →</a>
+  </div>
+</body>
+</html>

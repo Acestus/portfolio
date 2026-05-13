@@ -407,7 +407,7 @@ fn scatter_vec(idx: usize, collapse: f64, time: f64, dx: f64, dz: f64) -> Vec3 {
 
 // --- Unicyclist builder ---
 
-fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f64, bz: f64, ground_y: f64, time: f64, phase: f64, fall: f64, fall_dx: f64, fall_dz: f64, hue: usize, facing: f64) -> (Vec3, f64) {
+fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f64, bz: f64, ground_y: f64, time: f64, phase: f64, fall: f64, fall_dx: f64, fall_dz: f64, hue: usize, facing: f64, scatter_amount: f64, scatter_time: f64) -> (Vec3, f64) {
     let s = 3.0;
     let pedal_speed = 2.5;
     let pa = -time * pedal_speed + phase;
@@ -422,17 +422,13 @@ fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f
     // fall < 0: collapsing (0 -> 1), fall > 0: reassembling/levitating (0 -> 1)
     let collapse = if fall < 0.0 { (-fall).min(1.0) } else { 0.0 };
     let reassemble = if fall > 0.0 { fall.min(1.0) } else { 0.0 };
-    // vertical offset for collapse / levitation
+    // vertical offset for collapse only — no levitation during reassembly
     let collapse_offset = -0.8 * s * collapse; // sink down when collapsed
-    let levitate_offset = 0.3 * s * reassemble; // further reduced levitation peak when reassembling
-    let extra_y = collapse_offset + levitate_offset;
+    let extra_y = collapse_offset;
     // lateral offset based on tap direction (fall_dx, fall_dz are normalized screen coords mapped to world)
-    let lateral_strength = 1.6 * s; // how far rider moves horizontally when knocked
-    // invert: tap on right (positive fall_dx) should push rider left (negative world x)
-    let lat_x = -fall_dx * lateral_strength * collapse; // only during collapse
+    let lateral_strength = 1.6 * s;
+    let lat_x = -fall_dx * lateral_strength * collapse;
     let lat_z = -fall_dz * lateral_strength * collapse;
-
-    // Wheel segments — wheel plane contains forward and up directions
     let n_segs: usize = 10;
     let tau = std::f64::consts::TAU;
     let spin = time * pedal_speed;
@@ -484,10 +480,9 @@ fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f
     let collapse = if fall < 0.0 { (-fall).min(1.0) } else { 0.0 };
     let reassemble = if fall > 0.0 { fall.min(1.0) } else { 0.0 };
 
-    // vertical offset for collapse / levitation
+    // vertical offset for collapse only — no levitation during reassembly
     let collapse_offset = -0.8 * s * collapse; // sink down when collapsed
-    let levitate_offset = 0.3 * s * reassemble; // further reduced levitation peak when reassembling
-    let extra_y = collapse_offset + levitate_offset;
+    let extra_y = collapse_offset;
 
     // lateral offset based on tap direction (fall_dx, fall_dz are normalized screen coords mapped to world)
     let lateral_strength = 1.6 * s; // how far rider moves horizontally when knocked
@@ -515,18 +510,20 @@ fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f
     rider_s.push(Sphere { center: Vec3::new(bx, sh_y + 0.32 * s + bob, bz),
         radius: 0.16 * s, color: Vec3::new(0.9, 0.75, 0.65) });
 
-    // After building parts, apply per-part scatter offsets when collapsing
+    // Apply per-part scatter offsets during collapse AND reassembly (reverse)
+    // scatter_amount goes 0→1 during collapse, 1→0 during reassembly
+    // scatter_time is frozen at peak collapse so vectors are consistent during reverse
     let mut part_idx = 0usize;
     for s in rider_s.iter_mut() {
-        if collapse > 0.0 {
-            let off = scatter_vec(part_idx, collapse, time, fall_dx, fall_dz);
+        if scatter_amount > 0.0 {
+            let off = scatter_vec(part_idx, scatter_amount, scatter_time, fall_dx, fall_dz);
             s.center = s.center.add(off);
         }
         part_idx += 1;
     }
     for c in rider_c.iter_mut() {
-        if collapse > 0.0 {
-            let off = scatter_vec(part_idx, collapse, time, fall_dx, fall_dz);
+        if scatter_amount > 0.0 {
+            let off = scatter_vec(part_idx, scatter_amount, scatter_time, fall_dx, fall_dz);
             c.a = c.a.add(off);
             c.b = c.b.add(off);
         }
@@ -608,8 +605,13 @@ pub struct Raytracer {
     // normalized screen tap vector (-1..1), set by JS on tap
     knock_sx: f64,
     knock_sy: f64,
+    // canvas pixel coords of tap for overlay effects
+    knock_cx: f64,
+    knock_cy: f64,
     // store paused path parameter when knocked to freeze motion
     knocked_path_t: f64,
+    // accumulated time spent in knockdown animations so rider resumes where knocked
+    knock_pause_total: f64,
     // ripple overlay for Minds Eye effect (pixel coords)
     ripples: Vec<Ripple>,
 }
@@ -625,7 +627,7 @@ impl Raytracer {
         let light = Light { pos: Vec3::new(10.0, 20.0, 8.0), intensity: 2.5 };
         let (maze_grid, maze_path) = generate_maze();
 
-        Ok(Raytracer { ctx, buf: vec![0u8; (W*H*4) as usize], light, maze_grid, maze_path, knocked_time: -1.0, knock_sx: 0.0, knock_sy: 0.0, knocked_path_t: -1.0, ripples: Vec::new() })
+        Ok(Raytracer { ctx, buf: vec![0u8; (W*H*4) as usize], light, maze_grid, maze_path, knocked_time: -1.0, knock_sx: 0.0, knock_sy: 0.0, knock_cx: 0.0, knock_cy: 0.0, knocked_path_t: -1.0, knock_pause_total: 0.0, ripples: Vec::new() })
     }
 
     // Called from JS on canvas tap to knock the rider over
@@ -634,11 +636,13 @@ impl Raytracer {
         self.knocked_time = t;
         self.knock_sx = sx;
         self.knock_sy = sy;
+        self.knock_cx = cx;
+        self.knock_cy = cy;
         // pause path traversal at current parameter so rider stops moving
         let speed = 3.5;
-        self.knocked_path_t = t * speed;
-        // add Minds Eye neon ripple at canvas pixel coords
-        self.ripples.push(Ripple { x: cx, y: cy, age: 0.0, duration: 1.2, max_radius: 220.0 });
+        self.knocked_path_t = (t - self.knock_pause_total) * speed;
+        // add Minds Eye neon ripple at canvas pixel coords — short flash
+        self.ripples.push(Ripple { x: cx, y: cy, age: 0.0, duration: 0.35, max_radius: 80.0 });
     }
 
     fn build_scene(&mut self, time: f64) -> Scene {
@@ -665,7 +669,7 @@ impl Raytracer {
         // freeze path traversal while knocked (until reassembled)
         let mut dtk = f64::MAX;
         if self.knocked_time >= 0.0 { dtk = time - self.knocked_time; }
-        let mut t_param = time * speed;
+        let mut t_param = (time - self.knock_pause_total) * speed;
         if self.knocked_time >= 0.0 && dtk < 2.0 {
             t_param = self.knocked_path_t;
         }
@@ -681,8 +685,9 @@ impl Raytracer {
                 // reassembling: 0 -> 1
                 fall = (dtk - 0.8) / (2.0 - 0.8);
             } else {
-                // done
+                // done — accumulate paused duration so rider resumes from knock position
                 fall = 0.0;
+                self.knock_pause_total += dtk;
                 self.knocked_time = -1.0;
             }
         }
@@ -690,6 +695,23 @@ impl Raytracer {
         // freeze time-based rider animations while knocked so everything (camera, spin, bob)
         // appears paused during collapse/reassemble; reassembly progress still driven by dtk/fall
         let rider_time = if self.knocked_time >= 0.0 && dtk < 2.0 { self.knocked_time } else { time };
+
+        // scatter_amount: 0→1 during collapse, 1→0 during reassembly (reversed velocity)
+        // scatter_time: frozen at peak collapse so scatter vectors are consistent during reverse
+        let (scatter_amount, scatter_time) = if self.knocked_time >= 0.0 {
+            if dtk < 0.8 {
+                // collapsing: scatter increases 0→1
+                (dtk / 0.8, self.knocked_time + dtk)
+            } else if dtk < 2.0 {
+                // reassembling: scatter decreases 1→0 (reverse the disassembly)
+                let reassemble_progress = (dtk - 0.8) / (2.0 - 0.8);
+                (1.0 - reassemble_progress, self.knocked_time + 0.8)
+            } else {
+                (0.0, time)
+            }
+        } else {
+            (0.0, time)
+        };
 
 
         // place a goal flag at the maze end
@@ -701,7 +723,7 @@ impl Raytracer {
             pillars.push(Capsule { a: Vec3::new(wx, ROAD_Y + 6.0, wz), b: Vec3::new(wx + 2.5, ROAD_Y + 5.0, wz), radius: 0.4, color: Vec3::new(0.9, 0.1, 0.1) });
         }
 
-        let (center, bound) = build_unicyclist(&mut rider_spheres, &mut rider_capsules, px, pz, ROAD_Y, rider_time, 0.0, fall, self.knock_sx, self.knock_sy, 0, facing);
+        let (center, bound) = build_unicyclist(&mut rider_spheres, &mut rider_capsules, px, pz, ROAD_Y, rider_time, 0.0, fall, self.knock_sx, self.knock_sy, 0, facing, scatter_amount, scatter_time);
 
         Scene { rider_spheres, rider_capsules, rider_center: center, rider_bound: bound, pillars, maze: self.maze_grid }
     }
@@ -713,7 +735,7 @@ impl Raytracer {
         // freeze camera tracking while knocked so the view doesn't follow the rider during collapse/reassemble
         let mut dtk = f64::MAX;
         if self.knocked_time >= 0.0 { dtk = time - self.knocked_time; }
-        let mut cam_t_param = time * speed;
+        let mut cam_t_param = (time - self.knock_pause_total) * speed;
         if self.knocked_time >= 0.0 && dtk < 2.0 { cam_t_param = self.knocked_path_t; }
         let (rx, rz, _) = path_pos(&self.maze_path, cam_t_param);
 
@@ -764,6 +786,49 @@ impl Raytracer {
                 let color = format!("rgba(0,255,65,{:.3})", alpha * (1.0 - i as f64 * 0.25));
                 self.ctx.set_stroke_style_str(&color);
                 self.ctx.set_line_width(lw);
+                self.ctx.stroke();
+            }
+        }
+
+        // Rainbow wheel during reassembly — Minds Eye style converging spinner
+        if self.knocked_time >= 0.0 {
+            let dtk = time - self.knocked_time;
+            if dtk >= 0.8 && dtk < 2.0 {
+                let progress = (dtk - 0.8) / (2.0 - 0.8); // 0→1
+                let wx = self.knock_cx;
+                let wy = self.knock_cy;
+                let tau = std::f64::consts::TAU;
+                let n_arcs = 6;
+                let spin = time * 8.0; // fast spin
+                let max_r = 120.0 * (1.0 - progress); // converges inward
+                let min_r = 10.0;
+                let radius = min_r + max_r;
+                let alpha = 0.7 * (1.0 - progress * 0.5);
+                let arc_len = tau / n_arcs as f64 * 0.7; // each arc spans 70% of its slot
+                let hues = [
+                    "rgba(255,50,50",   // red
+                    "rgba(255,165,0",   // orange
+                    "rgba(255,255,50",  // yellow
+                    "rgba(50,255,50",   // green
+                    "rgba(50,150,255",  // blue
+                    "rgba(180,50,255",  // violet
+                ];
+                for i in 0..n_arcs {
+                    let base_angle = spin + (i as f64) * tau / n_arcs as f64;
+                    self.ctx.begin_path();
+                    let _ = self.ctx.arc(wx, wy, radius, base_angle, base_angle + arc_len);
+                    let color = format!("{},{:.3})", hues[i % hues.len()], alpha);
+                    self.ctx.set_stroke_style_str(&color);
+                    self.ctx.set_line_width(4.0 + 3.0 * (1.0 - progress));
+                    self.ctx.stroke();
+                }
+                // inner glow ring
+                self.ctx.begin_path();
+                let _ = self.ctx.arc(wx, wy, min_r + 5.0 * (1.0 - progress), 0.0, tau);
+                let glow_alpha = 0.4 * (1.0 - progress);
+                let glow = format!("rgba(255,255,255,{:.3})", glow_alpha);
+                self.ctx.set_stroke_style_str(&glow);
+                self.ctx.set_line_width(2.0);
                 self.ctx.stroke();
             }
         }

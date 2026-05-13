@@ -97,14 +97,14 @@
    :asset-path "/js/agentic"
    :modules {:main {:init-fn portfolio.pro.agentic/init}}}
 
-  :enterprise-pricing
+  :pricing
   {:target :browser
-   :output-dir "resources/public/js/enterprise/pricing"
-   :asset-path "/js/enterprise/pricing"
-   :modules {:main {:init-fn portfolio.enterprise.pricing/init}}}
+   :output-dir "resources/public/js/pricing"
+   :asset-path "/js/pricing"
+   :modules {:main {:init-fn portfolio.pro.pricing/init}}}
 
-  :enterprise-m365
+  :m365
   {:target :browser
-   :output-dir "resources/public/js/enterprise/m365"
-   :asset-path "/js/enterprise/m365"
-   :modules {:main {:init-fn portfolio.enterprise.m365/init}}}}}
+   :output-dir "resources/public/js/m365"
+   :asset-path "/js/m365"
+   :modules {:main {:init-fn portfolio.pro.m365/init}}}}}
