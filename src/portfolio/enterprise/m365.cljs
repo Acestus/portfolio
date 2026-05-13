@@ -19,9 +19,10 @@
         (let [b (.createElement js/document "button")]
           (set! (.-textContent b) k)
           (.addEventListener b "click" (fn [_]
-                                          (js/alert (str "Workflow " k " steps:\n" (.-steps (aget (clj->js (:jml_workflows data)) k)))) ) )
-          (.appendChild wf-div b))))
-    (.appendChild container wf-div)
+                                          (let [^js wf (aget (clj->js (:jml_workflows data)) k)]
+                                            (js/alert (str "Workflow " k " steps:\n" (.-steps wf))))))
+          (.appendChild wf-div b)))
+      (.appendChild container wf-div))
 
     ;; group mapping view
     (let [groups (.keys js/Object (clj->js (:entra_groups data)))
@@ -29,7 +30,8 @@
       (set! (.-textContent gdiv) "Entra groups (roles):")
       (doseq [g (js/Array.from groups)]
         (let [p (.createElement js/document "p")]
-          (set! (.-textContent p) (str g ": " (.-roles (aget (clj->js (:entra_groups data)) g))))
+          (let [^js grp (aget (clj->js (:entra_groups data)) g)]
+            (set! (.-textContent p) (str g ": " (.-roles grp))))
           (.appendChild gdiv p)))
       (.appendChild container gdiv))
 
@@ -37,8 +39,8 @@
 
     (let [update (fn []
                    (let [jt (.-value sel)
-                         cfg (aget (clj->js (:job_titles data)) jt)]
-                     (set! (.-innerHTML out) (str "Access packages: <pre>" (js/JSON.stringify (.-access_packages cfg) null 2) "</pre>"))))]
+                         ^js cfg (aget (clj->js (:job_titles data)) jt)]
+                     (set! (.-innerHTML out) (str "Access packages: <pre>" (js/JSON.stringify (.-access_packages cfg) nil 2) "</pre>"))))]
       (.addEventListener sel "change" (fn [_] (update)))
       (js/setTimeout update 10))
 )

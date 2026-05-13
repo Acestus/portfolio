@@ -34,7 +34,7 @@
     (core/create-el "a" {:class "hub-card" :href (:href item) :data-id id}
       (core/create-el "span" {:class "hub-icon"} (:icon item))
       (core/create-el "span" {:class "hub-title"} (:title item))
-      (core/create-el "span" {:class "hub-desc"} (:desc item))))
+      (core/create-el "span" {:class "hub-desc"} (:desc item)))))
 
 (defn- category-section [{:keys [category items]}]
   (let [section (core/create-el "section" {:class "hub-category"})]
@@ -59,4 +59,3 @@
 (defn init []
   (core/mount!
     (ui/page-shell :hub "/articles/hub.html" "" (hub-content))))
-)
