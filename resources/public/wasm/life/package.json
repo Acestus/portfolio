@@ -1,0 +1,15 @@
+{
+  "name": "life",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "life_bg.wasm",
+    "life.js",
+    "life.d.ts"
+  ],
+  "main": "life.js",
+  "types": "life.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

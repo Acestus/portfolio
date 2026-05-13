@@ -73,6 +73,19 @@
     async function run() {
       await init();
       const canvas = document.getElementById('canvas');
+      // create overlay canvas for Minds Eye effects
+      const wrapper = canvas.parentElement;
+      if (wrapper) wrapper.style.position = wrapper.style.position || 'relative';
+      const overlay = document.createElement('canvas');
+      overlay.style.position = 'absolute';
+      overlay.style.left = '0px';
+      overlay.style.top = '0px';
+      overlay.style.pointerEvents = 'none';
+      overlay.style.zIndex = '10';
+      overlay.id = 'minds-eye-overlay';
+      if (wrapper) wrapper.appendChild(overlay);
+      const octx = overlay.getContext('2d');
+
       const rt = new Raytracer(canvas);
       // knock rider over on click/tap — send normalized screen vector and pixel coords
       canvas.addEventListener('click', (e)=>{
@@ -85,6 +98,86 @@
       });
       canvas.addEventListener('touchstart', (e)=>{ e.preventDefault(); const t = e.touches[0]; const rect = canvas.getBoundingClientRect(); const cx = t.clientX - rect.left; const cy = t.clientY - rect.top; const sx = (cx - canvas.width/2) / (canvas.width/2); const sy = (cy - canvas.height/2) / (canvas.height/2); rt.tap(performance.now()/1000, sx, sy, cx, cy); }, {passive:false});
       const fpsEl = document.getElementById('fps');
+
+      function resizeOverlay(){
+        const rect = canvas.getBoundingClientRect();
+        const wrapRect = wrapper.getBoundingClientRect();
+        const cssW = rect.width || canvas.clientWidth || 320;
+        const cssH = rect.height || canvas.clientHeight || 240;
+        const dpr = window.devicePixelRatio || 1;
+        // position overlay relative to wrapper
+        overlay.style.left = (rect.left - wrapRect.left) + 'px';
+        overlay.style.top = (rect.top - wrapRect.top) + 'px';
+        // set CSS size
+        overlay.style.width = cssW + 'px';
+        overlay.style.height = cssH + 'px';
+        // set backing store size for high-DPI
+        overlay.width = Math.max(1, Math.round(cssW * dpr));
+        overlay.height = Math.max(1, Math.round(cssH * dpr));
+        // scale drawing operations so coordinates are in CSS pixels
+        if (octx) { octx.setTransform(dpr,0,0,dpr,0,0); }
+      }
+      // sync sizes if needed
+      resizeOverlay();
+      // Observe size changes to canvas and reposition overlay
+      const mo = new ResizeObserver(()=>resizeOverlay());
+      mo.observe(canvas);
+      window.addEventListener('resize', resizeOverlay);
+
+      function animateMindsEye(cx, cy){
+        if (!octx) return;
+        const rect = canvas.getBoundingClientRect();
+        const cssW = rect.width || canvas.clientWidth;
+        const cssH = rect.height || canvas.clientHeight;
+        const start = performance.now();
+        const duration = 1600;
+        const slices = 7;
+        function frame(){
+          const now = performance.now();
+          const t = (now - start) / duration;
+          // clear using CSS pixel coords
+          octx.save();
+          octx.globalCompositeOperation = 'source-over';
+          octx.clearRect(0,0,cssW, cssH);
+          octx.restore();
+          if (t >= 1.0) return;
+          octx.globalCompositeOperation = 'lighter';
+          for (let i=0;i<slices;i++){
+            const angle = i*(Math.PI*2)/slices + t*4.0;
+            octx.save();
+            octx.translate(cx, cy);
+            octx.rotate(angle);
+            octx.beginPath();
+            octx.moveTo(0,0);
+            octx.arc(0,0, Math.min(cssW, cssH)*0.4, -0.35, 0.35);
+            octx.closePath();
+            const hue = (i*360/slices + t*360) % 360;
+            octx.fillStyle = `hsla(${hue},90%,60%,${0.25*(1-t)})`;
+            octx.fill();
+            octx.restore();
+          }
+          // neon ring
+          const maxR = Math.max(cssW, cssH);
+          const r = maxR * 0.25 * (0.5 + t);
+          octx.lineWidth = 8 * (1 - t);
+          octx.strokeStyle = `rgba(0,255,65,${1 - t})`;
+          octx.beginPath(); octx.arc(cx, cy, r, 0, Math.PI*2); octx.stroke();
+          requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+      }
+
+      // click/touch handler: keep existing RT tap (if exported) and also run Minds Eye overlay
+      canvas.addEventListener('click', (e)=>{
+        const rect = canvas.getBoundingClientRect();
+        const cx = e.clientX - rect.left;
+        const cy = e.clientY - rect.top;
+        const sx = (cx - canvas.width/2) / (canvas.width/2);
+        const sy = (cy - canvas.height/2) / (canvas.height/2);
+        try { if (rt && rt.tap) rt.tap(performance.now()/1000, sx, sy, cx, cy); } catch (err) { /* ignore if tap not exported */ }
+        animateMindsEye(cx, cy);
+      });
+      canvas.addEventListener('touchstart', (e)=>{ e.preventDefault(); const t = e.touches[0]; const rect = canvas.getBoundingClientRect(); const cx = t.clientX - rect.left; const cy = t.clientY - rect.top; const sx = (cx - canvas.width/2) / (canvas.width/2); const sy = (cy - canvas.height/2) / (canvas.height/2); try { if (rt && rt.tap) rt.tap(performance.now()/1000, sx, sy, cx, cy); } catch (err){} animateMindsEye(cx, cy); }, {passive:false});
 
       let frames = 0, fpsTime = 0, last = performance.now();
       function loop(now) {
