@@ -7,6 +7,14 @@ const GRID_H: u32 = 150;
 const W: u32 = GRID_W * CELL_SIZE;
 const H: u32 = GRID_H * CELL_SIZE;
 
+struct Ripple {
+    x: f64,
+    y: f64,
+    age: f64,
+    duration: f64,
+    max_radius: f64,
+}
+
 #[wasm_bindgen]
 pub struct Life {
     cells: Vec<bool>,
@@ -15,6 +23,7 @@ pub struct Life {
     generation: u32,
     population: u32,
     seed: u32, // simple LCG for click-directed randomness
+    ripples: Vec<Ripple>,
 }
 
 fn idx(x: u32, y: u32) -> usize {
@@ -70,10 +79,14 @@ impl Life {
             }
         }
 
-        Ok(Life { cells, next, ctx, generation: 0, population: 0, seed: 0xC0FF_EE })
+        Ok(Life { cells, next, ctx, generation: 0, population: 0, seed: 0xC0FF_EE, ripples: Vec::new() })
     }
 
     pub fn tick(&mut self) {
+        // Update ripples (age and remove finished)
+        for r in self.ripples.iter_mut() { r.age += 1.0/60.0; }
+        self.ripples.retain(|r| r.age < r.duration);
+
         let mut pop = 0u32;
         for y in 0..GRID_H {
             for x in 0..GRID_W {
@@ -133,6 +146,23 @@ impl Life {
                 }
             }
         }
+
+        // Draw ripples overlay (retro neon green)
+        for rip in &self.ripples {
+            let t = (rip.age / rip.duration).min(1.0);
+            let r = rip.max_radius * t;
+            let alpha = f64::max(1.0 - t, 0.0);
+            for i in 0..3 {
+                let ring_r = r * (1.0 + i as f64 * 0.12);
+                let lw = 8.0 / (i as f64 + 1.0);
+                self.ctx.begin_path();
+                let _ = self.ctx.arc(rip.x, rip.y, ring_r, 0.0, std::f64::consts::TAU);
+                let color = format!("rgba(0,255,65,{:.3})", alpha * (1.0 - i as f64 * 0.25));
+                self.ctx.set_stroke_style_str(&color);
+                self.ctx.set_line_width(lw);
+                self.ctx.stroke();
+            }
+        }
     }
 
     // simple LCG for local randomness
@@ -178,6 +208,9 @@ impl Life {
                 self.cells[i] = true;
             }
         }
+
+        // Add retro neon ripple at the tapped canvas location
+        self.ripples.push(Ripple { x: canvas_x, y: canvas_y, age: 0.0, duration: 1.2, max_radius: 300.0 });
     }
 
     pub fn generation(&self) -> u32 { self.generation }
