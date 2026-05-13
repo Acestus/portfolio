@@ -1,0 +1,15 @@
+{
+  "name": "particles",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "particles_bg.wasm",
+    "particles.js",
+    "particles.d.ts"
+  ],
+  "main": "particles.js",
+  "types": "particles.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
