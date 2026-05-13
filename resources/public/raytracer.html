@@ -78,11 +78,10 @@
       if (wrapper) wrapper.style.position = wrapper.style.position || 'relative';
       const overlay = document.createElement('canvas');
       overlay.style.position = 'absolute';
-      overlay.style.left = 0;
-      overlay.style.top = 0;
+      overlay.style.left = '0px';
+      overlay.style.top = '0px';
       overlay.style.pointerEvents = 'none';
-      overlay.width = canvas.width || 320;
-      overlay.height = canvas.height || 240;
+      overlay.style.zIndex = '10';
       overlay.id = 'minds-eye-overlay';
       if (wrapper) wrapper.appendChild(overlay);
       const octx = overlay.getContext('2d');
@@ -91,8 +90,11 @@
       const fpsEl = document.getElementById('fps');
 
       function resizeOverlay(){
-        overlay.width = canvas.width;
-        overlay.height = canvas.height;
+        // match canvas drawing buffer size and CSS size
+        overlay.width = canvas.width || canvas.clientWidth || 320;
+        overlay.height = canvas.height || canvas.clientHeight || 240;
+        overlay.style.width = (canvas.clientWidth || overlay.width) + 'px';
+        overlay.style.height = (canvas.clientHeight || overlay.height) + 'px';
       }
       // sync sizes if needed
       resizeOverlay();
@@ -106,6 +108,8 @@
         function frame(){
           const now = performance.now();
           const t = (now - start) / duration;
+          // clear with source-over to reset previous content
+          octx.globalCompositeOperation = 'source-over';
           octx.clearRect(0,0,overlay.width, overlay.height);
           if (t >= 1.0) return;
           octx.globalCompositeOperation = 'lighter';
@@ -116,7 +120,7 @@
             octx.rotate(angle);
             octx.beginPath();
             octx.moveTo(0,0);
-            octx.arc(0,0, Math.min(overlay.width, overlay.height)*0.9, -0.35, 0.35);
+            octx.arc(0,0, Math.min(overlay.width, overlay.height)*0.4, -0.35, 0.35);
             octx.closePath();
             const hue = (i*360/slices + t*360) % 360;
             octx.fillStyle = `hsla(${hue},90%,60%,${0.25*(1-t)})`;
@@ -125,7 +129,7 @@
           }
           // neon ring
           const maxR = Math.max(overlay.width, overlay.height);
-          const r = maxR * 0.4 * t + 4.0;
+          const r = maxR * 0.25 * (0.5 + t);
           octx.lineWidth = 8 * (1 - t);
           octx.strokeStyle = `rgba(0,255,65,${1 - t})`;
           octx.beginPath(); octx.arc(cx, cy, r, 0, Math.PI*2); octx.stroke();
