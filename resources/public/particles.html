@@ -61,22 +61,84 @@
     async function run() {
       await init();
       const canvas = document.getElementById('canvas');
+      const wrapper = canvas.parentElement || document.body;
+      if (wrapper) wrapper.style.position = wrapper.style.position || 'relative';
+      // overlay canvas for neon ripple
+      const overlay = document.createElement('canvas');
+      overlay.style.position = 'absolute';
+      overlay.style.left = '0px';
+      overlay.style.top = '0px';
+      overlay.style.pointerEvents = 'none';
+      overlay.style.zIndex = '10';
+      wrapper.appendChild(overlay);
+      const octx = overlay.getContext('2d');
+
       const sys = new ParticleSystem(canvas);
       const fpsEl = document.getElementById('fps');
+
+      function resizeOverlay(){
+        const rect = canvas.getBoundingClientRect();
+        const wrapRect = wrapper.getBoundingClientRect();
+        const cssW = rect.width || canvas.clientWidth || 800;
+        const cssH = rect.height || canvas.clientHeight || 600;
+        const dpr = window.devicePixelRatio || 1;
+        overlay.style.left = (rect.left - wrapRect.left) + 'px';
+        overlay.style.top = (rect.top - wrapRect.top) + 'px';
+        overlay.style.width = cssW + 'px';
+        overlay.style.height = cssH + 'px';
+        overlay.width = Math.max(1, Math.round(cssW * dpr));
+        overlay.height = Math.max(1, Math.round(cssH * dpr));
+        if (octx) { octx.setTransform(dpr,0,0,dpr,0,0); }
+      }
+      resizeOverlay();
+      const mo = new ResizeObserver(resizeOverlay);
+      mo.observe(canvas);
+      window.addEventListener('resize', resizeOverlay);
+
+      function animateRipple(cx, cy){
+        if (!octx) return;
+        const rect = canvas.getBoundingClientRect();
+        const cssW = rect.width || canvas.clientWidth;
+        const cssH = rect.height || canvas.clientHeight;
+        const start = performance.now();
+        const duration = 1000;
+        function frame(){
+          const now = performance.now();
+          const t = (now - start) / duration;
+          octx.clearRect(0,0,cssW, cssH);
+          if (t >= 1.0) return;
+          const r = Math.max(cssW, cssH) * 0.6 * t + 4;
+          const alpha = Math.max(1.0 - t, 0);
+          octx.lineWidth = 8 * (1 - t);
+          octx.strokeStyle = `rgba(0,255,65,${alpha})`;
+          octx.beginPath(); octx.arc(cx, cy, r, 0, Math.PI*2); octx.stroke();
+          requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+      }
+
       canvas.addEventListener('click', (e) => {
         const rect = canvas.getBoundingClientRect();
         const sx = canvas.width / rect.width;
         const sy = canvas.height / rect.height;
-        sys.add_well_at((e.clientX - rect.left) * sx, (e.clientY - rect.top) * sy);
+        const cx = (e.clientX - rect.left);
+        const cy = (e.clientY - rect.top);
+        sys.add_well_at(cx * sx, cy * sy);
+        animateRipple(cx, cy);
       });
+
       canvas.addEventListener('touchstart', (e) => {
         e.preventDefault();
         const t = e.touches[0];
         const rect = canvas.getBoundingClientRect();
         const sx = canvas.width / rect.width;
         const sy = canvas.height / rect.height;
-        sys.add_well_at((t.clientX - rect.left) * sx, (t.clientY - rect.top) * sy);
+        const cx = (t.clientX - rect.left);
+        const cy = (t.clientY - rect.top);
+        sys.add_well_at(cx * sx, cy * sy);
+        animateRipple(cx, cy);
       }, { passive: false });
+
       let last = performance.now();
       let frames = 0, fpsTime = 0;
       function loop(now) {
