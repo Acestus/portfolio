@@ -16,8 +16,47 @@
   <link rel="stylesheet" href="/css/arcade.css">
 </head>
 <body class="arcade-theme">
-  <div id="app"></div>
+  <div class="page-shell">
+    <header class="site-nav" role="banner">
+      <a class="site-name" href="/">acestus.com</a>
+      <nav role="navigation" aria-label="Main">
+        <button class="nav-toggle" aria-controls="main-nav" aria-expanded="false">☰</button>
+        <div class="nav-links" id="main-nav">
+          <a class="nav-link" href="/">Portfolio</a>
+        </div>
+      </nav>
+    </header>
+    <main class="main-content" id="app"></main>
+    <footer class="site-footer" role="contentinfo"></footer>
+  </div>
   <script src="/js/hub/main.js"></script>
-  <script src="/js/nav.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var toggle = document.querySelector('.nav-toggle');
+      var links = document.getElementById('main-nav');
+      if (!toggle || !links) return;
+
+      toggle.addEventListener('click', function() {
+        var isOpen = links.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+
+      // Close mobile nav when a link is activated
+      links.querySelectorAll('a').forEach(function(a) {
+        a.addEventListener('click', function() {
+          links.classList.remove('open');
+          toggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+
+      // Close on Escape
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          links.classList.remove('open');
+          toggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    });
+  </script>
 </body>
 </html>
