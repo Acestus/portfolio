@@ -431,7 +431,7 @@ fn build_unicyclist(rider_s: &mut Vec<Sphere>, rider_c: &mut Vec<Capsule>, bx: f
     let lat_z = -fall_dz * lateral_strength * collapse;
     let n_segs: usize = 10;
     let tau = std::f64::consts::TAU;
-    let spin = time * pedal_speed;
+    let spin = -time * pedal_speed;
     for i in 0..n_segs {
         let a0 = (i as f64) * tau / (n_segs as f64) + spin;
         let a1 = ((i + 1) as f64) * tau / (n_segs as f64) + spin;
