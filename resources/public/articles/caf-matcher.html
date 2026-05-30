@@ -3,7 +3,7 @@
 <head>
   <meta charset='utf-8'>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
-  <title>CAF Naming Puzzle — Cloud Adoption Framework Naming</title>
+  <title>CAF Naming — The Convention That Scales</title>
   <style>
     :root { --accent: #0078d4; --accent-dark: #106ebe; --bg: #faf9f8; --text: #323130; --summary: #e1f5fe; }
     * { box-sizing: border-box; }
@@ -13,10 +13,11 @@
     .back-link { display: inline-block; margin-bottom: 1rem; font-weight: 600; }
     h1 { color: var(--accent); border-bottom: 3px solid var(--accent); padding-bottom: 0.5rem; margin-top: 0; }
     h2 { color: var(--accent-dark); border-left: 4px solid var(--accent); padding-left: 15px; margin-top: 2.25rem; }
+    h3 { color: var(--accent-dark); margin-top: 1.5rem; }
     .summary { background: var(--summary); border-left: 5px solid var(--accent); border-radius: 4px; padding: 1rem; margin: 1rem 0 1.5rem; }
     .metrics { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0; }
     .metric-card { background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-bottom: 3px solid var(--accent); padding: 1rem; flex: 1 1 180px; min-width: 170px; }
-    .metric-value { color: var(--accent); font-size: 1.6rem; font-weight: 700; }
+    .metric-value { color: var(--accent); font-size: 1.45rem; font-weight: 700; }
     .metric-label { color: #605e5c; font-size: 0.95rem; }
     .flow { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.5rem; margin: 1.5rem 0; }
     .pill { background: var(--accent); color: #fff; padding: 0.65rem 1rem; border-radius: 999px; font-weight: 600; }
@@ -27,6 +28,7 @@
     th { background: var(--accent); color: #fff; }
     tbody tr:nth-child(even) { background: #f3f2f1; }
     tbody tr:hover { background: #deecf9; }
+    .callout { background: #fff3cd; border-left: 5px solid #ffc107; border-radius: 4px; padding: 1rem; margin: 1rem 0; }
     .footer-link { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #d2d0ce; }
     @media (max-width: 768px) {
       body { padding: 16px; }
@@ -75,66 +77,177 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
   <a class='back-link' href='/matcher.html'>← Back to Demo</a>
-  <h1>CAF Naming Puzzle — Cloud Adoption Framework Naming</h1>
+  <h1>CAF Naming — The Convention That Scales</h1>
 
   <div class='summary'>
-    Timed puzzle matching Azure resources to their CAF-compliant names. It looks playful, but the implementation teaches an operationally serious skill: naming standards as machine-readable metadata. The SPA randomizes a round from a larger naming corpus, tracks selection state on canvas, and uses click-position scaling so desktop and mobile taps resolve accurately.
+    The Microsoft Build 2026 refresh turns the CAF matcher from a simple puzzle explainer into a governance article about naming that scales. The SPA teaches the same muscle memory platform teams need in production: choose the resource type, match the CAF pattern, validate the name before provisioning, and keep Azure and Microsoft Fabric artifacts consistent enough for ownership, cost attribution, and automation.
   </div>
 
   <div class='metrics'>
-    <div class='metric-card'><div class='metric-value'>12</div><div class='metric-label'>Resource Types</div></div>
-    <div class='metric-card'><div class='metric-value'>30s</div><div class='metric-label'>Round Timer</div></div>
-    <div class='metric-card'><div class='metric-value'>Click/Tap</div><div class='metric-label'>Primary Input</div></div>
-    <div class='metric-card'><div class='metric-value'>Score</div><div class='metric-label'>Tracked Per Match</div></div>
+    <div class='metric-card'><div class='metric-value'>{type}-{project}-{env}-{region}-{instance}</div><div class='metric-label'>Core Azure CAF Pattern</div></div>
+    <div class='metric-card'><div class='metric-value'>PR-Gated</div><div class='metric-label'>Names Validated Before Merge</div></div>
+    <div class='metric-card'><div class='metric-value'>Azure Naming Tool</div><div class='metric-label'>Standardize and Automate</div></div>
+    <div class='metric-card'><div class='metric-value'>lh_&lt;domain&gt;_&lt;layer&gt;</div><div class='metric-label'>Fabric Pattern</div></div>
   </div>
 
   <div class='flow'>
-    <span class='pill'>Pick 5 Pairs</span><span class='arrow'>→</span>
-    <span class='pill'>Shuffle Columns</span><span class='arrow'>→</span>
-    <span class='pill'>Select Resource</span><span class='arrow'>→</span>
-    <span class='pill'>Match CAF Name</span><span class='arrow'>→</span>
-    <span class='pill'>+200 Score</span>
+    <span class='pill'>Choose Type</span><span class='arrow'>→</span>
+    <span class='pill'>Match Pattern</span><span class='arrow'>→</span>
+    <span class='pill'>Validate</span><span class='arrow'>→</span>
+    <span class='pill'>Provision</span><span class='arrow'>→</span>
+    <span class='pill'>Govern</span>
   </div>
 
-  <h2>CAF Naming Convention</h2>
-  <p>The puzzle is built around a practical naming grammar, not arbitrary strings. Resource names encode type, project, environment, region, and instance. That makes them readable to humans while still predictable enough for scripts, governance policies, and support runbooks.</p>
+  <h2>Why Naming Conventions Matter</h2>
+  <p>Cloud sprawl starts as a readability problem. If a resource name does not reveal type, workload, environment, and region, every incident, cleanup, and cost review begins with a manual lookup. CAF-aligned naming converts the name itself into operational metadata.</p>
+  <p>The matcher game reinforces that pattern by asking players to connect resource types to compliant names. In production, the same matching happens in pull requests, deployment pipelines, inventory exports, and chargeback reviews.</p>
+  <p>Consistent naming improves ownership, cost attribution, and governance. A resource named <code>func-coredata-prd-usw2-001</code> immediately reads as an example project code for a production Function App in West US 2. A name like <code>app-final-v2</code> does not.</p>
+
+  <h2>The CAF Pattern Explained</h2>
+  <p>The Azure resource convention used by the demo follows a hyphenated Cloud Adoption Framework pattern:</p>
+  <div class='code-block'>{type}-{project}-{env}-{region}-{instance}
+func-project-dev-usw2-001
+kv-coremon-prd-usw2-001   # coremon is an example project code
+umi-coredata-dev-usw2-ctl  # ctl marks a control-plane identity</div>
   <div class='table-wrap'>
     <table>
-      <thead><tr><th>Prefix</th><th>Resource</th><th>Example</th></tr></thead>
+      <thead><tr><th>Component</th><th>Purpose</th><th>Allowed / Example Values</th><th>Governance Notes</th></tr></thead>
       <tbody>
-        <tr><td>func</td><td>Function App</td><td>func-project-dev-usw2-001</td></tr>
-        <tr><td>st</td><td>Storage Account</td><td>st-project-dev-usw2-001</td></tr>
-        <tr><td>kv</td><td>Key Vault</td><td>kv-project-dev-usw2-001</td></tr>
-        <tr><td>vnet</td><td>Virtual Network</td><td>vnet-project-dev-usw2-001</td></tr>
-        <tr><td>umi</td><td>User-assigned Managed Identity</td><td>umi-project-dev-usw2-ctl</td></tr>
-        <tr><td>evh</td><td>Event Hub</td><td>evh-project-dev-usw2-001</td></tr>
+        <tr><td><code>type</code></td><td>Resource-type abbreviation</td><td><code>rg</code>, <code>func</code>, <code>kv</code>, <code>st</code>, <code>vnet</code></td><td>Comes from the canonical abbreviation table.</td></tr>
+        <tr><td><code>project</code></td><td>Workload or platform short code</td><td><code>project</code>, <code>coremon</code>, <code>coredata</code>, <code>coresec</code></td><td>Real-looking values here are example project codes only.</td></tr>
+        <tr><td><code>env</code></td><td>Deployment environment</td><td><code>dev</code>, <code>stg</code>, <code>prd</code>, <code>sbx</code></td><td>Map subscription names to generic scopes such as Production, Dev, and Sandbox.</td></tr>
+        <tr><td><code>region</code></td><td>Azure location code</td><td><code>usw2</code> for West US 2, <code>eus</code> for East US</td><td>Keep the code short and stable.</td></tr>
+        <tr><td><code>instance</code></td><td>Sequence or purpose suffix</td><td><code>001</code>, <code>002</code>, <code>ctl</code>, <code>dat</code></td><td>Use numeric instances for multiples and purpose suffixes for identities.</td></tr>
       </tbody>
     </table>
   </div>
 
-  <h2>The Naming Pattern</h2>
-  <p>The article-worthy detail is that the game teaches structure, not memorization. Players are effectively parsing a naming DSL. Once you recognize that <code>usw2</code> is West US 2 and <code>ctl</code> signals a control identity or control-plane role, the string stops being noise and starts becoming an inventory record.</p>
-  <div class='code-block'>{type}-{project}-{env}-{region}-{instance}
-func-project-dev-usw2-001
-st-project-dev-usw2-001
-umi-project-dev-usw2-ctl</div>
-  <p>Because the source data is a vector of maps, the game can separate display text from semantics. A round is generated by taking five random pairs, then independently shuffling the resource column and CAF-name column. That means every round is small enough to read yet different enough to stay interesting.</p>
+  <h2>Resource-Type Abbreviations</h2>
+  <p>The canonical table keeps names predictable across subscriptions. It is grounded in the Microsoft CAF abbreviation guidance and extended with common deployment, identity, data, analytics, network, monitoring, and Fabric-adjacent resource types used by modern Azure platforms.</p>
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Category</th><th>Resource</th><th>Provider / Scope</th><th>Abbreviation</th><th>Example Name</th></tr></thead>
+      <tbody>
+        <tr><td>Management</td><td>Resource group</td><td>Microsoft.Resources/resourceGroups</td><td><code>rg</code></td><td><code>rg-coremon-dev</code></td></tr>
+        <tr><td>Management</td><td>Management group</td><td>Tenant scope</td><td><code>mg</code></td><td><code>mg-platform-prd</code></td></tr>
+        <tr><td>Management</td><td>Deployment stack</td><td>Microsoft.Resources/deploymentStacks</td><td><code>stack</code></td><td><code>stack-coredata-prd-usw2-001</code></td></tr>
+        <tr><td>Identity</td><td>User-assigned managed identity</td><td>Microsoft.ManagedIdentity/userAssignedIdentities</td><td><code>umi</code></td><td><code>umi-coredata-dev-usw2-ctl</code></td></tr>
+        <tr><td>Identity</td><td>Key Vault</td><td>Microsoft.KeyVault/vaults</td><td><code>kv</code></td><td><code>kv-coremon-prd-usw2-001</code></td></tr>
+        <tr><td>Identity</td><td>Federated credential</td><td>Child of managed identity</td><td><code>fc</code></td><td><code>fc-org-repo-main</code></td></tr>
+        <tr><td>Compute</td><td>Virtual machine</td><td>Microsoft.Compute/virtualMachines</td><td><code>vm</code></td><td><code>vm-build-dev-usw2-001</code></td></tr>
+        <tr><td>Compute</td><td>Virtual machine scale set</td><td>Microsoft.Compute/virtualMachineScaleSets</td><td><code>vmss</code></td><td><code>vmss-api-prd-usw2-001</code></td></tr>
+        <tr><td>Compute</td><td>Availability set</td><td>Microsoft.Compute/availabilitySets</td><td><code>avail</code></td><td><code>avail-api-prd-usw2-001</code></td></tr>
+        <tr><td>Compute</td><td>Managed disk</td><td>Microsoft.Compute/disks</td><td><code>disk</code></td><td><code>disk-api-prd-usw2-001</code></td></tr>
+        <tr><td>Web</td><td>Function App</td><td>Microsoft.Web/sites</td><td><code>func</code></td><td><code>func-coresec-dev-usw2-001</code></td></tr>
+        <tr><td>Web</td><td>App Service app</td><td>Microsoft.Web/sites</td><td><code>app</code></td><td><code>app-portal-prd-usw2-001</code></td></tr>
+        <tr><td>Web</td><td>App Service plan</td><td>Microsoft.Web/serverfarms</td><td><code>asp</code></td><td><code>asp-portal-prd-usw2-001</code></td></tr>
+        <tr><td>Web</td><td>Static Web App</td><td>Microsoft.Web/staticSites</td><td><code>stapp</code></td><td><code>stapp-portfolio-prd-usw2-001</code></td></tr>
+        <tr><td>Containers</td><td>Container registry</td><td>Microsoft.ContainerRegistry/registries</td><td><code>cr</code></td><td><code>crplatformdevusw2001</code></td></tr>
+        <tr><td>Containers</td><td>Azure Kubernetes Service</td><td>Microsoft.ContainerService/managedClusters</td><td><code>aks</code></td><td><code>aks-app-prd-usw2-001</code></td></tr>
+        <tr><td>Containers</td><td>Container Apps environment</td><td>Microsoft.App/managedEnvironments</td><td><code>cae</code></td><td><code>cae-app-prd-usw2-001</code></td></tr>
+        <tr><td>Containers</td><td>Container App</td><td>Microsoft.App/containerApps</td><td><code>ca</code></td><td><code>ca-api-prd-usw2-001</code></td></tr>
+        <tr><td>Storage</td><td>Storage account</td><td>Microsoft.Storage/storageAccounts</td><td><code>st</code></td><td><code>stprojectdevusw2001</code></td></tr>
+        <tr><td>Storage</td><td>Blob container</td><td>Storage child resource</td><td><code>blob</code></td><td><code>blob-raw-ingest</code></td></tr>
+        <tr><td>Storage</td><td>File share</td><td>Storage child resource</td><td><code>share</code></td><td><code>share-app-prd</code></td></tr>
+        <tr><td>Database</td><td>Azure SQL server</td><td>Microsoft.Sql/servers</td><td><code>sql</code></td><td><code>sql-data-prd-usw2-001</code></td></tr>
+        <tr><td>Database</td><td>Azure SQL database</td><td>Microsoft.Sql/servers/databases</td><td><code>sqldb</code></td><td><code>sqldb-sales-prd-usw2-001</code></td></tr>
+        <tr><td>Database</td><td>Cosmos DB account</td><td>Microsoft.DocumentDB/databaseAccounts</td><td><code>cosmos</code></td><td><code>cosmos-app-prd-usw2-001</code></td></tr>
+        <tr><td>Database</td><td>PostgreSQL flexible server</td><td>Microsoft.DBforPostgreSQL/flexibleServers</td><td><code>psql</code></td><td><code>psql-app-prd-usw2-001</code></td></tr>
+        <tr><td>Database</td><td>Redis cache</td><td>Microsoft.Cache/Redis</td><td><code>redis</code></td><td><code>redis-app-prd-usw2-001</code></td></tr>
+        <tr><td>Network</td><td>Virtual network</td><td>Microsoft.Network/virtualNetworks</td><td><code>vnet</code></td><td><code>vnet-hub-prd-usw2-001</code></td></tr>
+        <tr><td>Network</td><td>Subnet</td><td>Microsoft.Network/virtualNetworks/subnets</td><td><code>snet</code></td><td><code>snet-app-prd-usw2-001</code></td></tr>
+        <tr><td>Network</td><td>Network security group</td><td>Microsoft.Network/networkSecurityGroups</td><td><code>nsg</code></td><td><code>nsg-app-prd-usw2-001</code></td></tr>
+        <tr><td>Network</td><td>Route table</td><td>Microsoft.Network/routeTables</td><td><code>rt</code></td><td><code>rt-app-prd-usw2-001</code></td></tr>
+        <tr><td>Network</td><td>Public IP address</td><td>Microsoft.Network/publicIPAddresses</td><td><code>pip</code></td><td><code>pip-app-prd-usw2-001</code></td></tr>
+        <tr><td>Network</td><td>Load balancer</td><td>Microsoft.Network/loadBalancers</td><td><code>lb</code></td><td><code>lb-app-prd-usw2-001</code></td></tr>
+        <tr><td>Network</td><td>Application Gateway</td><td>Microsoft.Network/applicationGateways</td><td><code>agw</code></td><td><code>agw-app-prd-usw2-001</code></td></tr>
+        <tr><td>Network</td><td>Azure Firewall</td><td>Microsoft.Network/azureFirewalls</td><td><code>afw</code></td><td><code>afw-hub-prd-usw2-001</code></td></tr>
+        <tr><td>Network</td><td>Private endpoint</td><td>Microsoft.Network/privateEndpoints</td><td><code>pep</code></td><td><code>pep-kv-prd-usw2-001</code></td></tr>
+        <tr><td>Integration</td><td>Event Hubs namespace</td><td>Microsoft.EventHub/namespaces</td><td><code>evhns</code></td><td><code>evhns-coremon-dev-usw2-001</code></td></tr>
+        <tr><td>Integration</td><td>Event hub</td><td>Microsoft.EventHub/namespaces/eventhubs</td><td><code>evh</code></td><td><code>activitylogs</code></td></tr>
+        <tr><td>Integration</td><td>Service Bus namespace</td><td>Microsoft.ServiceBus/namespaces</td><td><code>sbns</code></td><td><code>sbns-app-prd-usw2-001</code></td></tr>
+        <tr><td>Integration</td><td>Service Bus queue</td><td>Service Bus child resource</td><td><code>sbq</code></td><td><code>sbq-orders-prd</code></td></tr>
+        <tr><td>Integration</td><td>Logic App</td><td>Microsoft.Logic/workflows</td><td><code>logic</code></td><td><code>logic-ops-prd-usw2-001</code></td></tr>
+        <tr><td>Data</td><td>Data Factory</td><td>Microsoft.DataFactory/factories</td><td><code>adf</code></td><td><code>adf-data-prd-usw2-001</code></td></tr>
+        <tr><td>Data</td><td>Data Explorer cluster</td><td>Microsoft.Kusto/clusters</td><td><code>dec</code></td><td><code>dec-logs-prd-usw2-001</code></td></tr>
+        <tr><td>Data</td><td>Data Explorer database</td><td>Microsoft.Kusto/clusters/databases</td><td><code>dedb</code></td><td><code>dedb-logs-prd-usw2-001</code></td></tr>
+        <tr><td>AI</td><td>Azure AI Search</td><td>Microsoft.Search/searchServices</td><td><code>srch</code></td><td><code>srch-docs-prd-usw2-001</code></td></tr>
+        <tr><td>AI</td><td>Azure OpenAI Service</td><td>Microsoft.CognitiveServices/accounts</td><td><code>oai</code></td><td><code>oai-copilot-prd-usw2-001</code></td></tr>
+        <tr><td>AI</td><td>Foundry account</td><td>Microsoft.CognitiveServices/accounts</td><td><code>aif</code></td><td><code>aif-agents-prd-usw2-001</code></td></tr>
+        <tr><td>AI</td><td>Machine Learning workspace</td><td>Microsoft.MachineLearningServices/workspaces</td><td><code>mlw</code></td><td><code>mlw-models-prd-usw2-001</code></td></tr>
+        <tr><td>Monitoring</td><td>Application Insights</td><td>Microsoft.Insights/components</td><td><code>appi</code></td><td><code>appi-coremon-dev-usw2-001</code></td></tr>
+        <tr><td>Monitoring</td><td>Log Analytics workspace</td><td>Microsoft.OperationalInsights/workspaces</td><td><code>log</code></td><td><code>log-platform-prd-usw2-001</code></td></tr>
+        <tr><td>Monitoring</td><td>Action group</td><td>Microsoft.Insights/actionGroups</td><td><code>ag</code></td><td><code>ag-platform-prd-usw2-001</code></td></tr>
+        <tr><td>Monitoring</td><td>Managed Grafana</td><td>Microsoft.Dashboard/grafana</td><td><code>amg</code></td><td><code>amg-coremon-dev-usw2-001</code></td></tr>
+        <tr><td>Analytics</td><td>Fabric capacity</td><td>Microsoft.Fabric/capacities</td><td><code>cap</code></td><td><code>cap-data-prd-usw2-001</code></td></tr>
+      </tbody>
+    </table>
+  </div>
 
-  <h2>Why Naming Matters</h2>
-  <p>Good naming reduces cognitive load during incidents, deployments, and audits. If a platform engineer sees <code>kv-skpad-prd-usw2-001</code>, they can infer service class, workload, environment, geography, and multiplicity without opening Azure Portal. That is exactly why naming standards belong in policy, IaC, dashboards, and onboarding material.</p>
-  <p>The game also quietly shows why inconsistent naming is expensive. Every mismatch forces extra lookup steps. In real systems that means harder chargeback, weaker troubleshooting, and brittle automation because regex, tag rules, and deployment scopes all become less trustworthy.</p>
+  <h2>Special Cases</h2>
+  <p>Not every Azure service can use the hyphenated pattern exactly. CAF is a convention, but Azure resource-name rules still win.</p>
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Resource</th><th>Rule</th><th>Pattern</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td>Storage account</td><td>Lowercase letters and numbers only; no hyphens; 3–24 characters; globally unique.</td><td><code>st{project}{env}{region}{instance}</code></td><td><code>stprojectdevusw2001</code></td></tr>
+        <tr><td>Container registry</td><td>Usually no hyphens; globally unique; keep compact.</td><td><code>cr{project}{env}{region}{instance}</code></td><td><code>crplatformdevusw2001</code></td></tr>
+        <tr><td>Key Vault</td><td>Globally unique DNS name; hyphens allowed; plan for soft-delete and purge protection.</td><td><code>kv-{project}-{env}-{region}-{instance}</code></td><td><code>kv-project-prd-usw2-001</code></td></tr>
+        <tr><td>Resource group</td><td>Often uses short form because region and instance are implied by contained resources.</td><td><code>rg-{project}-{env}</code></td><td><code>rg-coremon-dev</code></td></tr>
+        <tr><td>Managed identity</td><td>Purpose suffix can be clearer than a number.</td><td><code>umi-{project}-{env}-{region}-{purpose}</code></td><td><code>umi-coredata-dev-usw2-dat</code></td></tr>
+        <tr><td>Event hub entity</td><td>Child resource inside a namespace; descriptive names can be better than repeating CAF.</td><td><code>{stream-name}</code></td><td><code>activitylogs</code></td></tr>
+      </tbody>
+    </table>
+  </div>
 
-  <h2>Implementation in ClojureScript</h2>
-  <p>This SPA renders entirely on canvas, so it must convert browser click coordinates into game coordinates. The code reads the canvas bounding rectangle, derives X and Y scale factors, and maps pointer position back into the 480×400 game world before deciding which row was selected.</p>
-  <div class='code-block'>rect = canvas.getBoundingClientRect()
-scale-x = W / rect.width
-scale-y = H / rect.height
-mx = (clientX - rect.left) * scale-x
-my = (clientY - rect.top) * scale-y</div>
-  <p>That one step is the difference between a toy and a robust canvas UI. It preserves hit accuracy regardless of CSS scaling, making the puzzle usable on phones and tablets without changing the logical layout or introducing a second rendering path.</p>
+  <h2>Fabric Artifact Naming</h2>
+  <p>Microsoft Fabric artifacts use a different but complementary convention. Instead of hyphenated Azure resource names, Fabric workspace items use underscore-delimited prefixes that make the artifact type, domain, and medallion layer visible in the workspace list. Common wildcard patterns include <code>lh_*_brz</code>, <code>lh_*_slv</code>, <code>lh_*_gld</code>, and <code>nb_*_dq_*</code>.</p>
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Artifact</th><th>Prefix / Pattern</th><th>Example</th><th>Usage</th></tr></thead>
+      <tbody>
+        <tr><td>Workspace</td><td><code>ws_&lt;domain&gt;_&lt;env&gt;</code></td><td><code>ws_sales_prd</code></td><td>Domain and environment boundary.</td></tr>
+        <tr><td>Lakehouse</td><td><code>lh_&lt;domain&gt;_&lt;layer&gt;</code></td><td><code>lh_sales_brz</code></td><td>Bronze, Silver, and Gold storage.</td></tr>
+        <tr><td>Pipeline</td><td><code>pl_&lt;function&gt;_&lt;source&gt;_&lt;domain&gt;_&lt;layer&gt;</code></td><td><code>pl_ing_salesforce_sales_brz</code></td><td>Ingestion, transformation, orchestration.</td></tr>
+        <tr><td>Notebook</td><td><code>nb_&lt;purpose&gt;_&lt;domain&gt;_&lt;desc&gt;</code></td><td><code>nb_dq_sales_validation</code></td><td>Data quality, analytics, utility.</td></tr>
+        <tr><td>Warehouse</td><td><code>dw_&lt;domain&gt;_&lt;layer&gt;</code></td><td><code>dw_sales_gld</code></td><td>Gold-layer SQL consumption.</td></tr>
+        <tr><td>Semantic Model</td><td><code>sm_&lt;domain&gt;_&lt;purpose&gt;</code></td><td><code>sm_sales_performance</code></td><td>Power BI model layer.</td></tr>
+        <tr><td>Report</td><td><code>rpt_&lt;domain&gt;_&lt;purpose&gt;</code></td><td><code>rpt_sales_dashboard</code></td><td>Published analytical report.</td></tr>
+        <tr><td>Dataflow</td><td><code>df_&lt;purpose&gt;_&lt;domain&gt;_&lt;layer&gt;</code></td><td><code>df_clean_sales_slv</code></td><td>Low-code transformation artifact.</td></tr>
+        <tr><td>Environment</td><td><code>env_&lt;domain&gt;_spark</code></td><td><code>env_sales_spark</code></td><td>Runtime and library configuration.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class='code-block'>Bronze: lh_sales_brz, pl_ing_erp_sales_brz, nb_dq_sales_brz
+Silver: lh_sales_slv, pl_tfm_sales_brz_slv, nb_dq_sales_slv
+Gold:   lh_sales_gld, dw_sales_gld, sm_sales_performance, rpt_sales_dashboard</div>
+
+  <h2>Enforcement at the PR Gate</h2>
+  <p>Naming conventions work when they are checked before resources exist. The PR gate should validate IaC names with the Azure Naming Tool, run the Bicep linter, and fail the build when a resource cannot be traced to the expected pattern.</p>
+  <div class='callout'>
+    <strong>Azure Naming Tool callout:</strong> Use the Azure Naming Tool to standardize and automate name generation. Pair it with source-controlled naming rules so reviewers see the same result the pipeline enforces.
+  </div>
+  <div class='code-block'>Pull request opens
+  → bicep build / bicep linter
+  → naming-rule validation
+  → storage and key-vault special-case checks
+  → policy-as-code and deployment preview
+  → merge only when names are compliant</div>
+  <p>This is the operational lesson behind the SPA. The game rewards correct matches immediately; the platform should do the same by catching drift in code review rather than after deployment.</p>
 
   <div class='footer-link'>
-    <a href='https://github.com/Acestus/portfolio/blob/main/src/portfolio/games/matcher.cljs' target='_blank' rel='noopener noreferrer'>View Source Code</a>
+    <strong>References:</strong>
+    <a href='https://learn.microsoft.com/azure/cloud-adoption-framework/'>Cloud Adoption Framework</a> ·
+    <a href='https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming'>Azure resource naming guidance</a> ·
+    <a href='https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations'>Recommended abbreviations for Azure resource types</a> ·
+    <a href='https://learn.microsoft.com/azure/azure-resource-manager/management/resource-name-rules'>Azure resource name rules</a> ·
+    <a href='https://learn.microsoft.com/azure/azure-resource-manager/bicep/linter'>Bicep linter</a> ·
+    <a href='https://learn.microsoft.com/azure/azure-resource-manager/bicep/deployment-stacks'>Bicep Deployment Stacks</a> ·
+    <a href='https://learn.microsoft.com/fabric/fundamentals/microsoft-fabric-overview'>Microsoft Fabric</a> ·
+    <a href='https://learn.microsoft.com/fabric/onelake/onelake-medallion-lakehouse-architecture'>Medallion lakehouse architecture</a> ·
+    <a href='https://github.com/mspnp/AzureNamingTool'>Azure Naming Tool</a> ·
+    <a href='https://github.com/Acestus/portfolio/blob/main/src/portfolio/games/matcher.cljs' target='_blank' rel='noopener noreferrer'>View Source Code</a> ·
+    <a href='/matcher.html'>Back to Demo →</a>
   </div>
 </body>
 </html>

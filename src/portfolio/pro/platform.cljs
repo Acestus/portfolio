@@ -18,8 +18,8 @@
 
 (def ^:private pim-roles
   [{:role "Fabric Admin"        :scope "ws_ad_prd"   :duration "8 hours" :justification "Pipeline deploy"}
-   {:role "Key Vault Officer"   :scope "kv-skpad-prd" :duration "4 hours" :justification "Secret rotation"}
-   {:role "Contributor"         :scope "rg-skpad-prd" :duration "8 hours" :justification "Stack deployment"}])
+   {:role "Key Vault Officer"   :scope "kv-coresec-prd" :duration "4 hours" :justification "Secret rotation"}
+   {:role "Contributor"         :scope "rg-coresec-prd" :duration "8 hours" :justification "Stack deployment"}])
 
 (defn- tab-button [label active on-click]
   (let [btn (core/create-el "button"

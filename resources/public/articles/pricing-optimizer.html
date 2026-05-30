@@ -77,187 +77,230 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
   <a class='back-link' href='/pricing.html'>← Back to Demo</a>
-  <h1>Azure Pricing &amp; Cost Optimization</h1>
+  <h1>Pricing &amp; Cost Optimizer — Fabric, AI Foundry, and Commitment Terms</h1>
 
   <div class='summary'>
-    Interactive cost optimizer covering Azure SKU selection, Joiner-Mover-Leaver (JML) cost impact modeling, CAF naming conventions, and tag enforcement governance. The SPA models real decisions made in a production Azure tenant: how SKU tier selection drives monthly spend, how workforce lifecycle events create and retire cloud costs, how naming conventions prevent sprawl, and how modify-effect policies enforce tagging standards without blocking deployments.
+    The Microsoft Build 2026 refresh turns the demo into a FinOps planning surface for Azure, Microsoft Fabric, and AI Foundry. The SPA now compares six SKU categories, applies commitment-term discounts per eligible SKU, models joiner-mover-leaver workforce changes, and keeps governance visible through required tags, modify policies, and CAF naming examples that make costs attributable before resources reach production.
   </div>
 
   <div class='metrics'>
-    <div class='metric-card'><div class='metric-value'>4</div><div class='metric-label'>Service Categories</div></div>
-    <div class='metric-card'><div class='metric-value'>~$93</div><div class='metric-label'>Phase 1 Monthly Est.</div></div>
-    <div class='metric-card'><div class='metric-value'>30–40%</div><div class='metric-label'>RI Savings Potential</div></div>
-    <div class='metric-card'><div class='metric-value'>29</div><div class='metric-label'>Active Policy Assignments</div></div>
+    <div class='metric-card'><div class='metric-value'>6</div><div class='metric-label'>SKU Categories</div></div>
+    <div class='metric-card'><div class='metric-value'>30–72%</div><div class='metric-label'>RI Savings Range</div></div>
+    <div class='metric-card'><div class='metric-value'>F2–F64</div><div class='metric-label'>Fabric Capacity SKUs</div></div>
+    <div class='metric-card'><div class='metric-value'>$0.15/1M</div><div class='metric-label'>GPT-4o-mini Input</div></div>
   </div>
 
   <div class='flow'>
-    <span class='pill'>SKU Selection</span><span class='arrow'>→</span>
-    <span class='pill'>Cost Estimate</span><span class='arrow'>→</span>
-    <span class='pill'>Tag Enforcement</span><span class='arrow'>→</span>
-    <span class='pill'>Naming Convention</span><span class='arrow'>→</span>
-    <span class='pill'>Budget Alerts</span>
+    <span class='pill'>Select SKUs</span><span class='arrow'>→</span>
+    <span class='pill'>Apply Term</span><span class='arrow'>→</span>
+    <span class='pill'>Model JML</span><span class='arrow'>→</span>
+    <span class='pill'>Validate Tags</span><span class='arrow'>→</span>
+    <span class='pill'>CAF Names</span>
   </div>
 
-  <h2>1. SKU Selection and Right-Sizing</h2>
-  <p>Azure pricing is SKU-driven. Every resource has a tier that determines its capabilities and cost. The challenge is not finding the cheapest option — it is matching the tier to the actual workload profile. Over-provisioning wastes budget; under-provisioning causes outages and emergency scale-ups that cost more than the original tier would have.</p>
-  <p>The SPA models four service categories — Compute, Storage, Database, and Networking — each with three tiers. In production, this maps directly to decisions like choosing between an App Service B1 ($13/mo) for a low-traffic web frontend and an S1 ($73/mo) for a service that needs autoscale and deployment slots.</p>
+  <h2>1. Azure SKU Selection and Right-Sizing</h2>
+  <p>The optimizer starts with the practical FinOps question: which SKU is big enough for the workload without buying idle capacity? The refreshed SPA groups selections into Compute, Storage, Database, Network, Microsoft Fabric, and AI Foundry. Each selected SKU contributes a list-price monthly value, then the commitment selector recomputes the total with per-SKU factors.</p>
+  <p>Discounts are deliberately SKU-aware. Compute, database, and Fabric capacity can benefit from reservations or savings plans, while storage and network examples remain at pay-as-you-go because the modeled SKUs do not use the same RI/SP mechanics. This makes the demo closer to a real optimization workflow than a flat percentage calculator.</p>
 
   <div class='table-wrap'>
     <table>
-      <thead><tr><th>Resource</th><th>SKU / Tier</th><th>Purpose</th><th>Est. Cost/mo</th></tr></thead>
+      <thead><tr><th>Category</th><th>Example SKUs</th><th>Modeled Monthly Range</th><th>Optimization Lever</th></tr></thead>
       <tbody>
-        <tr><td>Azure OpenAI</td><td>S0 (GPT-4o-mini)</td><td>~2M input + ~500K output tokens/mo</td><td>~$1</td></tr>
-        <tr><td>Azure AI Search</td><td>Basic (1 unit)</td><td>15 GB storage, up to 15 indexes</td><td>$74</td></tr>
-        <tr><td>Azure Function</td><td>Flex Consumption (FC1)</td><td>Timer-triggered indexer, 4 runs/day</td><td>~$1</td></tr>
-        <tr><td>App Service</td><td>B1 (Linux)</td><td>Web frontend, 1 instance</td><td>$13</td></tr>
-        <tr><td>Storage Account</td><td>Standard LRS</td><td>Hub storage, &lt;1 GB</td><td>~$1</td></tr>
-        <tr><td>Key Vault</td><td>Standard</td><td>~100 operations/day</td><td>~$1</td></tr>
-        <tr><td>Bot Service</td><td>Free</td><td>Teams channel registration</td><td>$0</td></tr>
-        <tr><td>Foundry Hub + Project</td><td>—</td><td>Wraps other resources</td><td>$0</td></tr>
-        <tr><td colspan='3'><strong>Phase 1 Total</strong></td><td><strong>~$93</strong></td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <p>Resource names follow the CAF pattern <code>{type}-{project}-{env}-{region}-{instance}</code>. For example: <code>func-copilot-idx-prd-usw2-001</code> for the indexer Function App, <code>oai-copilot-prd-usw2-001</code> for the OpenAI resource. The Azure Naming Tool enforces this convention at provisioning time.</p>
-
-  <h2>2. Cost Management Patterns</h2>
-  <p>Cost management in Azure is not a monthly review — it is a set of automated guardrails that catch overspend before it happens. The most effective controls are tagging for chargeback, budget alerts with action groups, weekly Advisor reviews for right-sizing, and Reserved Instance commitments for stable workloads.</p>
-
-  <h3>Quick Billing Check</h3>
-  <div class='code-block'>az consumption usage list \
-    --start-date 2025-01-01 \
-    --end-date 2025-01-31 \
-    --query "[].{Resource:instanceName, Cost:pretaxCost, Currency:currency}" \
-    --output table</div>
-
-  <h3>Cost Controls</h3>
-  <div class='table-wrap'>
-    <table>
-      <thead><tr><th>Control</th><th>Mechanism</th><th>Impact</th></tr></thead>
-      <tbody>
-        <tr><td>Tag everything</td><td><code>cost-center</code>, <code>environment</code>, <code>workload</code> tags</td><td>Enables chargeback and cost attribution</td></tr>
-        <tr><td>Budget alerts</td><td>Monthly budgets with action groups</td><td>Email/Teams notifications at 80%, 100%, 120% thresholds</td></tr>
-        <tr><td><a href='https://learn.microsoft.com/azure/advisor/advisor-overview'>Advisor</a> recommendations</td><td>Weekly review cadence</td><td>Right-sizing and reservation suggestions</td></tr>
-        <tr><td>Reserved Instances</td><td>1-year or 3-year commitment for stable workloads</td><td>30–40% savings (1-yr), up to 72% (3-yr)</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <h2>3. JML Cost Impact</h2>
-  <p>Workforce lifecycle events — Joiner, Mover, Leaver — create and retire cloud costs. A new hire triggers compute provisioning, license assignment, and storage allocation. A transfer reallocates resources between cost centers. Offboarding reclaims licenses and deallocates per-user resources. The SPA models four scenarios to show how headcount changes ripple through Azure spend.</p>
-  <p>The most significant cost driver is often licensing, not infrastructure. A <a href='https://learn.microsoft.com/microsoft-365/copilot/microsoft-365-copilot-licensing'>Microsoft 365 Copilot add-on</a> at <strong>$30/user/month</strong> on top of an E3/E5 base license can exceed the per-user Azure infrastructure cost for many workloads. JML automation ensures licenses are assigned at onboarding and reclaimed at offboarding — the gap between those two events is where license waste accumulates.</p>
-
-  <h2>4. Tag Enforcement with Modify Policies</h2>
-  <p>Tags are enforced via <a href='https://learn.microsoft.com/azure/governance/policy/overview'>Azure Policy</a> <strong>modify-effect</strong> policies that auto-append missing required tags during resource creation. This is non-blocking governance: deployments succeed, but tags are guaranteed to be present.</p>
-
-  <h3>How Modify Works</h3>
-  <ol>
-    <li>A resource group is created without the required <code>CostCenter</code> tag</li>
-    <li>The policy evaluates the resource at creation time</li>
-    <li>The modify effect adds the tag with a default value (inherited from subscription or resource group)</li>
-    <li>The resource is created with the tag already present</li>
-  </ol>
-
-  <h3>Required Tags</h3>
-  <div class='table-wrap'>
-    <table>
-      <thead><tr><th>Tag</th><th>Source</th><th>Purpose</th><th>Default</th></tr></thead>
-      <tbody>
-        <tr><td><code>CostCenter</code></td><td>Subscription</td><td>Cost allocation and chargeback</td><td>Inherited from subscription</td></tr>
-        <tr><td><code>Environment</code></td><td>Subscription</td><td>dev / tst / stg / prd identification</td><td>Based on subscription naming</td></tr>
-        <tr><td><code>Owner</code></td><td>Resource Group</td><td>Team or individual responsible</td><td>Creator (if event-driven tagging enabled)</td></tr>
-        <tr><td><code>Project</code></td><td>Resource Group</td><td>Project or workload name</td><td>—</td></tr>
-        <tr><td><code>Department</code></td><td>Subscription</td><td>Organizational unit</td><td>Inherited from subscription</td></tr>
-        <tr><td><code>Workload</code></td><td>Resource Group</td><td>Workload classification</td><td>Inherited from resource group</td></tr>
-        <tr><td><code>ManagedBy</code></td><td>Resource Group</td><td>Managing team or automation</td><td>Inherited from resource group</td></tr>
+        <tr><td>Compute</td><td>B2s, D4s_v5, D8s_v5, E16s_v5</td><td>$30–$580</td><td>Right-size vCPU/RAM, then reserve stable baseline</td></tr>
+        <tr><td>Storage</td><td>LRS-Hot, ZRS-Hot, LRS-Cool, GRS-Archive</td><td>$3–$36</td><td>Move cold data to cool/archive and choose redundancy intentionally</td></tr>
+        <tr><td>Database</td><td>Basic-5DTU, S1-20DTU, P1-125DTU, Serverless-GP</td><td>$5–$465</td><td>Use serverless for intermittent workloads; reserve steady DTU/vCore usage</td></tr>
+        <tr><td>Network</td><td>Basic-LB, Standard-LB, App-GW-v2, Front Door</td><td>$0–$330</td><td>Match ingress pattern to availability and security requirements</td></tr>
+        <tr><td>Fabric</td><td>F2, F8, F32, F64</td><td>$262–$8,406</td><td>Size by Capacity Units, concurrency, and smoothing behavior</td></tr>
+        <tr><td>AI Foundry</td><td>GPT-4o-mini, GPT-4o, o1, embedding-3-large</td><td>$22–$1,850 example workload</td><td>Route requests by task complexity and token volume</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class='callout'>
-    These are <strong>non-blocking</strong> — they add missing tags at resource creation time without denying the deployment. Existing resources missing tags can be remediated with a <a href='https://learn.microsoft.com/azure/governance/policy/how-to/remediate-resources'>remediation task</a> or the PowerShell bulk tag merge script.
+    The key behavior in the SPA is recomputation: changing a SKU, commitment term, or JML scenario immediately updates list price, committed cost, monthly savings, and adjusted workforce-impact cost.
   </div>
 
-  <h3>Bulk Tag Remediation</h3>
-  <div class='code-block'># Query resource groups with missing tags, merge new tags without overwriting existing ones
-$rg = Get-AzResourceGroup | Where-Object { -not $_.Tags.ContainsKey('CostCenter') }
-foreach ($group in $rg) {
-    $existing = $group.Tags ?? @{}
-    $existing['CostCenter'] = 'inherited-from-subscription'
-    Set-AzResourceGroup -Name $group.ResourceGroupName -Tag $existing
-}</div>
+  <h3>Discount Factors Used by the Demo</h3>
+  <div class='code-block'>Pay-As-You-Go: factor 1.00 for every SKU
+RI 1-Year:      per-SKU RI factor, usually 0.55–0.75 for eligible compute/database/Fabric
+RI 3-Year:      RI factor minus 0.20, floored at 0.28 to show up-to-72% savings
+Savings Plan:   per-SKU SP factor, usually 0.63–0.72 for eligible workloads</div>
 
-  <h2>5. CAF Naming Conventions</h2>
-  <p>The <a href='https://learn.microsoft.com/azure/cloud-adoption-framework/'>Cloud Adoption Framework</a> naming convention ensures every resource is identifiable by type, project, environment, and region at a glance. The Azure Naming Tool enforces the pattern <code>{type}-{project}-{environment}-{region}</code> at provisioning time. Names invented outside this convention are blocked at PR gates and cannot be promoted to staging or production.</p>
+  <h2>2. Fabric Capacity SKUs (F2 through F64, with smoothing notes)</h2>
+  <p>Microsoft Fabric capacity is modeled as a first-class cost category because Fabric is often the largest single line item in a data platform. The SPA includes F2, F8, F32, and F64 choices and labels them with approximate monthly capacity costs. These examples represent the reserved compute pool that backs notebooks, pipelines, lakehouses, warehouses, semantic models, and reports.</p>
+  <p>Fabric planning is not just list price. Capacity Units (CUs), interactive concurrency, Spark environment sizing, and smoothing behavior all determine whether users experience steady throughput or HTTP 430 capacity exhaustion. A right-sized Fabric environment allows bursty work, but repeated overconsumption creates CU debt that must drain before new work can start.</p>
 
   <div class='table-wrap'>
     <table>
-      <thead><tr><th>Resource Type</th><th>Prefix</th><th>Example</th><th>Pattern</th></tr></thead>
+      <thead><tr><th>Fabric SKU</th><th>Capacity Units</th><th>Approx. PAYG / Month</th><th>RI 1-Year Factor</th><th>Best Fit</th></tr></thead>
       <tbody>
-        <tr><td>Function App</td><td><code>func-</code></td><td><code>func-skpcerts-prd-scus-001</code></td><td><code>func-{project}-{env}-{region}-{instance}</code></td></tr>
-        <tr><td>Storage Account</td><td><code>st</code></td><td><code>stcopilotprdusw2001</code></td><td><code>st{project}{env}{region}{instance}</code> (no hyphens)</td></tr>
-        <tr><td>Key Vault</td><td><code>kv-</code></td><td><code>kv-copilot-prd-usw2-001</code></td><td><code>kv-{project}-{env}-{region}-{instance}</code></td></tr>
-        <tr><td>App Service</td><td><code>app-</code></td><td><code>app-copilot-web-prd-usw2-001</code></td><td><code>app-{project}-{role}-{env}-{region}-{instance}</code></td></tr>
-        <tr><td>Azure OpenAI</td><td><code>oai-</code></td><td><code>oai-copilot-prd-usw2-001</code></td><td><code>oai-{project}-{env}-{region}-{instance}</code></td></tr>
-        <tr><td>AI Search</td><td><code>srch-</code></td><td><code>srch-copilot-prd-usw2-001</code></td><td><code>srch-{project}-{env}-{region}-{instance}</code></td></tr>
+        <tr><td>F2</td><td>2 CUs</td><td>~$262</td><td>0.59</td><td>Small dev/test, proof of concept, scheduled light workloads</td></tr>
+        <tr><td>F8</td><td>8 CUs</td><td>~$1,051</td><td>0.59</td><td>Team workspace, light production reporting, limited notebook use</td></tr>
+        <tr><td>F32</td><td>32 CUs</td><td>~$4,203</td><td>0.59</td><td>Production data engineering and BI with moderate concurrency</td></tr>
+        <tr><td>F64</td><td>64 CUs</td><td>~$8,406</td><td>0.59</td><td>Enterprise semantic models, high concurrency, larger Spark jobs</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Capacity Tuning Pattern</h3>
+  <p>The reference pattern for notebook authors is to keep interactive Spark sessions smaller, use dynamic allocation, and reserve large environments for scheduled training or batch runs. High Concurrency mode can let multiple notebooks share a single Spark session instead of each consuming a separate capacity allocation.</p>
+  <div class='code-block'># Fabric interactive notebook posture
+spark.sql.shuffle.partitions = 8
+spark.dynamicAllocation.enabled = true
+minExecutors = 1
+maxExecutors = 3
+
+# Operational rule
+# Use small interactive environments during the day.
+# Run large ML or batch jobs through scheduled pipelines.</div>
+
+  <div class='callout'>
+    Smoothing is a buffer, not free capacity. If a workload repeatedly consumes more CUs than the SKU can sustain, Fabric can throttle new sessions until the debt drains. The optimizer highlights this by making F-SKU selection visible next to commitment-term savings.
+  </div>
+
+  <h2>3. AI Foundry Model Pricing</h2>
+  <p>The refreshed SPA includes AI Foundry model choices because model routing is now a core cost optimization decision. A small classification task should not pay reasoning-model prices; a complex planning or code-assist task may justify a higher-priced model if it reduces retries, manual review, or failed automation.</p>
+  <p>The demo uses public per-1M-token rates for representative OpenAI models available through Azure AI Foundry style deployments. The example monthly costs in the SPA are workload estimates, not platform minimums: actual charges depend on input tokens, output tokens, cache behavior, region, and whether deployments are pay-as-you-go or provisioned.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Model</th><th>Input Price</th><th>Output Price</th><th>Use When</th><th>Cost Note</th></tr></thead>
+      <tbody>
+        <tr><td>GPT-4o-mini</td><td>$0.15 / 1M tokens</td><td>$0.60 / 1M tokens</td><td>High-volume chat, extraction, classification, lightweight agents</td><td>Default low-cost model in the SPA</td></tr>
+        <tr><td>GPT-4o</td><td>$2.50 / 1M tokens</td><td>$10.00 / 1M tokens</td><td>Multimodal reasoning, higher quality generation, complex summarization</td><td>Use where quality saves downstream labor</td></tr>
+        <tr><td>o1</td><td>$15.00 / 1M tokens</td><td>$60.00 / 1M tokens</td><td>Deep reasoning, planning, hard technical analysis</td><td>Route sparingly; expensive output tokens dominate</td></tr>
+        <tr><td>text-embedding-3-large</td><td>$0.13 / 1M tokens</td><td>Input only</td><td>Vector search, retrieval augmentation, semantic matching</td><td>Control cost by chunk size and re-index cadence</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Routing Pattern</h3>
+  <div class='code-block'>if task == "embedding":
+    model = "text-embedding-3-large"
+elif task in ["classification", "draft", "extract"]:
+    model = "gpt-4o-mini"
+elif task in ["analysis", "multimodal", "high-quality-writeup"]:
+    model = "gpt-4o"
+else:
+    model = "o1"  # only for explicitly justified reasoning workloads</div>
+
+  <h2>4. Commitment Terms: RI vs Savings Plans</h2>
+  <p>The commitment selector is the biggest behavioral change from the older article. The SPA now lets the viewer compare Pay-As-You-Go, RI 1-Year, RI 3-Year, and Savings Plan. The result is not a generic discount; each SKU carries its own reservation and savings-plan factor.</p>
+  <p>Reserved Instances are strongest when the workload shape is stable: always-on compute, steady database capacity, and known Fabric capacity. Savings Plans are better when the hourly spend is predictable but the exact SKU or instance family changes over time. Pay-as-you-go remains the correct choice for experiments, short-lived environments, and workloads that may be deleted soon.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Term</th><th>How the SPA Treats It</th><th>Best Use</th><th>Avoid When</th></tr></thead>
+      <tbody>
+        <tr><td>Pay-As-You-Go</td><td>No discount; factor 1.00</td><td>New workloads, temporary environments, unknown demand</td><td>Stable baseline has months of history</td></tr>
+        <tr><td>RI 1-Year</td><td>Applies SKU RI factors such as 0.55–0.75</td><td>Predictable compute, database, or Fabric usage for the next fiscal year</td><td>Roadmap may migrate or retire the service</td></tr>
+        <tr><td>RI 3-Year</td><td>Shows deeper savings, floored at 0.28</td><td>Mature production platforms with durable demand</td><td>Architecture, region, or capacity size is still changing</td></tr>
+        <tr><td>Savings Plan</td><td>Applies flexible hourly-spend factors such as 0.63–0.72</td><td>Steady spend with changing SKUs or instance families</td><td>Spend level is volatile or dominated by non-eligible services</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class='callout'>
+    The practical workflow is: run PAYG until usage stabilizes, reserve the predictable floor, keep burst capacity flexible, and revisit commitments when JML, region moves, or platform migrations change the baseline.
+  </div>
+
+  <h2>5. JML Cost Impact (joiner-mover-leaver workforce changes)</h2>
+  <p>JML modeling connects cloud spend to workforce lifecycle events. A joiner can trigger compute, storage, model access, workspace permissions, and license assignment. A mover can shift costs between cost centers or elevate access to higher-cost platforms. A leaver should reduce cost when licenses, per-user resources, and access paths are reclaimed.</p>
+  <p>The SPA applies scenario multipliers after commitment discounts, making it clear that lifecycle automation affects the adjusted monthly total. This order matters: a reserved baseline can still waste money if offboarding does not release licenses or if movers retain access to old workspaces.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Scenario</th><th>SPA Multiplier</th><th>Cost Motion</th><th>Governance Check</th></tr></thead>
+      <tbody>
+        <tr><td>New Hire</td><td>1.15×</td><td>+15% for onboarding, licenses, provisioning, data access</td><td>Owner, Project, CostCenter tags populated at creation</td></tr>
+        <tr><td>Transfer</td><td>1.05×</td><td>+5% for role change, duplicated access, temporary overlap</td><td>Cost center and access reviews updated with the move</td></tr>
+        <tr><td>Steady State</td><td>1.00×</td><td>Baseline monthly operating cost</td><td>Budget and Advisor reviews catch drift</td></tr>
+        <tr><td>Offboard</td><td>0.60×</td><td>−40% for license reclaim and resource deprovisioning</td><td>Disable access, delete personal resources, transfer ownership</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>JML Control Loop</h3>
+  <div class='code-block'>Joiner  → provision least-privilege access + default tags + budget owner
+Mover   → change cost center + remove stale role assignments
+Leaver  → reclaim licenses + delete user-scoped resources + transfer ownership
+Review  → compare adjusted forecast to actual spend monthly</div>
+
+  <h2>6. CAF Naming &amp; Tag Governance</h2>
+  <p>The final part of the SPA keeps governance in the same screen as cost. Required tags make charges attributable, and CAF naming makes resources understandable in search, billing exports, and incident response. The demo shows both Azure resource naming patterns and Fabric artifact naming patterns.</p>
+  <p>Governance is intentionally non-blocking where possible. Modify-effect policies add missing required tags during creation or remediation instead of denying deployments. Deny policies are reserved for hard safety boundaries such as public exposure or disallowed regions.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Required Tag</th><th>Purpose</th><th>Default / Source</th><th>Cost Management Use</th></tr></thead>
+      <tbody>
+        <tr><td><code>CostCenter</code></td><td>Cost allocation and chargeback</td><td>Inherited from subscription</td><td>Group spend by budget owner</td></tr>
+        <tr><td><code>Environment</code></td><td>dev / tst / stg / prd classification</td><td>Subscription naming</td><td>Separate production from non-production burn</td></tr>
+        <tr><td><code>Owner</code></td><td>Team or person accountable</td><td>Creator or resource group owner</td><td>Route alerts and cleanup actions</td></tr>
+        <tr><td><code>Project</code></td><td>Workload or initiative</td><td>Deployment parameter</td><td>Forecast project-level run cost</td></tr>
+        <tr><td><code>BuildEvent</code></td><td>Microsoft Build 2026 demo tracking</td><td>false unless explicitly set</td><td>Measure campaign/demo resources separately</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>CAF Naming Examples</h3>
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Resource Type</th><th>Pattern</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td>Function App</td><td><code>func-{project}-{env}-{region}-{instance}</code></td><td><code>func-copilot-prd-usw2-001</code></td></tr>
+        <tr><td>Storage Account</td><td><code>st{project}{env}{region}{instance}</code></td><td><code>stcopilotprdusw2001</code></td></tr>
+        <tr><td>Key Vault</td><td><code>kv-{project}-{env}-{region}-{instance}</code></td><td><code>kv-copilot-prd-usw2-001</code></td></tr>
+        <tr><td>Fabric Capacity</td><td><code>cap-{domain}-{env}-{region}-{instance}</code></td><td><code>cap-data-prd-usw2-001</code></td></tr>
+        <tr><td>AI Foundry</td><td><code>oai-{project}-{env}-{region}-{instance}</code></td><td><code>oai-copilot-prd-usw2-001</code></td></tr>
+        <tr><td>App Service</td><td><code>app-{project}-{env}-{region}-{instance}</code></td><td><code>app-portfolio-prd-usw2-001</code></td></tr>
       </tbody>
     </table>
   </div>
 
   <h3>Fabric Artifact Naming</h3>
-  <p>Microsoft Fabric artifacts follow a different but complementary convention: <code>&lt;type&gt;_&lt;domain&gt;_&lt;layer&gt;</code> using three-letter medallion abbreviations (<strong>brz</strong>, <strong>slv</strong>, <strong>gld</strong>).</p>
-
   <div class='table-wrap'>
     <table>
-      <thead><tr><th>Artifact</th><th>Prefix</th><th>Example</th><th>Usage</th></tr></thead>
+      <thead><tr><th>Artifact</th><th>Prefix / Pattern</th><th>Example</th><th>Usage</th></tr></thead>
       <tbody>
-        <tr><td>Workspace</td><td><code>ws_</code></td><td><code>ws_sales_prd</code></td><td>One per domain per environment</td></tr>
-        <tr><td>Lakehouse</td><td><code>lh_</code></td><td><code>lh_sales_brz</code></td><td>One per domain per layer</td></tr>
-        <tr><td>Pipeline</td><td><code>pl_</code></td><td><code>pl_ing_salesforce_sales_brz</code></td><td>Ingestion / transform / orchestration</td></tr>
-        <tr><td>Notebook</td><td><code>nb_</code></td><td><code>nb_dq_sales_validation</code></td><td>Data quality / analytics / utility</td></tr>
-        <tr><td>Data Warehouse</td><td><code>dw_</code></td><td><code>dw_sales_gld</code></td><td>Gold-layer T-SQL consumption</td></tr>
-        <tr><td>Semantic Model</td><td><code>sm_</code></td><td><code>sm_sales_performance</code></td><td>Power BI modeling</td></tr>
+        <tr><td>Workspace</td><td><code>ws_&lt;domain&gt;_&lt;env&gt;</code></td><td><code>ws_sales_prd</code></td><td>Domain and environment boundary</td></tr>
+        <tr><td>Lakehouse</td><td><code>lh_&lt;domain&gt;_&lt;layer&gt;</code></td><td><code>lh_sales_brz</code></td><td>Bronze, Silver, Gold storage</td></tr>
+        <tr><td>Pipeline</td><td><code>pl_&lt;function&gt;_&lt;source&gt;_&lt;domain&gt;_&lt;layer&gt;</code></td><td><code>pl_ing_salesforce_sales_brz</code></td><td>Ingestion and orchestration</td></tr>
+        <tr><td>Notebook</td><td><code>nb_&lt;purpose&gt;_&lt;domain&gt;_&lt;desc&gt;</code></td><td><code>nb_dq_sales_validation</code></td><td>Data quality, analytics, utility</td></tr>
+        <tr><td>Semantic Model</td><td><code>sm_&lt;domain&gt;_&lt;purpose&gt;</code></td><td><code>sm_sales_performance</code></td><td>Power BI model layer</td></tr>
       </tbody>
     </table>
   </div>
 
-  <h2>6. Policy Portfolio Overview</h2>
-  <p>The Azure tenant uses a layered <a href='https://learn.microsoft.com/azure/governance/policy/overview'>policy</a> approach combining built-in initiatives with custom policies across 29 active assignments. Policies are categorized by effect type, each serving a distinct governance purpose.</p>
-
-  <div class='table-wrap'>
-    <table>
-      <thead><tr><th>Category</th><th>Count</th><th>Primary Effect</th><th>Purpose</th></tr></thead>
-      <tbody>
-        <tr><td>Tagging Governance</td><td>7</td><td>Modify</td><td>Auto-apply missing required tags at creation time</td></tr>
-        <tr><td>Security &amp; Compliance</td><td>5</td><td>Audit</td><td>Azure Security Benchmark, FedRAMP Moderate, TLS 1.2</td></tr>
-        <tr><td>Monitoring &amp; Defender</td><td>7</td><td>DeployIfNotExists</td><td>AMA agent, Defender plans, Log Analytics streaming</td></tr>
-        <tr><td>Networking</td><td>3</td><td>Deny</td><td>Block public IPs, enforce central NSG management</td></tr>
-        <tr><td>Update Management</td><td>4</td><td>Modify / DINE</td><td>Automated patching configuration</td></tr>
-        <tr><td>Guest Configuration</td><td>3</td><td>DeployIfNotExists</td><td>Machine-level compliance baselines</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <h3>Deny Policies — Network Security</h3>
-  <p>Two critical deny policies enforce network security boundaries. They block resource creation at the ARM layer, forcing all internet-facing traffic through controlled ingress points (Application Gateway, Azure Firewall, or Load Balancer).</p>
+  <h3>Modify Policy Sketch</h3>
   <div class='code-block'>{
   "if": {
-    "field": "Microsoft.Network/networkInterfaces/ipconfigurations[*].publicIpAddress.id",
-    "exists": true
+    "field": "tags['CostCenter']",
+    "exists": false
   },
   "then": {
-    "effect": "deny"
+    "effect": "modify",
+    "details": {
+      "operations": [
+        { "operation": "add", "field": "tags['CostCenter']", "value": "Production" }
+      ]
+    }
   }
 }</div>
 
+  <div class='callout'>
+    Use placeholders in documentation and examples: subscription scopes such as <code>Production</code> or <code>Connectivity hub</code>, tenant identifiers from docs.microsoft.com examples, and network examples like <code>10.0.0.0/16</code>. Public CAF patterns and Microsoft Learn links can remain exact.
+  </div>
+
   <div class='footer-link'>
     <strong>References:</strong>
-    <a href='https://learn.microsoft.com/azure/governance/policy/overview'>Azure Policy</a> ·
     <a href='https://learn.microsoft.com/azure/cloud-adoption-framework/'>Cloud Adoption Framework</a> ·
-    <a href='https://learn.microsoft.com/azure/advisor/advisor-overview'>Azure Advisor</a> ·
+    <a href='https://learn.microsoft.com/azure/governance/policy/overview'>Azure Policy</a> ·
     <a href='https://learn.microsoft.com/azure/governance/policy/how-to/remediate-resources'>Policy Remediation</a> ·
-    <a href='https://learn.microsoft.com/fabric/get-started/microsoft-fabric-overview'>Microsoft Fabric</a> ·
+    <a href='https://learn.microsoft.com/fabric/fundamentals/microsoft-fabric-overview'>Microsoft Fabric</a> ·
+    <a href='https://learn.microsoft.com/fabric/enterprise/licenses'>Fabric Capacity Licensing</a> ·
+    <a href='https://learn.microsoft.com/fabric/data-engineering/high-concurrency-overview'>Fabric High Concurrency</a> ·
+    <a href='https://azure.microsoft.com/pricing/details/cognitive-services/openai-service/'>Azure OpenAI Pricing</a> ·
     <a href='/pricing.html'>Back to Demo →</a>
   </div>
 </body>

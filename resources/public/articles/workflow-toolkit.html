@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <title>Workflow Toolkit — File-Driven AI Ops for Microsoft Build 2026</title>
+  <meta name='description' content='A Microsoft Build 2026 article about Workflow Toolkit, an open-source file-driven AI ops system using Copilot skills, markdown state, GitHub Actions, and API reconciliation.'>
+  <style>
+    :root { --accent: #0078d4; --accent-dark: #106ebe; --bg: #faf9f8; --text: #323130; --summary: #e1f5fe; }
+    * { box-sizing: border-box; }
+    body { margin: 0 auto; max-width: 1200px; padding: 24px; background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .back-link { display: inline-block; margin-bottom: 1rem; font-weight: 600; }
+    h1 { color: var(--accent); border-bottom: 3px solid var(--accent); padding-bottom: 0.5rem; margin-top: 0; }
+    h2 { color: var(--accent-dark); border-left: 4px solid var(--accent); padding-left: 15px; margin-top: 2.25rem; }
+    h3 { color: var(--accent-dark); margin-top: 1.5rem; }
+    .summary { background: var(--summary); border-left: 5px solid var(--accent); border-radius: 4px; padding: 1rem; margin: 1rem 0 1.5rem; }
+    .metrics { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0; }
+    .metric-card { background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-bottom: 3px solid var(--accent); padding: 1rem; flex: 1 1 180px; min-width: 170px; }
+    .metric-value { color: var(--accent); font-size: 1.6rem; font-weight: 700; }
+    .metric-label { color: #605e5c; font-size: 0.95rem; }
+    .flow { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.5rem; margin: 1.5rem 0; }
+    .pill { background: var(--accent); color: #fff; padding: 0.65rem 1rem; border-radius: 999px; font-weight: 600; }
+    .arrow { color: var(--accent-dark); font-size: 1.25rem; font-weight: 700; }
+    .code-block { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 6px; overflow: auto; white-space: pre; font-family: Consolas, Monaco, 'Courier New', monospace; font-size: 0.92rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; background: #fff; }
+    th, td { border: 1px solid #d2d0ce; padding: 0.8rem; text-align: left; vertical-align: top; }
+    th { background: var(--accent); color: #fff; }
+    tbody tr:nth-child(even) { background: #f3f2f1; }
+    tbody tr:hover { background: #deecf9; }
+    .callout { background: #fff3cd; border-left: 5px solid #ffc107; border-radius: 4px; padding: 1rem; margin: 1rem 0; }
+    .footer-link { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #d2d0ce; }
+    @media (max-width: 768px) {
+      body { padding: 16px; }
+      .metrics { flex-direction: column; }
+      .flow { flex-direction: column; }
+      .arrow { transform: rotate(90deg); }
+      .table-wrap { overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+<header class="site-nav" role="banner">
+  <a class="site-name" href="/">acestus.com</a>
+  <nav role="navigation" aria-label="Main">
+    <button class="nav-toggle" aria-controls="main-nav" aria-expanded="false">☰</button>
+    <div class="nav-links" id="main-nav">
+      <a class="nav-link" href="/">Portfolio</a>
+    </div>
+  </nav>
+</header>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var toggle = document.querySelector('.nav-toggle');
+  var links = document.getElementById('main-nav');
+  if (!toggle || !links) return;
+
+  toggle.addEventListener('click', function() {
+    var isOpen = links.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+
+  links.querySelectorAll('a').forEach(function(a) {
+    a.addEventListener('click', function() {
+      links.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      links.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+});
+</script>
+
+  <a class='back-link' href='/workflow.html'>← Back to Demo</a>
+  <h1>Workflow Toolkit — File-Driven AI Ops</h1>
+
+  <div class='summary'>
+    File-driven operations beat yet another SaaS dashboard because the operator keeps ownership of the truth: tickets, time, follow-ups, approvals, and standup notes are durable markdown files that can be searched, diffed, reviewed, committed, and replayed. Workflow Toolkit turns that local source of truth into AI-assisted operations by letting skills act on files first, then letting CI reconcile clean changes back to the systems of record.
+  </div>
+
+  <div class='metrics'>
+    <div class='metric-card'><div class='metric-value'>27</div><div class='metric-label'>Copilot Skills</div></div>
+    <div class='metric-card'><div class='metric-value'>19</div><div class='metric-label'>Instruction Files</div></div>
+    <div class='metric-card'><div class='metric-value'>12</div><div class='metric-label'>GitHub Workflows</div></div>
+    <div class='metric-card'><div class='metric-value'>80</div><div class='metric-label'>Python Scripts</div></div>
+  </div>
+
+  <div class='flow'>
+    <span class='pill'>Capture</span><span class='arrow'>→</span>
+    <span class='pill'>Markdown</span><span class='arrow'>→</span>
+    <span class='pill'>AI Round</span><span class='arrow'>→</span>
+    <span class='pill'>Voice Wall</span><span class='arrow'>→</span>
+    <span class='pill'>CI Sync</span><span class='arrow'>→</span>
+    <span class='pill'>Standup</span>
+  </div>
+
+  <p>The daily loop is intentionally narrow. It does not try to become a replacement for Jira, ServiceDesk Plus, Confluence, or GitHub. It creates a local operating layer that can understand all of them at once. The operator sees the day as a sequence of file transitions, while the external tools receive only the reconciled updates they already understand.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Stage</th><th>Artifact</th><th>AI Role</th><th>Human Checkpoint</th></tr></thead>
+      <tbody>
+        <tr><td>Capture</td><td>Planner note and incoming queue files</td><td>Collect candidates and summarize context</td><td>Confirm what deserves attention today</td></tr>
+        <tr><td>Markdown</td><td>Issue and case files</td><td>Normalize work into structured sections</td><td>Review the exact text that will sync</td></tr>
+        <tr><td>AI Round</td><td>Active lane item</td><td>Investigate, draft next actions, and gather evidence</td><td>Accept, redirect, or stop the proposed path</td></tr>
+        <tr><td>Voice Wall</td><td>Action entries</td><td>Separate internal notes from requester-facing updates</td><td>Verify the right audience receives the right language</td></tr>
+        <tr><td>CI Sync</td><td>Committed diff</td><td>Run deterministic reconciliation scripts</td><td>Inspect workflow status and retry safely if needed</td></tr>
+        <tr><td>Standup</td><td>Daily closeout summary</td><td>Turn committed work into a concise status narrative</td><td>Edit the final message before sharing</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>1. The File-Driven Mental Model</h2>
+  <p>Workflow Toolkit starts with a small refusal: the operational source of truth does not have to live inside a browser tab. Browser SaaS tools remain the official systems of record, but the working state lives in a repository. A Jira issue is represented by an <strong>issue file</strong>. A ServiceDesk Plus request is represented by a <strong>case file</strong>. A daily plan is represented by a planner note. The operator edits those files with the same tools used for code.</p>
+  <p>That shift matters for AI operations. An agent can reason over a markdown file without screen scraping, hidden modal state, or a brittle browser session. It can propose a worklog, add a follow-up, update a flow label, or prepare a standup summary in a form that a human can review before anything touches an external API.</p>
+  <p>The pattern is deliberately boring: capture the work, encode it as text, commit it, and let automation reconcile it. The boring part is the feature. Text has history. Git has review. CI has repeatability. Markdown has enough structure to be parsed by scripts and enough flexibility to be useful during messy investigations.</p>
+
+  <div class='code-block'>workflow-toolkit/
+├── .github/
+│   ├── skills/                 # Copilot skill definitions
+│   ├── instructions/           # File-pattern-scoped AI rules
+│   └── workflows/              # Sync, smoke test, and scheduled jobs
+├── issues/                     # Jira-backed markdown files
+├── cases/                      # ServiceDesk Plus-backed markdown files
+├── planner/                    # Daily notes, timers, and standup drafts
+├── confluence/                 # Publishable documentation drafts
+├── scripts/                    # CLI tools for APIs and reconciliation
+└── assets/                     # Diagrams, generated context, and references</div>
+
+  <p>The repository boundary also gives the operator a clean trust boundary. AI can draft file changes. Git shows the diff. GitHub Actions turns accepted changes into API calls. If a run fails, the markdown remains intact and the next run can pick up from the same durable state.</p>
+
+  <h3>Example Markdown File Layout</h3>
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Path</th><th>Purpose</th><th>Synced To</th><th>Typical Entries</th></tr></thead>
+      <tbody>
+        <tr><td><code>issues/INFRA-###/INFRA-###.md</code></td><td>Engineering ticket source file</td><td>Jira REST API</td><td>Description, investigation, actions, worklogs, internal comments</td></tr>
+        <tr><td><code>cases/#####/##### - Request.md</code></td><td>End-user support case file</td><td>ServiceDesk Plus API</td><td>Clerk card, tasks, web links, approvals, end-user comments</td></tr>
+        <tr><td><code>planner/MM-DD.org</code></td><td>Daily plan and time ledger</td><td>Local standup summary</td><td>Focus blocks, timers, active lane list, end-of-day notes</td></tr>
+        <tr><td><code>confluence/page-title.md</code></td><td>Long-form documentation draft</td><td>Confluence publishing script</td><td>Runbooks, architecture notes, implementation articles</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>2. Skills as Composable Units</h2>
+  <p>The toolkit treats AI skills as small operational units, not as one giant autonomous agent. Each skill has one job, a trigger phrase, a scope, and a set of file conventions it is allowed to touch. The operator chains skills together during the day: start the day, dispatch work, investigate a ticket, log time, publish a document, follow up on stale items, then close out.</p>
+  <p>This design keeps agency legible. A skill such as <code>ticket-investigator</code> is not responsible for the whole workday; it performs structured discovery for one ticket. A skill such as <code>jira-worklog</code> does not decide what to build; it records what happened in a parseable format. A skill such as <code>end-my-day</code> does not investigate tickets; it stops timers, summarizes outcomes, and prepares the handoff.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Category</th><th>Representative Skills</th><th>Operational Role</th></tr></thead>
+      <tbody>
+        <tr><td>Day orchestration</td><td><code>start-my-day</code>, <code>end-my-day</code>, <code>rounds</code></td><td>Open and close the workday, rotate active stations, keep the operator oriented.</td></tr>
+        <tr><td>Jira workflow</td><td><code>jira-router</code>, <code>jira-dispatcher</code>, <code>jira-worklog</code>, <code>ticket-investigator</code>, <code>phoenix-backlog</code></td><td>Route ticket intent, enforce lane WIP, create backlog items, investigate, and log internal work.</td></tr>
+        <tr><td>ServiceDesk Plus workflow</td><td><code>sdp-router</code>, <code>sdp-dispatcher</code>, <code>sdp-rounds</code>, <code>sdp-worklog</code>, <code>sdp-investigator</code>, <code>sdp-backlog</code></td><td>Mirror the Jira model for end-user requests, approvals, tasks, and visible requester updates.</td></tr>
+        <tr><td>Knowledge and writing</td><td><code>knowledge-clerk</code>, <code>confluence-writer</code>, <code>confluence-updater</code>, <code>editorial-assistant</code></td><td>Find precedent, write documentation, update existing pages, and review prose.</td></tr>
+        <tr><td>Cloud operations</td><td><code>azure-investigator</code>, <code>aws-investigator</code>, <code>pim-runbook</code>, <code>fabric-deploy</code></td><td>Gather cloud evidence, inspect identity and RBAC, verify privileged access, and support deployment workflows.</td></tr>
+        <tr><td>Review and reporting</td><td><code>pr-reviewer</code>, <code>pr-daily-summary</code>, <code>weekly-summary</code>, <code>waiting-ticket-followup</code>, <code>outbox-refresh</code></td><td>Review changes, summarize delivery, and keep stakeholders informed when work is waiting.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>The skill catalog is intentionally composable. The operator remains the scheduler and final reviewer. Skills make repeated actions reliable: they know the file layout, the voice conventions, the API scripts, and the correct handoff points. The result is an AI operations layer that feels less like chat roulette and more like a toolbelt.</p>
+
+  <h2>3. The 6-Lane Kanban Flow</h2>
+  <p>Workflow Toolkit uses a six-lane board with a hard WIP limit of one active item per lane. The first three lanes cover engineering project work. The second three lanes cover ServiceDesk Plus support work. This makes different kinds of work visible without letting them collapse into one overloaded queue.</p>
+  <p>Every item carries exactly one flow label: <code>flow:queue</code>, <code>flow:active</code>, <code>flow:waiting</code>, or <code>flow:done</code>. Only <code>flow:active</code> consumes the WIP slot. Waiting work is still tracked and followed up, but it does not block the operator from pulling the next eligible item into that lane.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Lane</th><th>System</th><th>Name</th><th>Typical Work</th><th>WIP Cap</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Jira</td><td>🔴 Urgent</td><td>Production incidents, security work, SLA-bound defects</td><td>1</td></tr>
+        <tr><td>2</td><td>Jira</td><td>🔵 Manual</td><td>Work requiring human judgment, stakeholder coordination, or privileged approval</td><td>1</td></tr>
+        <tr><td>3</td><td>Jira</td><td>🟢 Background</td><td>Automation, cleanup, documentation, and tasks suitable for high autonomy</td><td>1</td></tr>
+        <tr><td>4</td><td>SDP</td><td>🔴 SDP-Urgent</td><td>End-user issues that block business operations or production workflows</td><td>1</td></tr>
+        <tr><td>5</td><td>SDP</td><td>🟠 SDP-Approval</td><td>Requests waiting on stakeholder approval, budget, or access sign-off</td><td>1</td></tr>
+        <tr><td>6</td><td>SDP</td><td>🟢 SDP-Background</td><td>Routine access grants, configuration requests, and non-urgent support tasks</td><td>1</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>The lanes also create a practical autonomy model. Background work can be delegated aggressively. Manual work can ask for direction at decision points. Urgent work can remain under tight operator control. The same file-driven pattern supports all three modes because the handoff artifact is always the same: a markdown diff.</p>
+
+  <h2>4. The Voice Wall</h2>
+  <p>One of the most important conventions in the toolkit is the voice wall. The same work can need two different narratives. Engineering systems need an internal investigative voice: what was tested, what failed, what evidence supports the conclusion, and what should happen next. End-user systems need a plain-language service voice: what changed, what the requester can verify, and who owns the next action.</p>
+  <p>The toolkit encodes that difference directly in file rules. Jira <code>COMMENT:</code> lines are written in internal voice. ServiceDesk Plus <code>COMMENT:</code> lines are written in end-user voice. <code>WORKLOG:</code> lines remain internal time records in both systems. This prevents accidental leakage of investigation notes into requester-facing updates while still preserving useful technical context for the platform team.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Line Type</th><th>Jira Issue File</th><th>SDP Case File</th><th>Reason</th></tr></thead>
+      <tbody>
+        <tr><td><code>WORKLOG:</code></td><td>Internal time summary</td><td>Internal time summary</td><td>Time accounting should be concise, searchable, and auditable.</td></tr>
+        <tr><td><code>COMMENT:</code></td><td>Internal investigative update</td><td>End-user-facing update</td><td>The audience changes, so the language must change.</td></tr>
+        <tr><td><code>TODO:</code></td><td>Engineering next step</td><td>Requester or technician next step</td><td>Follow-up should be explicit and assigned to the right audience.</td></tr>
+        <tr><td>Clerk card</td><td>Optional context summary</td><td>Primary requester context</td><td>Support cases benefit from a structured lede, status, next, and links block.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>The voice wall is a small example of why instructions matter. The AI assistant is not just told to be helpful; it is given file-pattern-scoped writing rules. That lets the operator use natural language while the repository enforces the difference between engineering memory and customer communication.</p>
+
+  <h2>5. Markdown → API Sync</h2>
+  <p>The sync path is one-directional for writes: markdown first, API second. The operator updates files and pushes to <code>main</code>. GitHub Actions detects changed issue or case files. Reconciliation scripts parse the structured sections, calculate what has not been synced yet, and call the appropriate REST APIs.</p>
+  <p>For Jira, the workflows post worklogs, comments, and flow-label changes. For ServiceDesk Plus, the workflows can reconcile descriptions, tasks, tags, links, approval blocks, and worklog entries. The scripts use idempotent markers such as hashes and changed-file scopes so a rerun does not duplicate entries.</p>
+
+  <div class='code-block'>Operator edits markdown
+        ↓
+git commit && git push origin main
+        ↓
+GitHub Actions detects changed paths
+        ↓
+Python reconciliation scripts parse structured sections
+        ↓
+Jira and ServiceDesk Plus APIs receive approved updates
+        ↓
+Planner and standup summaries reflect the durable file state</div>
+
+  <p>This design makes failures safer. If an API token expires, a workflow times out, or an external service returns a transient error, the accepted work remains in the repository. The next CI run can retry from the same files. The operator does not have to reconstruct a lost browser form or remember which comments were already posted.</p>
+
+  <h2>6. Why Open Source</h2>
+  <p>Workflow Toolkit began as a personal operating system for the platform team: a way to coordinate engineering tickets, support requests, follow-ups, documentation, privileged access checks, and end-of-day reporting without losing context. Open sourcing it turns that personal system into a pattern others can fork, strip down, and adapt.</p>
+  <p>The public repository at <a href='https://github.com/Acestus/workflow-toolkit'>github.com/Acestus/workflow-toolkit</a> packages the core idea without company-internal identifiers. Bring your own Jira project, your own support portal, your own GitHub secrets, and your own instruction files. The architecture does not require a specific organization chart. It requires a repo, a CLI, a few APIs, and a willingness to treat markdown as operational infrastructure.</p>
+
+  <div class='callout'>
+    <strong>Build 2026 visibility:</strong> Microsoft Build is the right audience for this pattern because it sits at the intersection of Copilot extensibility, GitHub-native automation, IT operations, and responsible human-in-the-loop AI. The demo is not about replacing operators. It is about giving operators a durable, reviewable, open-source control plane for AI-assisted work.
+  </div>
+
+  <p>Open source also gives the project a better feedback loop. Teams can compare lane models, contribute new skills, improve sync scripts, and share safer instruction patterns. A personal toolkit becomes a community catalog of practical AI ops patterns: small skills, clear files, visible diffs, API reconciliation, and a human operator who always has the final say.</p>
+  <p>
+    That is the Build 2026 story in one sentence: AI becomes safer when its working memory is inspectable, versioned, and owned by the people doing the work.
+  </p>
+
+  <div class='footer-link'>
+    <h3>References</h3>
+    <ul>
+      <li><a href='https://github.com/Acestus/workflow-toolkit'>Workflow Toolkit on GitHub</a></li>
+      <li>Workflow Toolkit README — file-driven personal kanban and ITSM workflow</li>
+      <li>Internal architecture notes, sanitized into platform-team terminology for public release</li>
+      <li><a href='https://learn.microsoft.com/en-us/copilot/'>Microsoft Copilot documentation</a></li>
+      <li><a href='https://learn.microsoft.com/en-us/azure/devops/'>Microsoft Learn: Azure DevOps documentation</a></li>
+    </ul>
+  </div>
+</body>
+</html>

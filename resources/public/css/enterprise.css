@@ -573,3 +573,52 @@
   color: var(--clr-text-muted); padding: var(--space-s);
   border-inline-start: 3px solid var(--clr-accent);
 }
+
+/* === SPA utility classes added for Build 2026 refresh === */
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-s);
+  margin-block: var(--space-s);
+}
+
+.panel-sub {
+  color: var(--clr-text-muted);
+  font-size: var(--step--1);
+  margin-block: var(--space-2xs) var(--space-s);
+}
+
+.flow {
+  display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
+  gap: var(--space-2xs); margin-block: var(--space-m);
+}
+.pill {
+  background: var(--clr-accent); color: #fff;
+  padding: 0.55rem 1rem; border-radius: 999px;
+  font-weight: 600; font-size: var(--step--1);
+}
+.arrow {
+  color: var(--clr-accent); font-size: 1.25rem; font-weight: 700;
+}
+
+.sku-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-2xs);
+  margin-block: var(--space-2xs);
+}
+
+.code-block {
+  background: #0a0a2a; color: #9cdcfe;
+  padding: var(--space-s); border-radius: 6px;
+  font-family: Consolas, Monaco, 'Courier New', monospace;
+  font-size: var(--step--1); line-height: 1.5;
+  overflow: auto; white-space: pre;
+  margin-block: var(--space-s);
+}
+
+@media (max-width: 768px) {
+  .flow { flex-direction: column; }
+  .arrow { transform: rotate(90deg); }
+}

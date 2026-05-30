@@ -3,7 +3,7 @@
 <head>
   <meta charset='utf-8'>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
-  <title>Platform Engineering Console</title>
+  <title>Platform Engineering Console — Self-Service Provisioning</title>
   <style>
     :root { --accent: #0078d4; --accent-dark: #106ebe; --bg: #faf9f8; --text: #323130; --summary: #e1f5fe; }
     * { box-sizing: border-box; }
@@ -13,6 +13,7 @@
     .back-link { display: inline-block; margin-bottom: 1rem; font-weight: 600; }
     h1 { color: var(--accent); border-bottom: 3px solid var(--accent); padding-bottom: 0.5rem; margin-top: 0; }
     h2 { color: var(--accent-dark); border-left: 4px solid var(--accent); padding-left: 15px; margin-top: 2.25rem; }
+    h3 { color: var(--accent-dark); margin-top: 1.5rem; }
     .summary { background: var(--summary); border-left: 5px solid var(--accent); border-radius: 4px; padding: 1rem; margin: 1rem 0 1.5rem; }
     .metrics { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0; }
     .metric-card { background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-bottom: 3px solid var(--accent); padding: 1rem; flex: 1 1 180px; min-width: 170px; }
@@ -27,6 +28,7 @@
     th { background: var(--accent); color: #fff; }
     tbody tr:nth-child(even) { background: #f3f2f1; }
     tbody tr:hover { background: #deecf9; }
+    .callout { background: #fff3cd; border-left: 5px solid #ffc107; border-radius: 4px; padding: 1rem; margin: 1rem 0; }
     .footer-link { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #d2d0ce; }
     @media (max-width: 768px) {
       body { padding: 16px; }
@@ -75,59 +77,181 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
   <a class='back-link' href='/platform.html'>← Back to Demo</a>
-  <h1>Platform Engineering Console</h1>
+  <h1>Platform Engineering Console — Self-Service Provisioning</h1>
 
   <div class='summary'>
-    Simulated platform engineering console showing workspace provisioning, M365 Copilot agents, and PIM just-in-time access. The page demonstrates platform-as-product thinking: a single interface for repeatable workspace creation, supported AI capabilities, and least-privilege elevation patterns that reduce hand-crafted operations.
+    The Microsoft Build 2026 refresh reframes the console as a self-service provisioning surface for Microsoft Fabric workspaces. The SPA demonstrates how an infrastructure team can offer safe paved roads: workspace tiers, request intake, PIM-controlled production access, GitOps provisioning, backlog flow, and handoff documentation that let application and data teams move quickly without unmanaged portal click-ops.
   </div>
 
   <div class='metrics'>
-    <div class='metric-card'><div class='metric-value'>6</div><div class='metric-label'>Workspaces</div></div>
-    <div class='metric-card'><div class='metric-value'>3</div><div class='metric-label'>Copilot Agents</div></div>
-    <div class='metric-card'><div class='metric-value'>4</div><div class='metric-label'>Onboarded Teams</div></div>
-    <div class='metric-card'><div class='metric-value'>12 / wk</div><div class='metric-label'>PIM Activations</div></div>
+    <div class='metric-card'><div class='metric-value'>Sandbox / Dev / Prod</div><div class='metric-label'>Workspace Tiers</div></div>
+    <div class='metric-card'><div class='metric-value'>PIM-Gated</div><div class='metric-label'>Production Access</div></div>
+    <div class='metric-card'><div class='metric-value'>GitOps</div><div class='metric-label'>Provisioned Workspaces</div></div>
+    <div class='metric-card'><div class='metric-value'>Self-Service</div><div class='metric-label'>Backlog Intake</div></div>
   </div>
 
   <div class='flow'>
-    <span class='pill'>Provision Workspace</span><span class='arrow'>→</span>
-    <span class='pill'>Sync Git</span><span class='arrow'>→</span>
-    <span class='pill'>Enable Agents</span><span class='arrow'>→</span>
-    <span class='pill'>Grant JIT Access</span><span class='arrow'>→</span>
-    <span class='pill'>Onboard Team</span>
+    <span class='pill'>Request</span><span class='arrow'>→</span>
+    <span class='pill'>Approve</span><span class='arrow'>→</span>
+    <span class='pill'>Provision</span><span class='arrow'>→</span>
+    <span class='pill'>Hand-Off</span><span class='arrow'>→</span>
+    <span class='pill'>Govern</span>
   </div>
 
-  <h2>1. Platform as Product</h2>
-  <p>The console is built around a product mindset rather than a ticket-queue mindset. A platform team is most effective when it offers paved roads: standard workspaces, predictable automation, documented support boundaries, and service-level expectations. This SPA makes that philosophy tangible by showing metrics, curated tabs, and repeatable actions instead of one-off admin moves.</p>
-  <p>Architecturally, the page uses a tiny tab state atom and rerenders the active panel on demand. That simplicity is a good metaphor for platform design itself: a small number of clear workflows beats a giant dashboard stuffed with every possible feature.</p>
+  <h2>1. The Three-Tier Workspace Model</h2>
+  <p>The console models Fabric onboarding as a tiered service instead of a one-off administrator task. Sandbox, Dev, and Prod have different permissions, gates, and expectations. That split matters because the right answer for experimentation is not the right answer for production reporting.</p>
+  <p>Sandbox workspaces give engineers a safe place to learn, run notebooks, and use synthetic data. Dev workspaces integrate team work behind a repository. Prod workspaces are deployment targets that serve downstream consumers and should not be edited manually.</p>
 
-  <h2>2. Fabric Workspace Provisioning</h2>
-  <p>The workspace inventory encodes an opinionated environment topology: dev, stg, and prd workspaces for shared domains, plus targeted environments for specific teams such as EDM or logs. That is exactly how platform provisioning should feel—standard names, standard environment tiers, and visible Git sync posture.</p>
   <div class='table-wrap'>
     <table>
-      <thead><tr><th>Workspace Pattern</th><th>What It Signals</th><th>Why It Matters</th></tr></thead>
+      <thead><tr><th>Tier</th><th>Capabilities</th><th>Access Model</th><th>Promotion Gate</th></tr></thead>
       <tbody>
-        <tr><td>ws_ad_dev / ws_ad_stg / ws_ad_prd</td><td>Environment separation</td><td>Keeps promotion paths and support ownership clear</td></tr>
-        <tr><td>Git Sync = true</td><td>Workspace connected to source control</td><td>Reduces click-ops and improves rollback confidence</td></tr>
-        <tr><td>Item count</td><td>Operational density of the workspace</td><td>Helps spot sprawl or underutilized landing zones</td></tr>
+        <tr><td>Sandbox</td><td>Personal experimentation, mock data, notebook learning, isolated repos</td><td>Contributor for the assigned engineer; no production sources</td><td>No promotion by default; useful work graduates by pull request</td></tr>
+        <tr><td>Dev</td><td>Shared integration, Git-connected workspace, lakehouses, pipelines, team testing</td><td>Team contributors with code review expectations</td><td>Pull request review, naming checks, successful pipeline run</td></tr>
+        <tr><td>Prod</td><td>Curated semantic models, reports, scheduled pipelines, downstream consumption</td><td>Read-mostly humans; automation deploys through scoped identity</td><td>Approval gate plus parameterized deployment from the repository</td></tr>
       </tbody>
     </table>
   </div>
-  <p>In practice, the hardest part of workspace provisioning is not creating the workspace object. It is standardizing naming, deciding environment topology, wiring Git integration, and making sure teams know what belongs where. The console tells that operational story clearly.</p>
 
-  <h2>3. M365 Copilot Agents</h2>
-  <p>The three showcased agents are exactly the kind that help platform teams compound leverage. Confluence Search lowers the cost of finding infrastructure knowledge. Sprint Planner turns backlog data into execution proposals. Meeting Recap converts coordination overhead into structured actions and decisions.</p>
-  <p>What makes this a platform concern rather than a novelty is curation. Useful agents are grounded in real team workflows, scoped to real sources of truth, and introduced with enough guardrails that they improve work instead of creating another tool silo.</p>
+  <div class='callout'>
+    The scaling move is not adding more administrators. It is making each tier repeatable: same naming, same artifact layout, same gates, and the same handoff pattern for every onboarded team.
+  </div>
 
-  <h2>4. PIM Just-in-Time Access</h2>
-  <p>PIM is where least privilege becomes practical. The console lists eligible roles, scopes, activation duration, and justification, which is exactly the information operators need when deciding whether access is appropriate. Standing access tends to become invisible risk; JIT activation makes privilege explicit, reviewable, and time-bounded.</p>
-  <p>The real lesson is cultural as much as technical: if platform teams expect developers to justify elevation, they should hold themselves to the same bar for Fabric admin, Key Vault officer, or contributor rights.</p>
+  <h2>2. Self-Service Onboarding</h2>
+  <p>Self-service starts with a structured request. A team describes the workload, expected source systems, row volume, refresh schedule, users, and downstream consumers. The platform team turns that request into a standard workspace plan rather than inventing a new topology each time.</p>
+  <p>The handoff is automated where possible and explicit where human judgment is needed. Intake captures enough detail to choose the domain name, environment set, Git repository, parameter files, security groups, and whether a sandbox is needed before the team touches production-bound assets.</p>
 
-  <h2>5. Onboarding Playbook</h2>
-  <p>A good onboarding playbook for this console would be short and opinionated: choose workspace pattern, apply naming standard, connect Git, enable the default Copilot agents, define PIM eligibility, and document support ownership. That sounds simple because it should be. Simplicity is what makes a platform adoptable.</p>
-  <p>The SPA supports that message by being tabbed, focused, and scenario-driven. It is not trying to be Azure Portal. It is showing what a team-owned platform product could look like when it is designed around common journeys instead of provider surface area.</p>
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Step</th><th>Owner</th><th>Output</th></tr></thead>
+      <tbody>
+        <tr><td>Request</td><td>Application or data team</td><td>Workload summary, source systems, users, schedule, and compliance notes</td></tr>
+        <tr><td>Scope</td><td>Platform team</td><td>CAF-aligned domain name, tier decision, access groups, and backlog item</td></tr>
+        <tr><td>Automate</td><td>Platform automation</td><td>Workspace, lakehouses, repository structure, parameters, and deployment hooks</td></tr>
+        <tr><td>Hand-Off</td><td>Joint</td><td>Runbook page, support boundary, next steps, and validation checklist</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Onboarding Contract</h3>
+  <div class='code-block'>request:
+  workload: &quot;&lt;domain-or-product-name&gt;&quot;
+  team: &quot;&lt;application-team-or-data-team&gt;&quot;
+  sources: [&quot;&lt;source-system&gt;&quot;]
+  refresh: &quot;&lt;hourly|daily|weekly&gt;&quot;
+  environments: [&quot;sandbox&quot;, &quot;dev&quot;, &quot;prod&quot;]
+  downstream_consumers: [&quot;&lt;report-or-api-consumer&gt;&quot;]
+  documentation_owner: &quot;&lt;role-label&gt;&quot;</div>
+
+  <h2>3. PIM-Gated Production Access</h2>
+  <p>Production access is not a permanent entitlement in the model shown by the SPA. Users can be eligible for elevated roles while remaining inactive by default. When a deployment, incident, or operational task requires write access, the role is activated with a duration and justification.</p>
+  <p>This keeps least privilege operationally realistic. Reader assignments support normal observation. Contributor or administrator paths are time-bound and auditable. The console's PIM tab represents that distinction by showing role, scope, duration, and justification together.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>State</th><th>Meaning</th><th>Operational Use</th><th>Risk Control</th></tr></thead>
+      <tbody>
+        <tr><td>Eligible</td><td>User can request activation but has no standing write access</td><td>Prepared for deployments and emergency response</td><td>Reduces attack surface between tasks</td></tr>
+        <tr><td>Active</td><td>Role is temporarily enabled after justification</td><td>Pipeline deploy, secret rotation, incident fix</td><td>Time-bound session with audit trail</td></tr>
+        <tr><td>Permanent Reader</td><td>Default observation role for most users</td><td>Validate reports, inspect run status, review outputs</td><td>Separates visibility from mutation</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class='callout'>
+    PIM is a guardrail, not a speed bump. The goal is to make safe access fast: pre-approved eligibility, short activation windows, clear justification, and no shared production identities.
+  </div>
+
+  <h2>4. Backlog Management</h2>
+  <p>The provisioning console fits into a flow-based backlog model. Requests enter a queue, are pulled into active work when capacity exists, move to waiting when blocked by approvals or external dependencies, and finish as done only when the workspace and documentation are usable.</p>
+  <p>This model prevents platform intake from becoming an invisible pile of favors. Each request has a state, a constraint, and a next action. Waiting work does not consume the active work-in-progress slot, but it stays visible so follow-up does not rely on memory.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Flow State</th><th>Provisioning Meaning</th><th>Typical Exit Condition</th></tr></thead>
+      <tbody>
+        <tr><td><code>flow:queue</code></td><td>Request is named, scored, and ready to be pulled</td><td>Capacity opens in the correct lane</td></tr>
+        <tr><td><code>flow:active</code></td><td>Workspace automation or access setup is underway</td><td>Artifacts are created or a blocker is found</td></tr>
+        <tr><td><code>flow:waiting</code></td><td>Blocked on approval, requester data, or external dependency</td><td>Missing input arrives or decision is made</td></tr>
+        <tr><td><code>flow:done</code></td><td>Workspace, access, runbook, and handoff are complete</td><td>Requester confirms usable landing zone</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Queue Discipline</h3>
+  <div class='code-block'>Identified → Named &amp; Scored → Queued → Active → Waiting or Done
+
+Rule of thumb:
+- Pull only when capacity exists.
+- Keep one active item per lane.
+- Move blocked work to waiting with an explicit next action.
+- Finish by documenting how the team operates the workspace.</div>
+
+  <h2>5. GitOps Provisioning</h2>
+  <p>Workspace creation should be reproducible. The article refresh emphasizes that infrastructure as code creates the workspace and related scaffolding; the portal is the observation surface, not the source of truth. Git holds the desired state, and automation applies it consistently.</p>
+  <p>That pattern aligns with Microsoft Fabric Git integration and Azure deployment practice: code is reviewable, parameterized, and reversible. A failed experiment can be deleted and recreated. A production change can be tied to a pull request and commit SHA.</p>
+
+  <h3>Bicep Workspace Provisioning Snippet</h3>
+  <div class='code-block'>param workspaceName string = 'ws_&lt;domain&gt;_prd'
+param capacityId string = '/subscriptions/&lt;subscription-id&gt;/resourceGroups/&lt;rg-name&gt;/providers/Microsoft.Fabric/capacities/&lt;capacity-name&gt;'
+param adminGroupObjectId string = '&lt;entra-group-object-id&gt;'
+
+resource fabricWorkspace 'Microsoft.Fabric/workspaces@2023-11-01' = {
+  name: workspaceName
+  location: 'westus2'
+  properties: {
+    capacityId: capacityId
+    description: 'Production Fabric workspace for &lt;domain&gt; workload'
+  }
+  tags: {
+    Environment: 'prd'
+    Owner: 'platform-team'
+    Provisioning: 'gitops'
+  }
+}
+
+resource workspaceAdmin 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(fabricWorkspace.id, adminGroupObjectId, 'Fabric Workspace Admin')
+  scope: fabricWorkspace
+  properties: {
+    principalId: adminGroupObjectId
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '&lt;role-definition-id&gt;')
+    principalType: 'Group'
+  }
+}</div>
+
+  <div class='callout'>
+    This is the platform bottleneck escape hatch: requesters get self-service, but the platform team keeps control of the templates, gates, naming rules, and audit trail.
+  </div>
+
+  <h2>6. Handoff Documentation</h2>
+  <p>Every provisioned workspace needs a runbook page. The page records what was created, why it exists, who owns it, how code is deployed, how access is requested, what data is synthetic versus production-bound, and where to go when a pipeline fails.</p>
+  <p>Handoff documentation is what turns an automation event into an operating model. Without it, the team has a workspace but not a platform product. With it, future support requests can start from a shared source of truth.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Runbook Section</th><th>What It Captures</th><th>Why It Matters</th></tr></thead>
+      <tbody>
+        <tr><td>Workspace Inventory</td><td>Workspace names, tiers, lakehouses, pipelines, and repository paths</td><td>Prevents discovery work during incidents</td></tr>
+        <tr><td>Access Model</td><td>Reader groups, contributor groups, PIM roles, and approval path</td><td>Sets expectations before production support starts</td></tr>
+        <tr><td>Deployment Path</td><td>Branch, pull request gate, pipeline, environment parameters</td><td>Makes Git the operational source of truth</td></tr>
+        <tr><td>Support Boundary</td><td>What the platform team owns and what the workload team owns</td><td>Reduces handoff ambiguity and ticket ping-pong</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>References</h3>
+  <ul>
+    <li><a href='https://learn.microsoft.com/fabric/get-started/microsoft-fabric-overview'>Microsoft Fabric overview</a></li>
+    <li><a href='https://learn.microsoft.com/fabric/onelake/onelake-medallion-lakehouse-architecture'>Medallion lakehouse architecture in OneLake</a></li>
+    <li><a href='https://learn.microsoft.com/fabric/cicd/git-integration/intro-to-git-integration'>Microsoft Fabric Git integration</a></li>
+    <li><a href='https://learn.microsoft.com/fabric/cicd/deployment-pipelines/intro-to-deployment-pipelines'>Microsoft Fabric deployment pipelines</a></li>
+    <li><a href='https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming'>CAF resource naming guidance</a></li>
+    <li><a href='https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-configure'>Microsoft Entra Privileged Identity Management</a></li>
+  </ul>
 
   <div class='footer-link'>
-    <a href='https://github.com/Acestus/portfolio/blob/main/src/portfolio/pro/platform.cljs' target='_blank' rel='noopener noreferrer'>View Source Code</a>
+    <p><strong>Platform Engineering Console — Microsoft Build 2026 refresh.</strong> Sanitized from internal Fabric onboarding, platform alignment, sandbox onboarding, and backlog operating-model notes. Workspace identifiers, project names, and people references are represented as role labels or placeholders.</p>
   </div>
 </body>
 </html>

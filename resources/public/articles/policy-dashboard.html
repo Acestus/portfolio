@@ -3,7 +3,7 @@
 <head>
   <meta charset='utf-8'>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
-  <title>Azure Policy Governance Dashboard</title>
+  <title>Azure Policy at Scale — Modify, Audit, Deny, Remediate</title>
   <style>
     :root { --accent: #0078d4; --accent-dark: #106ebe; --bg: #faf9f8; --text: #323130; --summary: #e1f5fe; }
     * { box-sizing: border-box; }
@@ -13,6 +13,7 @@
     .back-link { display: inline-block; margin-bottom: 1rem; font-weight: 600; }
     h1 { color: var(--accent); border-bottom: 3px solid var(--accent); padding-bottom: 0.5rem; margin-top: 0; }
     h2 { color: var(--accent-dark); border-left: 4px solid var(--accent); padding-left: 15px; margin-top: 2.25rem; }
+    h3 { color: var(--accent-dark); margin-top: 1.5rem; }
     .summary { background: var(--summary); border-left: 5px solid var(--accent); border-radius: 4px; padding: 1rem; margin: 1rem 0 1.5rem; }
     .metrics { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0; }
     .metric-card { background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-bottom: 3px solid var(--accent); padding: 1rem; flex: 1 1 180px; min-width: 170px; }
@@ -27,6 +28,7 @@
     th { background: var(--accent); color: #fff; }
     tbody tr:nth-child(even) { background: #f3f2f1; }
     tbody tr:hover { background: #deecf9; }
+    .callout { background: #fff3cd; border-left: 5px solid #ffc107; border-radius: 4px; padding: 1rem; margin: 1rem 0; }
     .footer-link { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #d2d0ce; }
     @media (max-width: 768px) {
       body { padding: 16px; }
@@ -75,59 +77,184 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
   <a class='back-link' href='/policy.html'>← Back to Demo</a>
-  <h1>Azure Policy Governance Dashboard</h1>
+  <h1>Azure Policy at Scale — Modify, Audit, Deny, Remediate</h1>
 
   <div class='summary'>
-    Interactive dashboard showing tenant-wide Azure Policy governance. It reflects a real platform concern: policy is not a one-time hardening exercise, but a continuously managed product spanning multiple subscriptions, scopes, and remediation paths. The SPA models 10 assignments across deny, modify, audit, and DeployIfNotExists effects with compliance scoring and filterable views.
+    The Microsoft Build 2026 refresh frames the SPA as an Azure governance operations dashboard. It shows how a platform team manages 29 active assignments across modify, audit, deny, and DeployIfNotExists effects; uses non-blocking tag governance as the default pattern; runs remediation tasks to back-fill drift; and protects production changes through time-bound Privileged Identity Management rather than standing administrator access.
   </div>
 
   <div class='metrics'>
-    <div class='metric-card'><div class='metric-value'>10</div><div class='metric-label'>Policies</div></div>
-    <div class='metric-card'><div class='metric-value'>4</div><div class='metric-label'>Effect Types</div></div>
-    <div class='metric-card'><div class='metric-value'>94%</div><div class='metric-label'>Average Compliance</div></div>
-    <div class='metric-card'><div class='metric-value'>3</div><div class='metric-label'>Representative Scopes</div></div>
+    <div class='metric-card'><div class='metric-value'>29</div><div class='metric-label'>Assignments</div></div>
+    <div class='metric-card'><div class='metric-value'>Modify-First</div><div class='metric-label'>Default Governance</div></div>
+    <div class='metric-card'><div class='metric-value'>Tags</div><div class='metric-label'>Cost &amp; Owner Signals</div></div>
+    <div class='metric-card'><div class='metric-value'>Drift</div><div class='metric-label'>Remediation Queue</div></div>
   </div>
 
   <div class='flow'>
-    <span class='pill'>Policy Definition</span><span class='arrow'>→</span>
-    <span class='pill'>Assignment Scope</span><span class='arrow'>→</span>
-    <span class='pill'>Effect Evaluation</span><span class='arrow'>→</span>
-    <span class='pill'>Compliance Score</span><span class='arrow'>→</span>
-    <span class='pill'>Remediation</span>
+    <span class='pill'>Define</span><span class='arrow'>→</span>
+    <span class='pill'>Assign</span><span class='arrow'>→</span>
+    <span class='pill'>Evaluate</span><span class='arrow'>→</span>
+    <span class='pill'>Remediate</span><span class='arrow'>→</span>
+    <span class='pill'>Audit</span>
   </div>
 
-  <h2>1. Policy as Product</h2>
-  <p>The philosophy behind the dashboard is simple: platform governance only scales when policies are treated like products with users, versioning, support cost, and measurable outcomes. A deny rule may be technically correct and still be a bad product if it blocks onboarding, lacks documentation, or arrives without exceptions strategy.</p>
-  <p>The SPA expresses that idea in a useful way. It does not just show policy names; it shows effect, scope, and compliance side by side. That mirrors how real platform teams reason about policy quality: what does it do, where does it apply, and is it actually improving estate posture?</p>
+  <h2>1. Effects: Audit vs Modify vs Deny vs DeployIfNotExists</h2>
+  <p>Azure Policy effect choice is the architecture decision behind every governance rule. The SPA intentionally exposes effect next to scope and compliance because an enterprise policy program cannot be judged by assignment count alone. A safe rollout usually starts with audit, graduates routine metadata to modify, reserves deny for high-confidence guardrails, and uses DeployIfNotExists when missing platform plumbing must be deployed after evaluation.</p>
+  <p>This effect model mirrors the operating runbook mindset: identify the failing control, check identity and scope, remediate the resource or assignment, then document the outcome. Policy is not a static catalog. It is a closed-loop system that needs owners, evidence, escalation paths, and a clear line between non-blocking hygiene and hard safety boundaries.</p>
 
-  <h2>2. Effect Types</h2>
-  <p>Azure Policy effect choice is where governance design becomes architecture. Deny is strong but blunt. Modify can standardize resources in-flight. Audit creates visibility without blocking delivery. DeployIfNotExists automates missing dependencies such as agents or diagnostic settings.</p>
   <div class='table-wrap'>
     <table>
-      <thead><tr><th>Effect</th><th>Behavior</th><th>Best Use Case</th><th>Tradeoff</th></tr></thead>
+      <thead><tr><th>Effect</th><th>Behavior</th><th>Best Use Case</th><th>Operational Watchout</th></tr></thead>
       <tbody>
-        <tr><td>Deny</td><td>Rejects non-compliant create or update operations</td><td>High-confidence guardrails like TLS enforcement or public access denial</td><td>Powerful, but painful if rolled out before teams are ready</td></tr>
-        <tr><td>Modify</td><td>Adds or changes properties during deployment</td><td>Tag enforcement, diagnostic settings defaults, metadata hygiene</td><td>Helpful, but can hide drift if teams do not understand what was changed</td></tr>
-        <tr><td>Audit</td><td>Reports non-compliance without blocking</td><td>Progressive rollout, discovery, and low-confidence standards</td><td>Safe to deploy, but easy to ignore if not operationalized</td></tr>
-        <tr><td>DeployIfNotExists</td><td>Deploys required supporting resources after evaluation</td><td>AMA rollout, flow logs, baseline monitoring agents</td><td>Operationally rich, but requires identity and remediation plumbing</td></tr>
+        <tr><td>Audit</td><td>Records non-compliance without blocking create or update operations</td><td>Discovery, baseline measurement, pilot rollout, and standards that still need evidence</td><td>Must feed a review queue or it becomes background noise</td></tr>
+        <tr><td>Modify</td><td>Adds, replaces, or normalizes fields during a deployment or remediation task</td><td>Tags, inherited metadata, diagnostic defaults, and safe resource properties</td><td>Requires a managed identity and clear documentation of what was changed</td></tr>
+        <tr><td>Deny</td><td>Rejects non-compliant requests before deployment completes</td><td>Public exposure, disallowed locations, weak encryption, and other hard guardrails</td><td>Can block delivery if exemptions and migration windows are not ready</td></tr>
+        <tr><td>DeployIfNotExists</td><td>Checks for a related resource or setting and deploys it when missing</td><td>Monitoring agents, diagnostic settings, flow logs, and required platform attachments</td><td>More moving parts: assignment identity, role grants, templates, and remediation status</td></tr>
       </tbody>
     </table>
   </div>
 
-  <h2>3. Compliance Scoring</h2>
-  <p>The dashboard's compliance bars intentionally compress a lot of meaning into one visual. A percentage by itself is not governance, but it is a useful portfolio metric when coupled with scope and effect. In the source, the bar color changes based on thresholds: green for strong posture, amber for warning, red for material gaps.</p>
-  <p>That is a subtle but correct design move. Compliance is not binary across a tenant. A 78% result for public network access denial suggests rollout friction or legacy exception debt, while 100% on TLS 1.2 tells you the control is mature and safely enforceable.</p>
+  <h3>Assignment Categories Shown in the Dashboard</h3>
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Category</th><th>Sanitized Count</th><th>Primary Effect</th><th>Example Control</th></tr></thead>
+      <tbody>
+        <tr><td>Tagging and ownership</td><td>8</td><td>Modify</td><td>Apply CostCenter, Environment, Owner, and Project tags from subscription or resource group context</td></tr>
+        <tr><td>Security baseline</td><td>7</td><td>Deny / Audit</td><td>Require secure transfer, TLS posture, soft delete, and restricted public access</td></tr>
+        <tr><td>Monitoring and diagnostics</td><td>6</td><td>DeployIfNotExists</td><td>Deploy diagnostic settings, agents, or flow logs where they are missing</td></tr>
+        <tr><td>Network governance</td><td>4</td><td>Audit / Deny</td><td>Flag missing private endpoint patterns or prevent unsafe ingress defaults</td></tr>
+        <tr><td>Cost and platform standards</td><td>4</td><td>Audit / Modify</td><td>Check CAF naming, required metadata, and environment classification</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-  <h2>4. Remediation Workflows</h2>
-  <p>Remediation is where policy programs live or die. For modify and DeployIfNotExists, the hardest part is rarely authoring JSON; it is the operating model around assignment identity, exclusions, sequencing, and safe backfill. A healthy remediation workflow usually includes pilot scopes, exception review, remediation tasks, and clear ownership when a deployment fails.</p>
-  <p>The SPA models this operationally by making filters first-class. Platform engineers rarely inspect every policy at once. They pivot by effect type, then investigate the row that needs action. That filtering behavior is small in code and very real in day-to-day governance practice.</p>
+  <h2>2. The Tagging Governance Pattern (modify-effect, non-blocking)</h2>
+  <p>The most important design choice in the refreshed article is the modify-first tagging pattern. Required tags are governance inputs: they connect resources to owners, budget centers, environments, projects, and incident routing. Blocking every deployment that misses a tag creates friction; modifying safe metadata in-flight makes the paved road easier to use while still improving reporting quality.</p>
+  <p>The dashboard treats tag governance as a platform service. A policy assignment can inherit a default from the resource group, normalize casing, or add a placeholder value that routes back to a remediation queue. That keeps delivery moving, but it also makes drift visible. The owner still needs to clean up inaccurate values; policy simply prevents missing metadata from becoming invisible technical debt.</p>
 
-  <h2>5. Real-World Governance</h2>
-  <p>The showcased controls are realistic: tag enforcement, Azure Monitor Agent deployment, TLS configuration, private endpoint expectations, NSG flow logs, Key Vault soft delete, and public network denial. These are the kinds of controls that turn governance from slideware into actual platform behavior.</p>
-  <p>Most importantly, the dashboard keeps policy visible as an operational system. It is not just about blocking bad choices. It is about gradually making the paved road safer, more consistent, and easier to consume across tenant root, subscription, and workload scopes.</p>
+  <div class='code-block'>// Modify-effect policy rule sketch for required ownership metadata
+{
+  "if": {
+    "allOf": [
+      { "field": "type", "notEquals": "Microsoft.Resources/subscriptions/resourceGroups" },
+      { "field": "tags['CostCenter']", "exists": false }
+    ]
+  },
+  "then": {
+    "effect": "modify",
+    "details": {
+      "roleDefinitionIds": [
+        "/providers/Microsoft.Authorization/roleDefinitions/&lt;tag-contributor-role-id&gt;"
+      ],
+      "operations": [
+        {
+          "operation": "add",
+          "field": "tags['CostCenter']",
+          "value": "[resourceGroup().tags['CostCenter']]"
+        }
+      ]
+    }
+  }
+}</div>
+
+  <div class='callout'>
+    The public pattern is the point: inherit safe metadata when possible, avoid logging sensitive values, and use placeholders for tenant IDs, subscription IDs, role definition IDs, and assignment identifiers in external documentation.
+  </div>
+
+  <h2>3. Policy as Code (Bicep policy definitions, deployment via stacks)</h2>
+  <p>At scale, a policy definition should not be a portal-only artifact. The article positions policy as code: definitions, initiatives, assignments, parameters, and managed identities are reviewed, deployed, and versioned through infrastructure stacks. That gives policy changes the same discipline as any other production control: pull request review, environment parameters, repeatable deployment, and rollback history.</p>
+  <p>Bicep is a natural fit for the definition and assignment layer. A stack can publish a custom policy definition, assign it at a management group or subscription scope, grant the assignment identity only the permissions needed for remediation, and expose environment-specific parameters without embedding tenant-specific IDs in the source. That makes the dashboard's numbers reproducible without leaking implementation details.</p>
+
+  <h3>Policy-as-Code Deployment Shape</h3>
+  <div class='code-block'>targetScope = 'managementGroup'
+
+param assignmentScope string = '/providers/Microsoft.Management/managementGroups/&lt;mg-name&gt;'
+param requiredTags array = [ 'CostCenter', 'Environment', 'Owner', 'Project' ]
+
+resource tagPolicy 'Microsoft.Authorization/policyDefinitions@2023-04-01' = {
+  name: 'modify-required-tags'
+  properties: {
+    policyType: 'Custom'
+    mode: 'Indexed'
+    displayName: 'Modify required resource tags'
+    metadata: { category: 'Tag Governance' }
+    parameters: { requiredTags: { type: 'Array' } }
+    policyRule: loadJsonContent('policyRules/modify-required-tags.json')
+  }
+}
+
+resource assignment 'Microsoft.Authorization/policyAssignments@2024-04-01' = {
+  name: 'tag-governance-modify'
+  scope: managementGroup('&lt;mg-name&gt;')
+  identity: { type: 'SystemAssigned' }
+  properties: {
+    displayName: 'Tag governance — modify required tags'
+    policyDefinitionId: tagPolicy.id
+    parameters: { requiredTags: { value: requiredTags } }
+    enforcementMode: 'Default'
+  }
+}</div>
+
+  <p>Deployment stacks add lifecycle clarity. They make it easier to understand which environment owns the current assignment, whether a change is idempotent, and how to remove a deprecated assignment without leaving orphaned definitions or unmanaged role grants behind.</p>
+
+  <h2>4. Exemptions: When and Why (request, approve, time-box)</h2>
+  <p>Exemptions are not exceptions to governance; they are governed records that explain why a resource or scope is temporarily outside the standard. A healthy exemption flow starts with a request, captures business justification, assigns an approver role, records an expiration date, and keeps the remediation owner visible. The article uses role labels instead of named owners so the public version demonstrates the pattern without exposing internal accountability data.</p>
+  <p>Use exemptions when a control is correct but immediate enforcement would create unacceptable business risk: legacy migration windows, vendor constraints, emergency incident response, or platform dependencies that are being remediated in phases. Avoid permanent exemptions. If an exemption never expires, the policy is either too broad, the exception is actually a standard, or the owning team needs a migration plan.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Exemption Scenario</th><th>Requester</th><th>Approver</th><th>Time Box</th><th>Evidence Required</th></tr></thead>
+      <tbody>
+        <tr><td>Legacy workload migration</td><td>Application owner role</td><td>Platform governance role</td><td>30–90 days</td><td>Migration ticket, target design, and review date</td></tr>
+        <tr><td>Emergency incident response</td><td>Incident commander role</td><td>Security operations role</td><td>Hours to days</td><td>Incident number, impact statement, and post-incident cleanup notes</td></tr>
+        <tr><td>Vendor limitation</td><td>Service owner role</td><td>Architecture review role</td><td>One renewal cycle</td><td>Vendor documentation and compensating control</td></tr>
+        <tr><td>Staged deny rollout</td><td>Subscription owner role</td><td>Cloud platform role</td><td>Until rollout milestone</td><td>Audit results, communication plan, and enforcement date</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>5. Remediation Tasks (back-filling non-compliant resources)</h2>
+  <p>Modify and DeployIfNotExists policies only change new or updated resources automatically. Existing resources need remediation tasks to back-fill the estate. That is why the SPA's compliance score should be read as an operations queue: identify the non-compliant set, verify the assignment identity has the required role, run remediation in a controlled scope, and monitor completion before escalating residual failures.</p>
+  <p>The runbook pattern applies here too. Start with the failing control, check permissions, confirm the target scope, execute the repair, then document what changed. If a remediation task fails, common causes include missing managed identity permissions, resources locked by deployment policy, unsupported resource types, or stale exemptions that need review.</p>
+
+  <h3>Remediation Control Loop</h3>
+  <div class='code-block'>Evaluate    → query compliance state by assignment and scope
+Authorize   → verify assignment identity has the minimum remediation role
+Remediate   → create remediation task for the targeted policy assignment
+Monitor     → track succeeded, failed, and skipped resources
+Document    → record outcome, residual risk, and next review date</div>
+
+  <p>For public examples, use generic assignment names such as <code>tag-governance-modify</code>, placeholder scopes such as <code>/subscriptions/&lt;subscription-id&gt;</code>, and role labels instead of named exemption owners. Microsoft Learn URLs can remain exact because they are public documentation references.</p>
+
+  <h2>6. JIT Access via PIM (eligible vs active assignments, time-bound elevation)</h2>
+  <p>Policy operations sometimes require elevated access: creating a remediation task, changing an assignment, or approving a short-lived exemption. The refreshed article connects those tasks to just-in-time access through Microsoft Entra Privileged Identity Management. Eligible assignment means a user or group can request access; active assignment means the access is currently usable and will expire automatically after the approved duration.</p>
+  <p>The public pattern is intentionally generic. A production operations group is eligible for the minimum role needed, activates through My Access or the Azure PIM portal, enters a ticket-backed justification, waits for propagation, completes the operation, and lets access expire. The same pattern works for emergency changes and planned maintenance: no standing human access, time-bound elevation, and a written trail of why the access was used.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>PIM State</th><th>Meaning</th><th>Used For</th><th>Governance Requirement</th></tr></thead>
+      <tbody>
+        <tr><td>Eligible</td><td>The role can be activated, but it is not currently granting access</td><td>Prepared operators, break-glass groups, and approval-based access packages</td><td>Membership review, MFA, and clear activation policy</td></tr>
+        <tr><td>Active</td><td>The role is currently effective for a bounded duration</td><td>Policy assignment updates, remediation tasks, incident repair, and verification</td><td>Ticket justification, shortest practical duration, and activity logging</td></tr>
+        <tr><td>Expired</td><td>The activation window ended automatically</td><td>Normal post-change state</td><td>No manual cleanup required unless early deactivation is needed</td></tr>
+        <tr><td>Denied or missing</td><td>The principal has no eligible assignment or approval failed</td><td>Troubleshooting access requests</td><td>Route to the access owner role; do not bypass PIM with standing permissions</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class='callout'>
+    The article deliberately avoids tenant IDs, group object IDs, named users, and workspace identifiers. Use placeholders like <code>&lt;tenant-id&gt;</code>, <code>&lt;group-id&gt;</code>, <code>&lt;workspace-id&gt;</code>, and <code>&lt;ticket-id&gt;</code> when documenting the public Build 2026 pattern.
+  </div>
 
   <div class='footer-link'>
-    <a href='https://github.com/Acestus/portfolio/blob/main/src/portfolio/pro/policy.cljs' target='_blank' rel='noopener noreferrer'>View Source Code</a>
+    <strong>References:</strong>
+    <a href='https://learn.microsoft.com/azure/governance/policy/overview'>Azure Policy overview</a> ·
+    <a href='https://learn.microsoft.com/azure/governance/policy/concepts/effects'>Azure Policy effects</a> ·
+    <a href='https://learn.microsoft.com/azure/governance/policy/how-to/remediate-resources'>Remediate non-compliant resources</a> ·
+    <a href='https://learn.microsoft.com/azure/governance/policy/concepts/exemption-structure'>Azure Policy exemptions</a> ·
+    <a href='https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview'>Bicep overview</a> ·
+    <a href='https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-overview'>Microsoft Entra PIM</a> ·
+    <a href='/policy.html'>Back to Demo →</a>
   </div>
 </body>
 </html>

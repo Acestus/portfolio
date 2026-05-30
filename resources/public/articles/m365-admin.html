@@ -3,7 +3,7 @@
 <head>
   <meta charset='utf-8'>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
-  <title>M365 Administration — JML Lifecycle, Entra ID Governance, Copilot Agents</title>
+  <title>M365 Administration — JML, Access Packages, and Copilot Governance</title>
   <style>
     :root { --accent: #0078d4; --accent-dark: #106ebe; --bg: #faf9f8; --text: #323130; --summary: #e1f5fe; }
     * { box-sizing: border-box; }
@@ -21,9 +21,6 @@
     .metric-label { color: #605e5c; font-size: 0.95rem; }
     .flow { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.5rem; margin: 1.5rem 0; }
     .pill { background: var(--accent); color: #fff; padding: 0.65rem 1rem; border-radius: 999px; font-weight: 600; }
-    .pill.green { background: #107c10; }
-    .pill.orange { background: #ca5010; }
-    .pill.red { background: #d13438; }
     .arrow { color: var(--accent-dark); font-size: 1.25rem; font-weight: 700; }
     .code-block { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 6px; overflow: auto; white-space: pre; font-family: Consolas, Monaco, 'Courier New', monospace; font-size: 0.92rem; }
     table { width: 100%; border-collapse: collapse; margin: 1rem 0; background: #fff; }
@@ -32,7 +29,6 @@
     tbody tr:nth-child(even) { background: #f3f2f1; }
     tbody tr:hover { background: #deecf9; }
     .callout { background: #fff3cd; border-left: 5px solid #ffc107; border-radius: 4px; padding: 1rem; margin: 1rem 0; }
-    .callout.info { background: var(--summary); border-left-color: var(--accent); }
     .footer-link { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #d2d0ce; }
     @media (max-width: 768px) {
       body { padding: 16px; }
@@ -81,265 +77,173 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
   <a class='back-link' href='/m365.html'>← Back to Demo</a>
-  <h1>M365 Administration — Identity Governance &amp; Copilot Agents</h1>
+  <h1>M365 Administration — JML, Access Packages, and Copilot Governance</h1>
 
   <div class='summary'>
-    Interactive dashboard modeling Microsoft 365 identity governance through the Joiner-Mover-Leaver (JML) lifecycle. The SPA covers Entra ID security group management, access package governance, Intune compliance enforcement, and custom Copilot agents — the operational surface that connects workforce events to cloud resource provisioning and license management.
+    The Microsoft Build 2026 refresh turns the M365 administration demo into a governance operating model for the M365 tenant. The SPA shows how Entra lifecycle workflows, access packages, Intune compliance, PIM activation, and Copilot licensing fit together so administrators can provision joiners, move users between roles, retire leavers, and govern AI features without relying on standing access or manual spreadsheets.
   </div>
 
   <div class='metrics'>
-    <div class='metric-card'><div class='metric-value'>3</div><div class='metric-label'>JML Workflows</div></div>
-    <div class='metric-card'><div class='metric-value'>$30</div><div class='metric-label'>Copilot Add-on /user/mo</div></div>
-    <div class='metric-card'><div class='metric-value'>3</div><div class='metric-label'>Custom Copilot Agents</div></div>
-    <div class='metric-card'><div class='metric-value'>29</div><div class='metric-label'>Policy Assignments</div></div>
+    <div class='metric-card'><div class='metric-value'>JML</div><div class='metric-label'>Automation</div></div>
+    <div class='metric-card'><div class='metric-value'>16</div><div class='metric-label'>Access Packages</div></div>
+    <div class='metric-card'><div class='metric-value'>Intune</div><div class='metric-label'>Managed Endpoints</div></div>
+    <div class='metric-card'><div class='metric-value'>$30</div><div class='metric-label'>/user/mo Copilot</div></div>
   </div>
-
-  <h2>1. Joiner-Mover-Leaver Lifecycle</h2>
-  <p>Every workforce event — onboarding, transfer, or offboarding — triggers a cascade of identity and access changes. The JML system is built as an event-driven pipeline using Microsoft-native services: <strong>Entra ID Governance</strong> (Lifecycle Workflows) → <strong>Azure Functions</strong> → <strong>Service Bus</strong> → <strong>Entra Provisioning</strong>. Three Azure Functions handle event classification, workflow orchestration, and account provisioning respectively.</p>
 
   <div class='flow'>
-    <span class='pill'>HRIS Event</span><span class='arrow'>→</span>
-    <span class='pill'>Lifecycle Workflows</span><span class='arrow'>→</span>
-    <span class='pill'>Event Listener (Function)</span><span class='arrow'>→</span>
-    <span class='pill'>Service Bus Topic</span><span class='arrow'>→</span>
-    <span class='pill'>Entra Provisioning</span>
+    <span class='pill'>Joiner</span><span class='arrow'>→</span>
+    <span class='pill'>Mover</span><span class='arrow'>→</span>
+    <span class='pill'>Leaver</span><span class='arrow'>→</span>
+    <span class='pill'>Reviewer</span><span class='arrow'>→</span>
+    <span class='pill'>Approver</span><span class='arrow'>→</span>
+    <span class='pill'>Audit</span>
   </div>
 
-  <div class='callout info'>
-    <strong>Why Service Bus over Event Hub?</strong> Service Bus is the right choice for JML: it's a message broker with topics/subscriptions, exactly-once delivery, dead-letter queues, and per-message acknowledgment. Event Hub is designed for high-throughput streaming (millions of events/sec) — overkill for JML where each hire/termination event must be individually processed and guaranteed.
-  </div>
-
-  <h3>Event Classification</h3>
-  <p>The Event Listener (Function App #1) receives HRIS events, classifies them, normalizes worker details, and publishes to the Service Bus topic. Downstream consumers filter by classification.</p>
+  <h2>1. The JML Lifecycle</h2>
+  <p>Joiner, mover, and leaver work is where identity administration becomes expensive. A new hire needs an account, baseline groups, a device, applications, and the right license bundle. A mover needs old permissions removed as deliberately as new permissions are added. A leaver needs access revoked quickly enough that security risk and license waste do not linger.</p>
+  <p>The demo models the lifecycle as an Entra-driven workflow rather than a ticket queue. HR or identity source changes trigger classification, group assignment, Intune enrollment, Conditional Access, and license reconciliation. The important point for Build 2026 is not that every step is fully automated on day one; it is that every manual gap has a visible cost.</p>
 
   <div class='table-wrap'>
     <table>
-      <thead><tr><th>Classification</th><th>Trigger</th><th>Creates Workflow</th><th>Provisions Account</th></tr></thead>
+      <thead><tr><th>Event</th><th>Automation Target</th><th>Admin Control</th><th>Cost / Risk if Manual</th></tr></thead>
       <tbody>
-        <tr><td><strong>NEW_HIRE</strong></td><td><code>worker.hire</code>, <code>worker.rehire</code></td><td>✅ Onboarding</td><td>✅ Yes</td></tr>
-        <tr><td><strong>TERMINATION</strong></td><td><code>worker.terminate</code></td><td>✅ Offboarding</td><td>✅ Disable + revoke</td></tr>
-        <tr><td><strong>CHANGE</strong></td><td>Worker type, job title, manager, department, position</td><td>✅ Transfer review</td><td>⚠ Attribute update (planned)</td></tr>
-        <tr><td><strong>OTHER_CHANGE</strong></td><td><code>worker.*</code> (catch-all)</td><td>❌ Logged only</td><td>❌ No</td></tr>
+        <tr><td>Joiner</td><td>Create identity, assign baseline groups, issue device, apply license</td><td>Lifecycle workflow + dynamic group rules</td><td>Delayed productivity, wrong access, duplicate license assignment</td></tr>
+        <tr><td>Mover</td><td>Swap role packages, update manager scope, reassign policies</td><td>Access review before and after transfer</td><td>Privilege creep from old team access plus new team access</td></tr>
+        <tr><td>Leaver</td><td>Disable sign-in, revoke sessions, reclaim licenses, retain data</td><td>Termination workflow with audit record</td><td>Security exposure and recurring license waste</td></tr>
+        <tr><td>Reviewer</td><td>Confirm access is still business-justified</td><td>Scheduled access reviews</td><td>Stale memberships become permanent entitlements</td></tr>
+        <tr><td>Approver</td><td>Grant only approved packages and roles</td><td>Named role approver, not global admin by habit</td><td>Untraceable approvals and inconsistent onboarding</td></tr>
+        <tr><td>Audit</td><td>Preserve who requested, who approved, and when access expires</td><td>Entra audit logs and ticket reference such as INFRA-###</td><td>Manual evidence gathering during compliance review</td></tr>
       </tbody>
     </table>
   </div>
 
-  <h3>End-to-End Timing</h3>
-  <div class='table-wrap'>
-    <table>
-      <thead><tr><th>Step</th><th>Delay</th><th>Cumulative</th></tr></thead>
-      <tbody>
-        <tr><td>HR submits event in HRIS</td><td>User action</td><td>—</td></tr>
-        <tr><td>Event Listener processes + publishes to Service Bus</td><td>Seconds–5 min</td><td>~5 min</td></tr>
-        <tr><td>Service Bus → Entra Provisioning (push trigger)</td><td>Near-instant</td><td>~5 min</td></tr>
-        <tr><td>SCIM bulk upload → on-prem AD sync</td><td>Up to 40 min</td><td>~45 min</td></tr>
-        <tr><td>Azure AD Connect / Cloud Sync back to Entra</td><td>Up to 30 min</td><td>~75 min</td></tr>
-        <tr><td colspan='2'><strong>Event → Entra provisioning initiated</strong></td><td><strong>~5 min</strong></td></tr>
-        <tr><td colspan='2'><strong>Event → Hybrid AD account ready</strong></td><td><strong>~45–75 min</strong></td></tr>
-      </tbody>
-    </table>
+  <div class='callout'>
+    Automation gaps cost money twice: administrators spend time chasing requests, and the tenant keeps paying for access or licenses that should have changed when the employee lifecycle changed.
   </div>
-  <p>Guest invitations (B2B) are near-instant since they go directly to the Microsoft Graph API with no AD sync required. Entra-only (cloud) accounts are also immediate.</p>
 
-  <h3>Account Type Routing</h3>
-  <p>The Entra Provisioning function determines the provisioning method based on employee type and work location:</p>
+  <h2>2. Access Packages and Entitlement Management</h2>
+  <p>Access packages move administration from individual group membership edits to requestable bundles. A package can represent a role such as Engineer, Manager, Finance reviewer, or Security operator. Each package has a catalog, eligibility rules, approval policy, expiration, and review cadence.</p>
+  <p>The SPA surfaces packages as role cards because that is how the business thinks about access. Users do not ask for ten group names; they ask for the tools needed to do a job. Entitlement management translates that job request into time-bound memberships that can be approved, reviewed, and removed.</p>
 
   <div class='table-wrap'>
     <table>
-      <thead><tr><th>Priority</th><th>Condition</th><th>Account Type</th><th>Mechanism</th></tr></thead>
+      <thead><tr><th>Lifecycle Step</th><th>What Happens</th><th>Control Point</th><th>Evidence Produced</th></tr></thead>
       <tbody>
-        <tr><td>1</td><td>External partner / outsourced</td><td>B2B Guest Invite</td><td>Graph API <code>/invitations</code></td></tr>
-        <tr><td>2</td><td>Offshore + external domain</td><td>B2B Guest Invite</td><td>Graph API <code>/invitations</code></td></tr>
-        <tr><td>3</td><td>Offshore + direct employee</td><td>Hybrid AD</td><td>SCIM 2.0 bulk upload → on-prem AD</td></tr>
-        <tr><td>4</td><td>Department in cloud migration list</td><td>Entra-Only</td><td>Graph API <code>POST /users</code> (cloud-only member)</td></tr>
-        <tr><td>5</td><td>Direct / Contractor (default)</td><td>Hybrid AD</td><td>SCIM 2.0 bulk upload → on-prem AD</td></tr>
+        <tr><td>Request</td><td>User selects a package such as Engineering-Group or Finance-DL access</td><td>Catalog eligibility and business justification</td><td>Requester, package, reason, timestamp</td></tr>
+        <tr><td>Approve</td><td>Role approver evaluates need and policy fit</td><td>Single or multi-stage approval</td><td>Approver decision and comments</td></tr>
+        <tr><td>Activate</td><td>Entra applies group memberships and app assignments</td><td>Start date, end date, and terms of use</td><td>Assignment record with expiration</td></tr>
+        <tr><td>Use</td><td>User accesses the applications and data in scope</td><td>Conditional Access and device compliance</td><td>Sign-in and audit logs</td></tr>
+        <tr><td>Review</td><td>Manager or owner confirms access is still needed</td><td>Scheduled access review campaign</td><td>Retain, remove, or no-response action</td></tr>
+        <tr><td>Expire</td><td>Membership ends automatically unless renewed</td><td>Time-bound assignment policy</td><td>Closed entitlement trail</td></tr>
       </tbody>
     </table>
   </div>
 
-  <h3>Onboard (Joiner)</h3>
-  <div class='flow'>
-    <span class='pill green'>HRIS Event</span><span class='arrow'>→</span>
-    <span class='pill green'>Lifecycle Workflow</span><span class='arrow'>→</span>
-    <span class='pill green'>Service Bus</span><span class='arrow'>→</span>
-    <span class='pill green'>Entra Provisioning</span><span class='arrow'>→</span>
-    <span class='pill green'>AD Sync</span><span class='arrow'>→</span>
-    <span class='pill green'>Groups + License</span>
-  </div>
-  <p>When HR submits a new hire, the Event Listener normalizes 15+ fields (name, department, manager, employee type, work location, exempt status) and publishes to the Service Bus topic. The Entra Provisioning function routes to the appropriate method — most commonly, SCIM 2.0 bulk upload for Hybrid AD provisioning via an on-premises provisioning agent. Post-provisioning steps include security group assignment, M365 license allocation, and Intune device enrollment.</p>
+  <h3>Package Design Pattern</h3>
+  <div class='code-block'>Role package     → business-readable bundle of groups and apps
+Eligibility      → who may request it
+Approval         → role owner or manager validates the need
+Expiration       → access ends unless actively renewed
+Review cadence   → stale access is found before audit season</div>
 
-  <h3>Transfer (Mover)</h3>
-  <div class='flow'>
-    <span class='pill orange'>HRIS Change Event</span><span class='arrow'>→</span>
-    <span class='pill orange'>Classify CHANGE</span><span class='arrow'>→</span>
-    <span class='pill orange'>Access Review</span><span class='arrow'>→</span>
-    <span class='pill orange'>Update Groups</span><span class='arrow'>→</span>
-    <span class='pill orange'>Update Packages</span>
-  </div>
-  <p>Change events for worker type, job title, manager, department, and position are classified and trigger transfer workflows. The risk is <strong>access accumulation</strong>: over time, transferred employees retain permissions from previous roles. <a href='https://learn.microsoft.com/entra/id-governance/access-reviews-overview'>Entra ID access reviews</a> and time-bound access packages mitigate this.</p>
-
-  <h3>Offboard (Leaver)</h3>
-  <div class='flow'>
-    <span class='pill red'>HRIS Termination</span><span class='arrow'>→</span>
-    <span class='pill red'>Lifecycle Workflow</span><span class='arrow'>→</span>
-    <span class='pill red'>Disable Sign-in</span><span class='arrow'>→</span>
-    <span class='pill red'>Revoke Access</span><span class='arrow'>→</span>
-    <span class='pill red'>Reclaim Licenses</span><span class='arrow'>→</span>
-    <span class='pill red'>Archive</span>
-  </div>
-  <p><a href='https://learn.microsoft.com/entra/id-governance/lifecycle-workflow-extensibility'>Entra ID Lifecycle Workflows</a> can automate offboarding: disable sign-in, revoke active sessions, remove group memberships, and trigger a Logic App for mailbox conversion and OneDrive archival. License reclamation is the most common source of cost waste — a Copilot add-on at $30/user/month left on a disabled account for six months costs $180 for nothing.</p>
-
-  <h2>2. Day-1 Access Checklist</h2>
-  <p>Access is provisioned via a single Jira ticket filed to the Infrastructure team. The checklist is role-based:</p>
+  <h2>3. PIM-Gated Admin Roles</h2>
+  <p>Administrative access should be eligible by default and active only when there is a reason. Privileged Identity Management separates the right to request a role from the act of holding that role. That distinction is central for Global Admin, Privileged Role Admin, Security Admin, Exchange Admin, Intune Admin, and Helpdesk roles.</p>
+  <p>The runbook pattern behind the article is simple: grant eligible membership to a protected group, require justification, cap activation duration, and let the activation expire. Emergency procedures can still exist, but they should create a short-lived audit trail instead of permanent standing access.</p>
 
   <div class='table-wrap'>
     <table>
-      <thead><tr><th>Requirement</th><th>All Roles</th><th>Engineers</th><th>Infrastructure</th></tr></thead>
+      <thead><tr><th>Role Family</th><th>Eligible State</th><th>Active State</th><th>Guardrail</th></tr></thead>
       <tbody>
-        <tr><td>Entra ID account + MFA</td><td>✅</td><td>✅</td><td>✅</td></tr>
-        <tr><td>Entra security group membership</td><td>✅</td><td>✅</td><td>✅</td></tr>
-        <tr><td>VPN access (private endpoints)</td><td>✅</td><td>✅</td><td>✅</td></tr>
-        <tr><td>Confluence space access (IPM)</td><td>✅</td><td>✅</td><td>✅</td></tr>
-        <tr><td>Fabric workspace (Viewer/Contributor)</td><td>—</td><td>✅</td><td>—</td></tr>
-        <tr><td>GitHub org membership (B2B guest)</td><td>—</td><td>✅</td><td>✅</td></tr>
-        <tr><td>Codespace access</td><td>—</td><td>✅</td><td>—</td></tr>
-        <tr><td>Azure subscription (Reader)</td><td>—</td><td>✅</td><td>—</td></tr>
-        <tr><td>PIM-eligible roles (Contributor)</td><td>—</td><td>—</td><td>✅</td></tr>
-        <tr><td>Key Vault Secrets User</td><td>—</td><td>—</td><td>✅</td></tr>
-        <tr><td>Deployment pipeline environments</td><td>—</td><td>—</td><td>✅</td></tr>
+        <tr><td>Global Admin</td><td>Break-glass or tightly limited eligible admins</td><td>Activated only for tenant-wide changes</td><td>MFA, justification, short duration, post-change review</td></tr>
+        <tr><td>Helpdesk Admin</td><td>Support staff eligible for password and device help</td><td>Activated for a support case</td><td>Ticket reference and scoped operating procedure</td></tr>
+        <tr><td>Intune Admin</td><td>Endpoint team eligible for policy updates</td><td>Activated for configuration change or incident</td><td>Change record and rollback plan</td></tr>
+        <tr><td>Security Admin</td><td>Security operators eligible for investigation work</td><td>Activated during alert triage or control update</td><td>Least-privilege role plus audit logging</td></tr>
       </tbody>
     </table>
   </div>
 
-  <h2>3. Entra ID Security Groups</h2>
-  <p>Access is always granted via team membership — never individual grants. Entra security groups map to role boundaries: an engineer's group membership determines their Fabric workspace access, GitHub team assignment, and Azure subscription visibility. B2B guest users are provisioned in Entra ID and added to the GitHub organization through team membership.</p>
-
-  <div class='callout info'>
-    <strong>Confluence permissions</strong> are mapped to Entra security groups. The Copilot architecture uses Entra ID delegated permissions and OBO (On-Behalf-Of) flow, ensuring that agents only return data the user has access to — security-trimmed search results, not unfiltered indexes.
+  <div class='callout'>
+    Eligible is not active. Eligible means the user can request elevation under policy; active means the role is currently usable and auditable for a limited window.
   </div>
 
-  <h2>4. Intune Compliance</h2>
-  <p>Device compliance policies enforce security baselines at the endpoint level. Intune evaluates devices against policies for encryption, OS version, antivirus status, and screen lock. Non-compliant devices are blocked from accessing M365 resources via Conditional Access policies — the enforcement boundary is Entra ID, not the device itself.</p>
-  <p>The SPA models compliance policies with percentage bars showing fleet-wide compliance. In production, the key insight is that compliance is not binary: a device can be "compliant" for encryption but "non-compliant" for OS version. Conditional Access policies can be configured to require specific compliance claims, not just overall compliance status.</p>
-
-  <h2>5. Microsoft 365 Copilot Agents</h2>
-  <p>Custom agents extend <a href='https://learn.microsoft.com/office365/servicedescriptions/office-365-platform-service-description/microsoft-365-copilot'>Microsoft 365 Copilot</a> with domain-specific capabilities. Each agent is accessible directly from the M365 Copilot chat interface at <a href='https://m365.cloud.microsoft/chat'>m365.cloud.microsoft/chat</a>.</p>
+  <h2>4. Intune as the Endpoint Backbone</h2>
+  <p>Identity controls are only as strong as the endpoint posture behind them. Intune gives the tenant an operating surface for Windows, macOS, iOS, and Android devices: enrollment, Autopilot, compliance policy, configuration profile, application deployment, and remote actions.</p>
+  <p>The SPA includes compliance bars because endpoint state should be visible next to access state. Conditional Access can require compliant devices before users reach M365 resources, Copilot experiences, or sensitive applications. That means a Joiner flow is not complete when the account exists; it is complete when the device is enrolled, compliant, and governed.</p>
 
   <div class='table-wrap'>
     <table>
-      <thead><tr><th>Agent</th><th>Capability</th><th>Access</th></tr></thead>
+      <thead><tr><th>Endpoint Layer</th><th>Intune Control</th><th>M365 Admin Outcome</th></tr></thead>
       <tbody>
-        <tr>
-          <td><strong><a href='https://m365.cloud.microsoft/chat/?titleId=P_7c69ad60-9565-29c7-8bd9-d83f454ee238'>Confluence Cloud</a></strong></td>
-          <td>Searches and summarizes Confluence Cloud pages inside M365 Copilot. Find wiki articles, pull up runbook steps, or get page summaries without leaving the chat window.</td>
-          <td>Basic Copilot Chat — no paid add-on required</td>
-        </tr>
-        <tr>
-          <td><strong><a href='https://m365.cloud.microsoft/chat/?titleId=T_d9cda51e-3f77-e62c-7ee6-ad679bac42ce&source=embedded-builder'>Project Planner</a></strong></td>
-          <td>Interactive project scoping agent. Prompt: "Interview me until you have 95% about what I actually want, not what I think I should want."</td>
-          <td>Basic Copilot Chat</td>
-        </tr>
-        <tr>
-          <td><strong><a href='https://m365.cloud.microsoft/chat/?titleId=T_807e00ed-cace-ba5f-04e1-12afb68fba24&source=embedded-builder'>Teams Meetings</a></strong></td>
-          <td>Recaps Teams meeting transcripts, extracts action items and decisions. Search across past meeting notes for specific topics.</td>
-          <td>Basic Copilot Chat</td>
-        </tr>
+        <tr><td>Provisioning</td><td>Windows Autopilot profile and enrollment status page</td><td>Device arrives ready for the user's role</td></tr>
+        <tr><td>Compliance</td><td>Encryption, OS version, firewall, threat signal, jailbreak detection</td><td>Conditional Access can trust device posture</td></tr>
+        <tr><td>Configuration</td><td>Security baselines, browser policy, app protection, Wi-Fi/VPN profiles</td><td>Standard settings without manual desktop work</td></tr>
+        <tr><td>Application</td><td>Required and available app assignments by group</td><td>Role packages translate into actual tools</td></tr>
+        <tr><td>Retirement</td><td>Selective wipe, full wipe, device cleanup rules</td><td>Leaver workflow closes endpoint exposure</td></tr>
       </tbody>
     </table>
   </div>
 
-  <div class='callout info'>
-    <strong>Works with basic Copilot Chat</strong> — no paid Microsoft 365 Copilot add-on license required. These agents are accessible to anyone with a standard M365 subscription that includes Copilot Chat. The paid Copilot add-on ($30/user/month) is required for the full work-grounded experience across Teams and Microsoft 365 apps, with eligible base licenses including <strong>M365 E3/E5</strong> or <strong>O365 E3/E5</strong>.
+  <h2>5. M365 Copilot Licensing and Governance</h2>
+  <p>M365 Copilot is a per-user add-on layered on top of the tenant's data, identity, and compliance posture. The license unlocks the experience, but governance determines whether the experience is safe and useful. Sensitivity labels, DLP policy, SharePoint permissions, audit logging, pilot scope, and cost approval should be in place before broad enablement.</p>
+  <p>The core governance question is not only “who gets Copilot?” It is “what can Copilot retrieve for that user?” Copilot respects existing permissions, so over-broad SharePoint or Teams access becomes over-broad AI retrieval. Readiness work therefore starts with permissions hygiene and a small pilot group before expanding.</p>
+
+  <div class='callout'>
+    Copilot licensing has a $30/user/month gap between assignment and active use. If a license is assigned before the user is trained, scoped, and measured, the tenant pays every month without receiving the intended productivity return.
   </div>
-
-  <h3>How to Add Agents</h3>
-  <ol>
-    <li><strong>Direct link (quickest):</strong> Click any agent link above — it opens directly in the Copilot chat interface. No installation needed.</li>
-    <li><strong>Agent store:</strong> Open M365 Copilot → click <strong>Get agents</strong> → search by name → click the agent tile.</li>
-    <li><strong>Microsoft Teams:</strong> Open the Copilot app in Teams sidebar → <strong>Get agents</strong> → browse or search.</li>
-  </ol>
-  <p>Agents remember context within a conversation. Tag an agent with <code>@AgentName</code> to direct a question to a specific agent mid-conversation. Pin frequently used agents for quick access.</p>
-
-  <h2>6. Licensing and Cost</h2>
-  <p>Microsoft 365 licensing for the Copilot experience has two tiers. Understanding the boundary is important for JML cost modeling — the Copilot add-on is a per-user cost that must be assigned at onboarding and reclaimed at offboarding.</p>
 
   <div class='table-wrap'>
     <table>
-      <thead><tr><th>Tier</th><th>Access</th><th>Cost</th><th>Prerequisites</th></tr></thead>
+      <thead><tr><th>Prerequisite</th><th>Why It Matters</th><th>Go-Live Signal</th></tr></thead>
       <tbody>
-        <tr><td>Copilot Chat (included)</td><td>Custom agents, web-grounded chat</td><td>Included with eligible M365 license</td><td>M365 E3/E5 or O365 E3/E5</td></tr>
-        <tr><td><a href='https://learn.microsoft.com/microsoft-365/copilot/microsoft-365-copilot-licensing'>Copilot Enterprise Add-on</a></td><td>Work-grounded Copilot across Teams, Word, Excel, etc.</td><td>$30/user/month</td><td>Eligible base license + Entra ID + Exchange Online</td></tr>
-        <tr><td>Copilot Business Add-on</td><td>Same capabilities for SMB (≤300 users)</td><td>$21/user/month</td><td>M365 Business Standard or Business Premium</td></tr>
+        <tr><td>AI use policy</td><td>Defines acceptable use, prohibited data, and human responsibility</td><td>Approved policy and pilot scope</td></tr>
+        <tr><td>Purview baseline</td><td>Labels, DLP, and audit controls shape what Copilot can surface</td><td>Sensitivity and DLP review complete</td></tr>
+        <tr><td>SharePoint permissions review</td><td>Copilot can find content the user already has access to</td><td>Overly broad sites remediated or documented</td></tr>
+        <tr><td>Pilot group</td><td>Limits blast radius and creates measurable feedback</td><td>Named role labels, use cases, 30–90 day criteria</td></tr>
+        <tr><td>License activation</td><td>Turns on paid user entitlement</td><td>Assigned only after prerequisites are met</td></tr>
       </tbody>
     </table>
   </div>
 
-  <h2>7. Architecture Integration</h2>
-  <p>The M365 Copilot agents connect to a broader platform architecture. The Foundry agent uses Entra ID token authentication, Microsoft Graph for user context, Jira for work item queries, and Fabric SQL for business data. Data sources span SharePoint, JIRA, Teams calls, Azure portal, Grafana, and Power BI.</p>
-  <p>The <a href='https://learn.microsoft.com/en-us/microsoft-365/copilot/connectors/confluence-cloud-deployment'>Confluence Cloud connector</a> for Microsoft 365 Copilot enables the Confluence agent to index and search Confluence pages. The Graph connector powers natural-language queries over security alerts and operational data.</p>
-
-  <div class='flow'>
-    <span class='pill'>Entra ID (Auth)</span><span class='arrow'>→</span>
-    <span class='pill'>Microsoft Graph</span><span class='arrow'>→</span>
-    <span class='pill'>Foundry Agent</span><span class='arrow'>→</span>
-    <span class='pill'>Confluence / Jira / Fabric</span><span class='arrow'>→</span>
-    <span class='pill'>M365 Copilot Chat</span>
-  </div>
-
-  <h2>8. JML Infrastructure (Azure Resources)</h2>
-  <p>The JML pipeline runs on Azure Deployment Stacks (Bicep). Three Function Apps share a Service Bus namespace, Key Vault, Application Insights, and a User Managed Identity with Microsoft Graph API permissions.</p>
+  <h2>6. Copilot Agents and the Vendor Risk Picture</h2>
+  <p>Copilot agents make the governance story more complicated because each agent introduces a source, an action surface, and a data handling model. First-party Teams meeting recap is different from a third-party connector, and a read-only retrieval agent is different from an agent that writes back to a system.</p>
+  <p>The SPA references agents such as Confluence search, project planning, and Teams meeting summaries because they are realistic productivity wins. The risk review should still ask the same questions every time: what data source is queried, whose identity is used, whether writes are possible, how citations work, and whether logs can prove what happened.</p>
 
   <div class='table-wrap'>
     <table>
-      <thead><tr><th>Resource</th><th>Type</th><th>SKU</th><th>Purpose</th></tr></thead>
+      <thead><tr><th>Agent Pattern</th><th>Primary Value</th><th>Risk Question</th><th>Control</th></tr></thead>
       <tbody>
-        <tr><td>Event Listener</td><td>Azure Function</td><td>EP1 (shared ASP)</td><td>Receives HRIS events, classifies, normalizes worker data</td></tr>
-        <tr><td>Workflow Orchestrator</td><td>Azure Function</td><td>EP1 (shared ASP)</td><td>Triggers Lifecycle Workflows, manages task completion</td></tr>
-        <tr><td>Entra Provisioning</td><td>Azure Function</td><td>EP1 (shared ASP)</td><td>SCIM/Guest/Cloud account creation via Graph API</td></tr>
-        <tr><td>Service Bus</td><td>Service Bus Namespace</td><td>Standard</td><td>Topic: <code>jml-events</code> — zone-redundant, managed identity only</td></tr>
-        <tr><td>Key Vault</td><td>Key Vault</td><td>Standard</td><td>HRIS certificates, OAuth tokens — RBAC auth, soft-delete 90 days</td></tr>
-        <tr><td>Application Insights</td><td>App Insights</td><td>—</td><td>365-day retention, workspace: Log Analytics</td></tr>
-        <tr><td>Managed Identity</td><td>User Assigned MI</td><td>—</td><td>Graph API: User.ReadWrite.All, User.Invite.All, Directory.ReadWrite.All, SCIM upload</td></tr>
+        <tr><td>Teams Meetings</td><td>Recap decisions, action items, and transcript Q&amp;A</td><td>Do transcripts contain sensitive discussion?</td><td>User permissions, training, audit review</td></tr>
+        <tr><td>Confluence Retrieval</td><td>Find and summarize runbooks or project notes</td><td>Are restricted pages excluded?</td><td>Published content scope and source citations</td></tr>
+        <tr><td>Project Planner</td><td>Interview users before work begins</td><td>Can prompts collect sensitive information?</td><td>Prompt limits and human review</td></tr>
+        <tr><td>Third-Party Connector</td><td>Bring external SaaS context into Copilot</td><td>What vendor sees tenant data?</td><td>Vendor assessment before enablement</td></tr>
+        <tr><td>Write-Capable Agent</td><td>Draft or perform actions in downstream systems</td><td>Could AI change records without consent?</td><td>Human confirmation before every write</td></tr>
       </tbody>
     </table>
   </div>
 
-  <h3>Authentication Model</h3>
-  <div class='table-wrap'>
-    <table>
-      <thead><tr><th>Integration</th><th>Method</th><th>Details</th></tr></thead>
-      <tbody>
-        <tr><td>Azure resources</td><td>User Managed Identity</td><td>Storage, Service Bus, Key Vault — no SAS keys, local auth disabled</td></tr>
-        <tr><td>Microsoft Graph</td><td>DefaultAzureCredential</td><td>Resolves to UMI — application-level permissions</td></tr>
-        <tr><td>HRIS API</td><td>OAuth2 + X.509 mTLS</td><td>Client credentials grant with certificate mutual TLS from Key Vault</td></tr>
-        <tr><td>Hybrid AD</td><td>SCIM 2.0</td><td>API-driven provisioning via on-prem provisioning agent</td></tr>
-      </tbody>
-    </table>
-  </div>
+  <h3>Agent Vetting Checklist</h3>
+  <div class='code-block'>1. Identify the data source and whether it stays inside the tenant.
+2. Confirm the agent uses delegated user access, not broad service-account access.
+3. Require citations so humans can verify source material.
+4. Block sensitive data classes that do not belong in prompts.
+5. Log user, timestamp, prompt class, response class, and source links.
+6. Review residual risk before expanding beyond the pilot group.</div>
 
-  <h2>9. Known Gaps &amp; Automation Roadmap</h2>
-  <div class='table-wrap'>
-    <table>
-      <thead><tr><th>Gap</th><th>Current State</th><th>Impact</th></tr></thead>
-      <tbody>
-        <tr><td>Termination deprovisioning</td><td>Manual via ITSM ticket</td><td>License waste if offboarding delayed</td></tr>
-        <tr><td>Mover attribute updates</td><td>ITSM ticket only — no Entra automation</td><td>Stale department/title in directory</td></tr>
-        <tr><td>Group membership assignment</td><td>Manual post-provisioning</td><td>Delayed Day-1 access</td></tr>
-        <tr><td>License assignment</td><td>Manual or group-based after manual group add</td><td>Delayed M365 access</td></tr>
-        <tr><td>Account enablement</td><td>Accounts created disabled; no scheduled enable</td><td>Requires manual action on start date</td></tr>
-        <tr><td>Dead-letter queue</td><td>Disabled on all Service Bus subscriptions</td><td>Failed messages lost after 10 retries</td></tr>
-        <tr><td>Rehire detection</td><td>Classified as NEW_HIRE; no reactivation logic</td><td>May create duplicate instead of reactivating</td></tr>
-      </tbody>
-    </table>
+  <div class='callout'>
+    The safest Build 2026 posture is a narrow pilot: read-only agents first, user-delegated identity, citations required, no external-facing input, and no autonomous writes without explicit human confirmation.
   </div>
 
   <div class='footer-link'>
     <strong>References:</strong>
-    <a href='https://learn.microsoft.com/office365/servicedescriptions/office-365-platform-service-description/microsoft-365-copilot'>Microsoft 365 Copilot</a> ·
-    <a href='https://learn.microsoft.com/microsoft-365/copilot/microsoft-365-copilot-licensing'>Copilot Licensing</a> ·
-    <a href='https://learn.microsoft.com/microsoft-365/copilot/microsoft-365-copilot-chat-requirements'>Copilot Chat Requirements</a> ·
-    <a href='https://learn.microsoft.com/en-us/microsoft-365/copilot/connectors/confluence-cloud-deployment'>Confluence Connector</a> ·
-    <a href='https://m365.cloud.microsoft/chat'>M365 Copilot Chat</a> ·
+    <a href='https://learn.microsoft.com/en-us/entra/id-governance/what-is-entitlement-management'>Entitlement Management</a> ·
+    <a href='https://learn.microsoft.com/en-us/entra/id-governance/what-are-lifecycle-workflows'>Lifecycle Workflows</a> ·
+    <a href='https://learn.microsoft.com/en-us/entra/id-governance/privileged-identity-management/pim-overview'>Privileged Identity Management</a> ·
+    <a href='https://learn.microsoft.com/en-us/mem/autopilot/windows-autopilot'>Windows Autopilot</a> ·
+    <a href='https://learn.microsoft.com/en-us/mem/intune/protect/device-compliance-get-started'>Intune Device Compliance</a> ·
+    <a href='https://learn.microsoft.com/en-us/entra/identity/conditional-access/overview'>Conditional Access</a> ·
+    <a href='https://learn.microsoft.com/en-us/copilot/microsoft-365/microsoft-365-copilot-overview'>Microsoft 365 Copilot</a> ·
+    <a href='https://learn.microsoft.com/en-us/copilot/microsoft-365/microsoft365-copilot-privacy'>Copilot Privacy</a> ·
+    <a href='https://learn.microsoft.com/en-us/purview/purview'>Microsoft Purview</a> ·
     <a href='/m365.html'>Back to Demo →</a>
   </div>
 </body>

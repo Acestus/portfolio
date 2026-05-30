@@ -3,7 +3,7 @@
 <head>
   <meta charset='utf-8'>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
-  <title>Real-Time Log Pipeline — Event Hub to Eventhouse</title>
+  <title>Real-Time Log Pipeline — Event Hub to Eventhouse KQL</title>
   <style>
     :root { --accent: #0078d4; --accent-dark: #106ebe; --bg: #faf9f8; --text: #323130; --summary: #e1f5fe; }
     * { box-sizing: border-box; }
@@ -13,6 +13,7 @@
     .back-link { display: inline-block; margin-bottom: 1rem; font-weight: 600; }
     h1 { color: var(--accent); border-bottom: 3px solid var(--accent); padding-bottom: 0.5rem; margin-top: 0; }
     h2 { color: var(--accent-dark); border-left: 4px solid var(--accent); padding-left: 15px; margin-top: 2.25rem; }
+    h3 { color: var(--accent-dark); margin-top: 1.5rem; }
     .summary { background: var(--summary); border-left: 5px solid var(--accent); border-radius: 4px; padding: 1rem; margin: 1rem 0 1.5rem; }
     .metrics { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0; }
     .metric-card { background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-bottom: 3px solid var(--accent); padding: 1rem; flex: 1 1 180px; min-width: 170px; }
@@ -27,6 +28,7 @@
     th { background: var(--accent); color: #fff; }
     tbody tr:nth-child(even) { background: #f3f2f1; }
     tbody tr:hover { background: #deecf9; }
+    .callout { background: #fff3cd; border-left: 5px solid #ffc107; border-radius: 4px; padding: 1rem; margin: 1rem 0; }
     .footer-link { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #d2d0ce; }
     @media (max-width: 768px) {
       body { padding: 16px; }
@@ -75,63 +77,174 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
   <a class='back-link' href='/logs.html'>← Back to Demo</a>
-  <h1>Real-Time Log Pipeline — Event Hub to Eventhouse</h1>
+  <h1>Real-Time Log Pipeline — Event Hub to Eventhouse KQL</h1>
 
   <div class='summary'>
-    Animated visualization of a real-time log ingestion pipeline. Spring Boot applications emit structured and semi-structured events into Event Hub; Eventstream forwards them into Fabric Eventhouse; KQL update policies or transformation functions parse raw messages into analytical tables; and Gold Lakehouse outputs provide report-friendly aggregates. The SPA makes that flow visible with a live log stream and KQL panel.
+    Microsoft Build 2026 portfolio deep dive for a real-time security and application log pipeline. The SPA shows the operational path: emit structured events, buffer them through Azure Event Hubs, route them with Microsoft Fabric Eventstream, land them in Eventhouse, query them with KQL, and fan out alerts through Durable Functions. The implementation favors event-driven ingestion over polling so producers stay decoupled, queries stay hot, and alert workflows remain durable under bursty traffic.
   </div>
 
   <div class='metrics'>
-    <div class='metric-card'><div class='metric-value'>247</div><div class='metric-label'>Events / sec</div></div>
-    <div class='metric-card'><div class='metric-value'>&lt; 2s</div><div class='metric-label'>Parse Latency</div></div>
-    <div class='metric-card'><div class='metric-value'>0.3%</div><div class='metric-label'>Error Rate</div></div>
-    <div class='metric-card'><div class='metric-value'>2</div><div class='metric-label'>KQL Tables</div></div>
+    <div class='metric-card'><div class='metric-value'>&lt; 1s</div><div class='metric-label'>Sub-Second Latency</div></div>
+    <div class='metric-card'><div class='metric-value'>KQL</div><div class='metric-label'>Native Query Layer</div></div>
+    <div class='metric-card'><div class='metric-value'>3</div><div class='metric-label'>Hot / Warm / Cold Tiers</div></div>
+    <div class='metric-card'><div class='metric-value'>Fan-Out</div><div class='metric-label'>Durable Alerting</div></div>
   </div>
 
   <div class='flow'>
-    <span class='pill'>Spring Boot Apps</span><span class='arrow'>→</span>
+    <span class='pill'>Emit</span><span class='arrow'>→</span>
     <span class='pill'>Event Hub</span><span class='arrow'>→</span>
     <span class='pill'>Eventstream</span><span class='arrow'>→</span>
     <span class='pill'>Eventhouse</span><span class='arrow'>→</span>
-    <span class='pill'>Gold Lakehouse</span>
+    <span class='pill'>KQL</span><span class='arrow'>→</span>
+    <span class='pill'>Alert</span>
   </div>
 
-  <h2>1. Architecture Overview</h2>
-  <p>The architecture solves a classic scaling mistake: using application databases as log sinks. In the old world, operational services often pushed diagnostic rows straight into SQL tables. That creates contention, schema coupling, and poor separation between OLTP and observability. In the event-driven version, applications emit facts, Event Hub absorbs throughput, and downstream systems parse and aggregate independently.</p>
-  <p>The SPA mirrors that design in miniature. The stage row is rendered from a data structure of pipeline nodes, and a timer prepends new sample events into the stream while trimming the list to the latest 15 lines. That means the page behaves like an active log console without requiring a backend.</p>
+  <h2>1. Why Event-Driven</h2>
+  <p>Polling works until the first real incident. A pull-based job asks every source, on a schedule, whether anything interesting happened. That creates idle reads during quiet periods and delayed visibility during spikes. The better pattern is to make every producer publish a durable event as soon as the fact exists.</p>
+  <p>In this design, services emit JSON to an Azure Event Hub namespace such as <code>evhns-secops-prd-...</code>. Event Hub provides the shock absorber: partitioned throughput, consumer groups, retention, replay, and a simple contract that producers can target without knowing where analytics data lands.</p>
+  <p>The SPA mirrors that model. Its ClojureScript demo renders a live stream, stage cards, and a KQL panel for the path from Clojure Functions to Event Hub, Eventstream, Eventhouse, parsed KQL tables, and Gold Lakehouse outputs.</p>
 
-  <h2>2. KQL Update Policies</h2>
-  <p>Real-time value comes from parsing near the ingestion point. Raw logs are still useful for replay, but analytical questions need typed columns: timestamps, app names, levels, HTTP status, and message body. KQL transformation functions are ideal here because they express parsing as readable, versionable query logic.</p>
-  <div class='code-block'>.create-or-alter function TransformRawLogs() {
-  transaction_raw
-  | extend parsed_ts = todatetime(raw_timestamp)
-  | extend app_name = extract('app=([\\w-]+)', 1, raw_message)
-  | extend log_level = extract('level=(\\w+)', 1, raw_message)
-  | extend http_status = toint(extract('→ (\\d+)', 1, raw_message))
-  | project parsed_ts, app_name, log_level, http_status, raw_message
+  <div class='callout'>
+    <strong>Cost note:</strong> At scale, this is cheaper than pushing every operational event into Log Analytics. Eventhouse is optimized for high-volume time-series queries, raw data can age into OneLake-backed storage, and only security-relevant incidents need SIEM-grade retention or Sentinel correlation.
+  </div>
+
+  <h2>2. The Kappa Architecture</h2>
+  <p>Kappa architecture uses one pipeline for both stream and batch-style outcomes. Instead of copying the same log through Bronze, Silver, and Gold Lakehouses with notebooks at each hop, raw events land once in Eventhouse and KQL derives the shaped views, functions, update policies, and materialized views above it.</p>
+  <p>That makes the operational boundary cleaner. Platform engineering owns the plumbing: Event Hub, Eventstream, Eventhouse, identity, and retention. Application and security teams own their KQL: parsing rules, alert logic, dashboard views, and department-specific aggregations.</p>
+  <p>The practical advantage is accountability. If a service adds a field, the producer contract and KQL parser change together. There is no chained notebook dependency that has to be rescheduled before the dashboard becomes useful again.</p>
+
+  <h3>Common Alert Query</h3>
+  <div class='code-block'>let window = 5m;
+transaction_parsed
+| where ingestion_time() > ago(window)
+| where severity in ('P1', 'Critical') or status_code >= 500
+| summarize
+    event_count = count(),
+    impacted_services = dcount(service_name),
+    sample_trace = any(trace_id),
+    latest_event = max(timestamp)
+  by alert_key = strcat(service_name, ':', tostring(status_code)), service_name
+| where event_count >= 3
+| project latest_event, alert_key, service_name, event_count, impacted_services, sample_trace</div>
+
+  <p>This style of query is intentionally small and operational. It groups related failures, preserves a trace sample for investigation, and produces a stable <code>alert_key</code> that the orchestration layer can use for deduplication.</p>
+
+  <h2>3. Eventstream as the Glue</h2>
+  <p>Fabric Eventstream is the managed connector layer between Event Hub and Eventhouse. It removes the need to operate a Kafka cluster, patch brokers, rebalance partitions, or maintain a custom event processor just to move records into the analytical store.</p>
+  <p>The important capacity pattern is to avoid one Eventstream per source. A workspace should use one Eventstream where practical, with multiple sources in and multiple destinations out. Routing can use event properties such as <code>source</code>, <code>eventType</code>, or <code>route</code> to send records to the correct KQL table.</p>
+  <p>For the security platform, this means activity logs, application health checks, alert actions, and policy compliance events can share the same managed event-processing backbone while still landing in separate raw tables for clean ownership and replay.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Eventstream Role</th><th>What It Replaces</th><th>Operational Benefit</th></tr></thead>
+      <tbody>
+        <tr><td>Source connector</td><td>Custom Event Hub readers</td><td>Fabric-managed authentication and ingestion</td></tr>
+        <tr><td>Mapper / router</td><td>Lightweight stream processor code</td><td>Routes fields to KQL tables without a service to host</td></tr>
+        <tr><td>Destination writer</td><td>Custom Kusto ingestion client</td><td>Direct Eventhouse landing with minimal moving parts</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>4. Eventhouse + KQL</h2>
+  <p>Eventhouse is the hot analytical tier. Raw tables capture the event exactly as received; parsed tables make those events queryable; materialized views pre-aggregate common operational questions such as failures by service, latency bands, and active security alerts.</p>
+  <p>KQL is the right language for this workload because it is built for time windows, pattern matching, dynamic JSON, summarization, and interactive investigation. Operators can move from an alert tile to a trace-level query without switching storage engines.</p>
+  <p>The SPA's KQL update-policy panel is a simplified version of this contract. A raw event is parsed into typed columns: timestamp, service name, level, status code, and message. Production queries extend that with correlation IDs, resource IDs, tenant placeholders, normalized severity, and alert routing keys.</p>
+
+  <h3>Parse Function Pattern</h3>
+  <div class='code-block'>.create-or-alter function fn_parse_security_event() {
+  security_raw
+  | extend parsed = parse_json(raw_event)
+  | project
+      timestamp = coalesce(todatetime(parsed.eventTime), ingestion_time()),
+      service_name = tostring(parsed.serviceName),
+      trace_id = tostring(parsed.traceId),
+      severity = tostring(parsed.severity),
+      status_code = toint(parsed.statusCode),
+      resource_id = tostring(parsed.resourceId),
+      message = tostring(parsed.message),
+      payload = parsed
 }</div>
-  <p>A production implementation would usually pair that function with an update policy on a parsed table so the raw table remains authoritative and the parsed table stays continuously queryable. That pattern gives you both forensic retention and analytical convenience.</p>
 
-  <h2>3. Gold Lakehouse Aggregation</h2>
-  <p>Not every query belongs in Eventhouse. Once logs are parsed, a PySpark notebook can aggregate them into gold datasets such as hourly request counts, failure rates by service, or P95 latency bands. That is the right place to denormalize for BI, because the transformations are explicit and batch-oriented instead of hidden inside dashboard formulas.</p>
-  <div class='code-block'>df = spark.read.table('transaction_parsed')
-(df.groupBy('app_name', window('parsed_ts', '1 hour'))
-   .agg(count('*').alias('events'),
-        avg('http_status').alias('avg_status'))
-   .write.mode('overwrite')
-   .format('delta')
-   .saveAsTable('gld_app_hourly'))</div>
+  <p>After the hot period, OneLake shortcuts let downstream workspaces expose Eventhouse or Lakehouse data without duplicating every byte. That supports colder analytics, compliance review, and BI-friendly aggregation while keeping real-time operations in KQL.</p>
 
-  <h2>4. Monitoring &amp; Observability</h2>
-  <p>The page's live stream is more than decoration. It illustrates the observability feedback loop: ingest, parse, classify, and watch for anomalies. The demo color-codes INFO, WARN, and ERROR records, which is exactly the kind of lightweight signal that helps an operator decide whether a red metric is a transient spike or a systemic issue.</p>
-  <p>In a real estate, you would pair these visuals with lag monitoring, malformed message counts, Event Hub throughput metrics, and alerting on transformation failures. The architectural point remains the same: observability pipelines need observability too.</p>
+  <h2>5. Retention Tiers</h2>
+  <p>Retention is a cost and usability decision. The hot tier should keep enough data for incident response, failed deployment triage, and short-term trend analysis. Older data should remain discoverable, but it does not need the same compute profile as an active outage.</p>
 
-  <h2>5. From SQL Inserts to Event-Driven</h2>
-  <p>The most important shift is organizational as much as technical. Once logs become events instead of table inserts, applications no longer need to know how analytics stores are modeled. They only need to emit durable, well-formed facts. The platform then owns enrichment, schema evolution, retention, and downstream publication.</p>
-  <p>That is why this SPA works as a portfolio piece. It does not just show pretty boxes. It tells the story of decoupling, contract design, and operational maturity—exactly the reasons teams move from brittle insert-based telemetry to streaming pipelines.</p>
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Tier</th><th>Storage</th><th>Retention</th><th>Use Case</th></tr></thead>
+      <tbody>
+        <tr><td>Hot</td><td>Eventhouse KQL tables</td><td>30 days</td><td>Live dashboards, alert queries, incident response, replay of recent producer changes</td></tr>
+        <tr><td>Warm / Cold</td><td>OneLake shortcut to Lakehouse tables</td><td>Project-defined</td><td>Historical trend analysis, Power BI models, department-owned views</td></tr>
+        <tr><td>Archive</td><td>Azure Storage account lifecycle tier</td><td>Compliance-defined</td><td>Long-term evidence, legal hold, low-frequency retrieval</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>This tiering strategy avoids treating every byte as a premium SIEM record forever. Security-relevant detections can still flow to Microsoft Sentinel or downstream incident systems, while high-volume telemetry uses the storage and query engine that matches its lifecycle.</p>
+
+  <h2>6. Alert Orchestration</h2>
+  <p>Alerting is where real-time analytics becomes operations. A KQL query can identify candidate alerts, but a durable workflow decides what to do next: deduplicate repeated signals, suppress known maintenance windows, create tickets, send Teams cards, email on-call roles, and mark the alert as ticketed.</p>
+  <p>Azure Durable Functions fits this pattern because the fan-out/fan-in model is explicit. One orchestrator reads the active alert set, starts one activity per alert, waits for completion, records outcomes, and can retry transient failures without sending duplicate notifications.</p>
+  <p>The security platform uses this separation to keep detection logic in KQL and side effects in code. KQL answers, “What is happening?” Durable Functions answers, “Who needs to know, and have we already told them?”</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Concern</th><th>Where It Lives</th><th>Reason</th></tr></thead>
+      <tbody>
+        <tr><td>Detection query</td><td>Eventhouse KQL</td><td>Fast time-window filtering and summarization</td></tr>
+        <tr><td>Deduplication</td><td>Durable orchestration state + alert key</td><td>Prevents notification storms during a single incident</td></tr>
+        <tr><td>Suppression</td><td>Config table or function settings</td><td>Maintenance windows should not change query logic</td></tr>
+        <tr><td>Actions</td><td>Durable activities</td><td>Tickets, Teams, and email are side effects with retry needs</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Operational Guardrails</h3>
+  <p>A production version of this pipeline needs guardrails that are visible to both platform and application teams. Each producer should publish a versioned envelope, include a trace identifier, and avoid placing secrets or personal data in message bodies.</p>
+  <p>Each ingestion component should also expose health signals. Event Hub lag, Eventstream destination failures, Eventhouse ingestion errors, and Durable Function retry counts are separate failure modes. Treating them separately makes incident triage faster.</p>
+  <p>The runbook should include a replay path. Event Hub retention and Eventhouse ingestion tracking make it possible to replay a small window after a parser fix without asking application teams to re-emit historical events.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Guardrail</th><th>Why It Matters</th><th>Example Check</th></tr></thead>
+      <tbody>
+        <tr><td>Schema version</td><td>Allows parsers to evolve safely</td><td>Reject or quarantine unknown major versions</td></tr>
+        <tr><td>Trace identifier</td><td>Links alerts back to application requests</td><td>Require non-empty <code>trace_id</code> for transaction events</td></tr>
+        <tr><td>Dead-letter route</td><td>Prevents bad payloads from blocking good data</td><td>Send parse failures to a quarantine table</td></tr>
+        <tr><td>Replay window</td><td>Supports recovery after mapping defects</td><td>Document Event Hub retention and consumer checkpoints</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Microsoft Build 2026 Takeaway</h3>
+  <p>The pattern is intentionally Microsoft-native. Event Hubs absorbs producer traffic, Fabric Real-Time Intelligence handles streaming and KQL analytics, OneLake provides the lake boundary, Durable Functions coordinates side effects, and Sentinel remains available for security correlation where SIEM semantics are required.</p>
+  <p>That mix matters because the goal is not to build another bespoke logging platform. The goal is to make operational telemetry queryable within seconds, keep long-term storage economical, and preserve a clear path from detection to accountable action.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Build Demo Layer</th><th>Production Responsibility</th><th>Evidence to Show</th></tr></thead>
+      <tbody>
+        <tr><td>Animated event flow</td><td>Producer-to-Event Hub contract</td><td>Sample payload, partition key, and replay notes</td></tr>
+        <tr><td>KQL panel</td><td>Parser and detection ownership</td><td>Function definition, update policy, and alert query</td></tr>
+        <tr><td>Alert status</td><td>Durable side-effect workflow</td><td>Dedup key, suppression rule, and notification result</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>The end result is a pipeline that is real-time without being fragile: event-driven ingestion, managed stream routing, hot KQL analytics, lifecycle-aware retention, and durable alert handling that can be explained from the SPA all the way to production architecture.</p>
 
   <div class='footer-link'>
-    <a href='https://github.com/Acestus/portfolio/blob/main/src/portfolio/pro/logs.cljs' target='_blank' rel='noopener noreferrer'>View Source Code</a>
+    <strong>References:</strong>
+    <a href='https://learn.microsoft.com/azure/event-hubs/event-hubs-about'>Azure Event Hubs</a> ·
+    <a href='https://learn.microsoft.com/fabric/real-time-intelligence/event-streams/overview'>Fabric Eventstreams</a> ·
+    <a href='https://learn.microsoft.com/fabric/real-time-intelligence/eventhouse'>Fabric Eventhouse</a> ·
+    <a href='https://learn.microsoft.com/kusto/query/'>KQL</a> ·
+    <a href='https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview'>Durable Functions</a> ·
+    <a href='https://learn.microsoft.com/fabric/onelake/onelake-shortcuts'>OneLake Shortcuts</a> ·
+    <a href='https://learn.microsoft.com/azure/sentinel/overview'>Microsoft Sentinel</a> ·
+    <a href='https://github.com/Acestus/portfolio/blob/main/src/portfolio/pro/logs.cljs' target='_blank' rel='noopener noreferrer'>View Source Code</a> ·
+    <a href='/logs.html'>Back to Demo →</a>
   </div>
 </body>
 </html>

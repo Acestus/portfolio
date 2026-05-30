@@ -12,11 +12,11 @@
    {:id :azure    :label "Azure Resources"       :icon "☁" :color "#ADD8E6" :detail "Idempotent, drift-free infrastructure"}])
 
 (def ^:private what-if-output
-  [{:resource "func-skpad-dev-usw2-001"  :type "Microsoft.Web/sites"                :change :modify :detail "Update appSettings"}
-   {:resource "st-skpad-dev-usw2-001"    :type "Microsoft.Storage/storageAccounts"   :change :no-change :detail ""}
-   {:resource "kv-skpad-dev-usw2-001"    :type "Microsoft.KeyVault/vaults"           :change :no-change :detail ""}
-   {:resource "umi-skpad-dev-usw2-ctl"   :type "Microsoft.ManagedIdentity/userAssignedIdentities" :change :no-change :detail ""}
-   {:resource "evh-skpad-dev-usw2-001"   :type "Microsoft.EventHub/namespaces"      :change :create :detail "New Event Hub namespace"}])
+  [{:resource "func-coresec-dev-usw2-001"  :type "Microsoft.Web/sites"                :change :modify :detail "Update appSettings"}
+   {:resource "st-coresec-dev-usw2-001"    :type "Microsoft.Storage/storageAccounts"   :change :no-change :detail ""}
+   {:resource "kv-coresec-dev-usw2-001"    :type "Microsoft.KeyVault/vaults"           :change :no-change :detail ""}
+   {:resource "umi-coresec-dev-usw2-ctl"   :type "Microsoft.ManagedIdentity/userAssignedIdentities" :change :no-change :detail ""}
+   {:resource "evh-coresec-dev-usw2-001"   :type "Microsoft.EventHub/namespaces"      :change :create :detail "New Event Hub namespace"}])
 
 (def ^:private change-colors
   {:create    "#00a86b"
@@ -83,7 +83,7 @@
              "│       │        │      │        └─ 001, 002, ctl, dat\n"
              "│       │        │      └─ usw2 (West US 2)\n"
              "│       │        └─ dev, stg, prd\n"
-             "│       └─ skpad, skpedm, skpmgt\n"
+             "│       └─ coresec, coredata, coremgmt\n"
              "└─ func, st, kv, umi, evh, rg")))
     panel))
 

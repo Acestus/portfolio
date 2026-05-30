@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="File-driven AI-assisted ops toolkit">
+  <meta name="theme-color" content="#0a0a2a">
+  <meta property="og:title" content="Workflow Toolkit — acestus.com">
+  <meta property="og:description" content="File-driven AI-assisted ops toolkit">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://portfolio.acestus.com/workflow.html">
+  <meta property="og:image" content="https://portfolio.acestus.com/favicon.svg">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>Workflow Toolkit — acestus.com</title>
+  <link rel="stylesheet" href="/css/shared.css">
+  <link rel="stylesheet" href="/css/arcade.css">
+  <link rel="stylesheet" href="/css/enterprise.css">
+</head>
+<body class="enterprise-theme">
+<header class="site-nav" role="banner">
+  <a class="site-name" href="/">acestus.com</a>
+  <nav role="navigation" aria-label="Main">
+    <button class="nav-toggle" aria-controls="main-nav" aria-expanded="false">☰</button>
+    <div class="nav-links" id="main-nav">
+      <a class="nav-link" href="/">Portfolio</a>
+    </div>
+  </nav>
+</header>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var toggle = document.querySelector('.nav-toggle');
+  var links = document.getElementById('main-nav');
+  if (!toggle || !links) return;
+
+  toggle.addEventListener('click', function() {
+    var isOpen = links.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+
+  links.querySelectorAll('a').forEach(function(a) {
+    a.addEventListener('click', function() {
+      links.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      links.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+});
+</script>
+
+  <div id="app"></div>
+  <script src="/js/workflow/main.js"></script>
+  <script src="/js/nav.js"></script>
+</body>
+</html>

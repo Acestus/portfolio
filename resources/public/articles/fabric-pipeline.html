@@ -3,7 +3,7 @@
 <head>
   <meta charset='utf-8'>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
-  <title>Fabric Medallion Pipeline — Real-Time Transaction Analytics</title>
+  <title>Fabric Medallion Pipeline — Microsoft Build 2026</title>
   <style>
     :root { --accent: #0078d4; --accent-dark: #106ebe; --bg: #faf9f8; --text: #323130; --summary: #e1f5fe; }
     * { box-sizing: border-box; }
@@ -13,6 +13,7 @@
     .back-link { display: inline-block; margin-bottom: 1rem; font-weight: 600; }
     h1 { color: var(--accent); border-bottom: 3px solid var(--accent); padding-bottom: 0.5rem; margin-top: 0; }
     h2 { color: var(--accent-dark); border-left: 4px solid var(--accent); padding-left: 15px; margin-top: 2.25rem; }
+    h3 { color: var(--accent-dark); margin-top: 1.5rem; }
     .summary { background: var(--summary); border-left: 5px solid var(--accent); border-radius: 4px; padding: 1rem; margin: 1rem 0 1.5rem; }
     .metrics { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0; }
     .metric-card { background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-bottom: 3px solid var(--accent); padding: 1rem; flex: 1 1 180px; min-width: 170px; }
@@ -27,6 +28,7 @@
     th { background: var(--accent); color: #fff; }
     tbody tr:nth-child(even) { background: #f3f2f1; }
     tbody tr:hover { background: #deecf9; }
+    .callout { background: #fff3cd; border-left: 5px solid #ffc107; border-radius: 4px; padding: 1rem; margin: 1rem 0; }
     .footer-link { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #d2d0ce; }
     @media (max-width: 768px) {
       body { padding: 16px; }
@@ -75,87 +77,244 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
   <a class='back-link' href='/fabric.html'>← Back to Demo</a>
-  <h1>Fabric Medallion Pipeline — Real-Time Transaction Analytics</h1>
+  <h1>Fabric Medallion Pipeline — Microsoft Build 2026</h1>
 
   <div class='summary'>
-    Interactive visualization of a production Fabric medallion architecture. The real system replaces direct SQL Server inserts with an event-driven path: Event Hub ingress, Eventstream forwarding, Eventhouse KQL transformation, Lakehouse gold aggregation, and a semantic model with DAX measures and TMDL-backed definitions. The SPA mirrors that flow with animated stages and pipeline activity telemetry.
+    This Microsoft Build 2026 refresh explains the SPA as a production-style Microsoft Fabric medallion architecture: raw events or files enter Bronze, PySpark notebooks cleanse and conform them in Silver, and Gold Delta tables feed Direct Lake semantic models for Power BI. The demo animation uses Event Hub, Eventstream, Bronze, Silver, Gold, and Semantic Model stages; the article grounds those visuals in real operating patterns for OneLake, Fabric Data Pipelines, Spark notebooks, and zero-copy shortcuts.
   </div>
 
   <div class='metrics'>
-    <div class='metric-card'><div class='metric-value'>12,470</div><div class='metric-label'>Events / hour</div></div>
-    <div class='metric-card'><div class='metric-value'>&lt; 5s</div><div class='metric-label'>End-to-end Latency</div></div>
-    <div class='metric-card'><div class='metric-value'>2</div><div class='metric-label'>Gold Tables</div></div>
-    <div class='metric-card'><div class='metric-value'>14</div><div class='metric-label'>DAX Measures</div></div>
+    <div class='metric-card'><div class='metric-value'>3</div><div class='metric-label'>Medallion Layers</div></div>
+    <div class='metric-card'><div class='metric-value'>24</div><div class='metric-label'>Bronze Raw Tables</div></div>
+    <div class='metric-card'><div class='metric-value'>5</div><div class='metric-label'>Silver Clean Tables</div></div>
+    <div class='metric-card'><div class='metric-value'>7</div><div class='metric-label'>Gold BI Tables</div></div>
   </div>
 
   <div class='flow'>
-    <span class='pill'>Event Hub</span><span class='arrow'>→</span>
-    <span class='pill'>Eventstream</span><span class='arrow'>→</span>
-    <span class='pill'>Bronze</span><span class='arrow'>→</span>
-    <span class='pill'>Silver</span><span class='arrow'>→</span>
-    <span class='pill'>Gold</span><span class='arrow'>→</span>
-    <span class='pill'>Semantic Model</span>
+    <span class='pill'>Source Event</span><span class='arrow'>→</span>
+    <span class='pill'>Bronze Landing</span><span class='arrow'>→</span>
+    <span class='pill'>Silver Quality</span><span class='arrow'>→</span>
+    <span class='pill'>Gold Model</span><span class='arrow'>→</span>
+    <span class='pill'>Power BI</span>
   </div>
 
-  <h2>1. Medallion Architecture</h2>
-  <p>The Bronze, Silver, and Gold layers are not buzzwords here; they divide responsibility. Bronze is append-only raw ingestion with minimal assumptions. Silver is where schemas become trustworthy: timestamps are typed, duplicate records are handled, payloads are normalized, and low-quality events are quarantined instead of silently polluting analytics. Gold is intentionally small and business-shaped, optimized for report refresh and semantic clarity rather than event fidelity.</p>
+  <h2>1. The Medallion Architecture</h2>
+  <p>The SPA shows a compact pipeline, but the pattern scales to a full data platform. Bronze, Silver, and Gold are separate Lakehouses so each layer has a clear contract. Bronze preserves the source record, Silver applies business rules and data quality gates, and Gold publishes curated facts, aggregates, and marts for analytics.</p>
+  <p>Fabric changes the center of gravity from database servers to OneLake. Instead of linked servers and stored procedures reaching across multiple machines, notebooks read committed Delta tables from the prior layer and write the next layer. The pipeline controls dependency order, but notebooks do not share memory; they communicate through persisted Delta tables.</p>
+
   <div class='table-wrap'>
     <table>
-      <thead><tr><th>Layer</th><th>Real Responsibility</th><th>Typical Storage Shape</th></tr></thead>
+      <thead><tr><th>Layer</th><th>Lakehouse Pattern</th><th>Table Pattern</th><th>Responsibility</th></tr></thead>
       <tbody>
-        <tr><td>Bronze</td><td>Land raw transaction events exactly as produced</td><td>Append-only ingestion table with schema-on-read tolerance</td></tr>
-        <tr><td>Silver</td><td>Parse JSON, type columns, deduplicate, enforce quality checks</td><td>KQL-managed analytical table with update policy or transformation function</td></tr>
-        <tr><td>Gold</td><td>Pre-aggregate metrics for BI consumption</td><td>Lakehouse Delta tables consumed by semantic model</td></tr>
+        <tr><td>Bronze</td><td><code>lh_*_brz</code></td><td><code>azsql_*_raw</code> or <code>{source}_*_raw</code></td><td>Exact source copy, append-only landing, audit trail, schema-on-read tolerance</td></tr>
+        <tr><td>Silver</td><td><code>lh_*_slv</code></td><td><code>{domain}_*_clean</code></td><td>Typed columns, deduplication, PII handling, conformed business rules</td></tr>
+        <tr><td>Gold</td><td><code>lh_*_gld</code></td><td><code>fct_*</code>, <code>agg_*</code>, <code>mart_*</code></td><td>Business-ready facts, aggregations, dimensional marts, semantic model inputs</td></tr>
       </tbody>
     </table>
   </div>
 
-  <h2>2. Event Hub Ingestion</h2>
-  <p>The architectural shift is important: instead of application code writing synchronously into SQL tables, services emit events to Event Hub. That decouples transactional paths from analytics paths. Eventstream then becomes the low-friction bridge into Fabric, giving you fan-in ingestion, observability, and a clear handoff between application teams and data platform ownership.</p>
-  <p>In the SPA, the animated pipeline and activity log make that architecture visible. A simple timer advances the active stage every two seconds, while sample operations such as <code>transaction_raw</code>, <code>update_policy</code>, <code>notebook_tfm_gld</code>, and <code>semantic_refresh</code> reinforce that data movement is a chain of independent, observable steps.</p>
+  <div class='callout'>
+    <strong>Why this replaces the legacy SQL Server pattern:</strong> the old model centralizes transformation inside synchronous stored procedures, SQL Agent schedules, and cross-server dependencies. Fabric makes the work cloud-native: data lands once in OneLake, Spark transforms it in parallel, pipelines orchestrate dependencies, Git captures changes, and Power BI reads curated Delta tables without copying them into another serving store.
+  </div>
 
-  <h2>3. KQL Update Policies</h2>
-  <p>KQL update policies are the key to making Eventhouse useful as more than a raw landing zone. Instead of waiting for batch jobs to parse logs later, the raw table can trigger transformation into a typed analytical table as events arrive. That keeps the ingest path cheap while still giving downstream consumers clean columns.</p>
-  <div class='code-block'>.create-or-alter function with (folder = 'transactions') TransformTransactions() {
-  transaction_raw
-  | extend event_ts = todatetime(raw_timestamp)
-  | extend tenant_id = tostring(payload.tenantId)
-  | extend order_id = tostring(payload.orderId)
-  | extend amount = todouble(payload.amount)
-  | extend currency = tostring(payload.currency)
-  | extend payment_status = tostring(payload.paymentStatus)
-  | extend channel = tostring(payload.channel)
-  | project event_ts, tenant_id, order_id, amount, currency, payment_status, channel, raw_payload
-}
+  <h3>Reference workspace inventory</h3>
+  <p>The numbers below are sanitized from a production migration pilot and show how the SPA's six-stage animation maps to real Fabric artifacts.</p>
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Artifact</th><th>Example Name</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td>Bronze Lakehouse</td><td><code>lh_loanetl_brz</code></td><td>Raw source extracts and file/event landings</td></tr>
+        <tr><td>Silver Lakehouse</td><td><code>lh_loanetl_slv</code></td><td>Cleansed tables with stored-procedure logic translated to PySpark</td></tr>
+        <tr><td>Gold Lakehouse</td><td><code>lh_loanetl_gld</code></td><td>Fact, aggregate, and mart tables consumed by analytics</td></tr>
+        <tr><td>Ingestion Notebook</td><td><code>nb_ing_loanetl_brz</code></td><td>Source-to-Bronze extraction or mock/demo data generation</td></tr>
+        <tr><td>Transform Notebook</td><td><code>nb_tfm_loanetl_brz_slv</code></td><td>Bronze-to-Silver cleansing, joins, and quality rules</td></tr>
+        <tr><td>Aggregation Notebook</td><td><code>nb_tfm_loanetl_slv_gld</code></td><td>Silver-to-Gold facts, aggregates, and marts</td></tr>
+        <tr><td>Pipeline</td><td><code>pl_orch_loanetl</code></td><td>Sequential DAG across ingestion, transformation, publication, and maintenance</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-.alter table transaction_silver policy update
-@'[{
-  "IsEnabled": true,
-  "Source": "transaction_raw",
-  "Query": "TransformTransactions()",
-  "IsTransactional": false,
-  "PropagateIngestionProperties": true
-}]'</div>
-  <p>This is exactly the kind of transformation boundary that scales well in production: raw events stay available for replay and auditing, but analysts and notebooks consume a curated schema immediately.</p>
+  <h2>2. Bronze: Raw Ingestion</h2>
+  <p>Bronze is deliberately boring. It lands source data with minimal interpretation, adds audit columns, and keeps enough fidelity to replay or reprocess when downstream rules change. In a legacy migration, Bronze might start as JDBC extracts from a legacy SQL Server. In an event-driven design, Bronze receives file metadata or streaming events from Event Hub and Eventstream.</p>
+  <p>The important production lesson is that the ingestion trigger can evolve without rewriting the processing logic. A scheduled SFTP poll can become a storage event that flows through Event Hub, Fabric Eventstream, and Eventhouse. The downstream Data Pipeline still starts the same notebook chain; only the readiness signal changes from “the clock fired” to “the file or event arrived.”</p>
 
-  <h2>4. Gold Layer &amp; DAX/TMDL</h2>
-  <p>The Gold layer should contain opinionated business outputs, not a second Silver layer with prettier names. In this design, notebooks aggregate hourly and daily transaction facts into two gold tables, then the semantic model exposes measures for reporting tools. TMDL matters because semantic definitions become source-controlled artifacts rather than portal-only configuration.</p>
-  <div class='code-block'>Revenue :=
-SUMX (
-    'gld_transactions_hourly',
-    'gld_transactions_hourly'[approved_amount]
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Pattern</th><th>Legacy Behavior</th><th>Fabric Evolution</th></tr></thead>
+      <tbody>
+        <tr><td>SFTP polling</td><td>Pipeline checks a vendor location on a fixed schedule</td><td>ADLS Gen2 SFTP endpoint emits a <code>BlobCreated</code> event after landing</td></tr>
+        <tr><td>Late files</td><td>Missed until the next polling window</td><td>Handled as soon as the event arrives</td></tr>
+        <tr><td>Large transfers</td><td>Risk of reading partial or duplicated files</td><td>One event per committed file path with size and timestamp metadata</td></tr>
+        <tr><td>Audit trail</td><td>Pipeline run history only</td><td>Queryable KQL/Eventhouse table with every file-arrival event</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class='code-block'># Bronze write pattern — raw landing with audit columns
+from pyspark.sql.functions import current_timestamp, lit
+
+source_table = "master_skip_trace"
+bronze_table = f"azsql_{source_table}_raw"
+
+df_bronze = (
+    df_source
+    .withColumn("_brz_load_ts", current_timestamp())
+    .withColumn("_brz_source_table", lit(f"legacy_sql_server.dbo.{source_table}"))
 )
 
-Approval Rate :=
-DIVIDE ( [Approved Transactions], [Total Transactions] )</div>
-  <p>That separation is why the dashboard can talk about 14 DAX measures without turning the ingest tier into a BI engine. Eventhouse handles stream transformation, notebooks handle aggregation, and the semantic model handles business logic and presentation semantics.</p>
+(
+    df_bronze.write
+    .format("delta")
+    .mode("append")
+    .option("mergeSchema", "true")
+    .saveAsTable(bronze_table)
+)</div>
 
-  <h2>5. Production Lessons</h2>
-  <p>Three practical lessons show up in pipelines like this. First, scheduling workarounds matter: when a desired trigger is not natively available in exactly the right place, teams often bridge with pipeline orchestration, notebook scheduling, or a lightweight automation layer rather than forcing synchronous coupling back into the applications. Second, Git integration matters at the workspace level; treating notebooks, semantic definitions, and pipeline metadata as code makes promotion and rollback much safer. Third, privileged access still needs discipline. Admin actions in Fabric and Azure should be performed through PIM-backed elevation, not standing rights.</p>
-  <p>The result is a cleaner architecture than direct SQL writes ever allowed. Application services emit facts. The platform translates, shapes, and publishes them. Analytics becomes a product of the event stream, not a side effect of OLTP code.</p>
+  <p>Schema-on-read is a strength at this layer. Bronze can absorb new source columns, retain raw payloads, and defer interpretation until Silver. That keeps ingestion resilient while preserving a complete audit trail for reconciliation.</p>
+
+  <h2>3. Silver: Conformed &amp; Cleansed</h2>
+  <p>Silver is where the data platform earns trust. PySpark notebooks replace stored procedure logic with version-controlled code that can be tested locally, reviewed in Git, and promoted through environments. Typical Silver work includes casting strings to dates and decimals, deduplicating by business keys, applying joins that previously crossed SQL Server instances, hashing PII, and quarantining invalid records instead of silently publishing them.</p>
+  <p>Data quality gates belong here because Silver is the contract for downstream consumers. If a required key is missing, a status code is unknown, or a record violates a business invariant, the notebook should fail visibly or route the row to a quarantine table. Gold should never need to guess whether its inputs are trustworthy.</p>
+
+  <div class='code-block'># Bronze to Silver — conformed, typed, and quality checked
+from pyspark.sql.functions import col, current_timestamp, sha2, concat_ws, lit, to_date
+
+bronze = spark.table("lh_loanetl_brz.dbo.azsql_master_skip_trace_raw")
+
+silver = (
+    bronze
+    .filter(col("LoanID").isNotNull())
+    .dropDuplicates(["LoanID", "Record_Date"])
+    .withColumn("Record_Date", to_date(col("Record_Date")))
+    .withColumn("Phone_Hash", sha2(concat_ws("|", col("Phone"), lit("platform_salt")), 512))
+    .drop("Phone")
+    .withColumn("_slv_processed_ts", current_timestamp())
+)
+
+invalid_count = silver.filter(col("Record_Date").isNull()).count()
+if invalid_count:
+    raise ValueError(f"Data quality gate failed: {invalid_count} missing Record_Date values")
+
+(
+    silver.write
+    .format("delta")
+    .mode("overwrite")
+    .option("replaceWhere", "Record_Date = '2026-05-09'")
+    .saveAsTable("loanetl_batch_skip_trace_clean")
+)</div>
+
+  <h3>Silver migration patterns</h3>
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>SQL Server Pattern</th><th>Fabric Silver Pattern</th><th>Why It Works</th></tr></thead>
+      <tbody>
+        <tr><td>Stored procedure with temp tables</td><td>PySpark DataFrames and temp views</td><td>Spark optimizes the execution plan before running distributed work</td></tr>
+        <tr><td>Linked-server joins</td><td>Lakehouse table reads from OneLake</td><td>No WAN hop and no circular server dependency</td></tr>
+        <tr><td>T-SQL encryption functions</td><td><code>sha2(..., 512)</code> or Key Vault-backed handling</td><td>PII rules are explicit and reviewable in code</td></tr>
+        <tr><td><code>UNION ALL</code> by ordinal</td><td><code>unionByName(allowMissingColumns=True)</code></td><td>Prevents schema drift from misaligning columns</td></tr>
+        <tr><td>SCD Type 2 merge logic</td><td>Delta merge or anti-join + union pattern</td><td>Retains history with effective dates and current-row flags</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>4. Gold: Dimensional Models</h2>
+  <p>Gold is intentionally smaller than Silver. It is shaped for analytics: facts at a clear grain, aggregates that avoid repeated expensive scans, and marts that align to business questions. The SPA's “Gold” and “Semantic Model” stages reflect this split: Spark publishes Delta tables, then Power BI semantic models define relationships, DAX measures, and presentation logic.</p>
+  <p>Direct Lake matters because Power BI can read Delta tables in OneLake without scheduled import copies. The result is a cleaner serving path: Gold tables stay in the Lakehouse, semantic definitions sit on top of them, and reports query governed data rather than disconnected extracts.</p>
+
+  <div class='code-block'># Silver to Gold — dimensional facts and aggregates
+from pyspark.sql.functions import count, sum as spark_sum, current_timestamp
+
+silver = spark.table("lh_loanetl_slv.dbo.loanetl_batch_skip_trace_clean")
+
+fct_batch_skip_trace = (
+    silver
+    .select("LoanID", "Record_Date", "Disposition", "Phone_Hash")
+    .withColumn("_gld_published_ts", current_timestamp())
+)
+
+agg_daily_disposition = (
+    silver
+    .groupBy("Record_Date", "Disposition")
+    .agg(
+        count("LoanID").alias("Loan_Count"),
+        spark_sum("Attempt_Count").alias("Attempt_Count")
+    )
+    .withColumn("_gld_published_ts", current_timestamp())
+)
+
+fct_batch_skip_trace.write.format("delta").mode("overwrite").saveAsTable("fct_batch_skip_trace")
+agg_daily_disposition.write.format("delta").mode("overwrite").saveAsTable("agg_skip_trace_daily")</div>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Gold Prefix</th><th>Use</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td><code>fct_</code></td><td>Event or transaction grain facts</td><td><code>fct_batch_skip_trace</code></td></tr>
+        <tr><td><code>agg_</code></td><td>Pre-computed rollups for BI performance</td><td><code>agg_loan_accretion_summary</code></td></tr>
+        <tr><td><code>mart_</code></td><td>Wide, consumer-friendly views of a business domain</td><td><code>mart_customer_360</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>5. Pipeline Orchestration</h2>
+  <p>Fabric Data Pipelines replace the SQL Agent and SSIS pattern with an explicit dependency DAG. The pipeline can run notebooks sequentially, retry transient failures, pass parameters such as <code>etl_process_date</code>, and keep each activity observable. In the pilot pattern, Bronze must succeed before Silver starts, Silver must succeed before Gold starts, and maintenance can run after publication or on a separate schedule.</p>
+  <p>This is not the same mental model as a single stored procedure transaction. Fabric is choreographed, eventual, and asynchronous. Each notebook commits Delta tables; the next notebook reads those committed tables. That boundary makes reruns safer, troubleshooting clearer, and environment promotion easier.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Order</th><th>Pipeline Activity</th><th>Notebook</th><th>Dependency</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Bronze Ingestion</td><td><code>nb_ing_loanetl_brz</code></td><td>Triggered by schedule, event, or manual run</td></tr>
+        <tr><td>2</td><td>Bronze to Silver</td><td><code>nb_tfm_loanetl_brz_slv</code></td><td>Runs only after Bronze succeeds</td></tr>
+        <tr><td>3</td><td>Silver to Gold</td><td><code>nb_tfm_loanetl_slv_gld</code></td><td>Runs only after Silver succeeds</td></tr>
+        <tr><td>4</td><td>Table Maintenance</td><td><code>nb_mnt_loanetl_maintenance</code></td><td>Optimizes Delta tables after publication</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <h2>6. OneLake Shortcuts</h2>
+  <p>OneLake Shortcuts are the Fabric replacement for many linked-server and copy-heavy integration patterns. A table can physically live in one Lakehouse while another Lakehouse, Warehouse, or consuming workspace references it through a shortcut. The consumer sees a table-like object; the platform avoids duplicating the underlying Delta files.</p>
+  <p>This matters when Bronze data lands in Lakehouse A but multiple domains need to transform or enrich it in Lakehouse B. Instead of copying raw data into every workspace, the data platform can expose governed shortcuts. Teams get local-looking access while storage remains centralized and auditable.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Old Pattern</th><th>Shortcut Pattern</th><th>Benefit</th></tr></thead>
+      <tbody>
+        <tr><td>Linked server to another SQL instance</td><td>Shortcut to another Lakehouse table</td><td>No server-to-server dependency or hybrid network hop</td></tr>
+        <tr><td>Nightly copy between marts</td><td>Zero-copy reference to Gold Delta table</td><td>Lower latency, lower storage cost, fewer reconciliation jobs</td></tr>
+        <tr><td>Warehouse owns duplicated reporting tables</td><td>Warehouse shortcut to Gold Lakehouse</td><td>T-SQL consumption without moving data out of OneLake</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class='code-block'># Conceptual read through a shortcut-backed table
+# Bronze physically lands in lh_source_brz.
+# lh_reporting_brz exposes it as a OneLake Shortcut, so the transform reads locally.
+
+raw_events = spark.table("lh_reporting_brz.dbo.azsql_transaction_events_raw")
+
+silver_events = (
+    raw_events
+    .filter("event_type is not null")
+    .dropDuplicates(["event_id"])
+)
+
+silver_events.write.format("delta").mode("overwrite").saveAsTable("platform_transaction_events_clean")</div>
+
+  <p>That is the key Build 2026 story: Fabric is not just a new place to run old database jobs. It is a governed data operating model where OneLake is the storage substrate, Spark handles transformation, Data Pipelines choreograph work, and Direct Lake semantic models serve analytics from the same Delta files.</p>
 
   <div class='footer-link'>
-    <a href='https://github.com/Acestus/portfolio/blob/main/src/portfolio/pro/fabric.cljs' target='_blank' rel='noopener noreferrer'>View Source Code</a>
+    <strong>References:</strong>
+    <a href='https://learn.microsoft.com/fabric/get-started/microsoft-fabric-overview'>Microsoft Fabric</a> ·
+    <a href='https://learn.microsoft.com/fabric/onelake/onelake-overview'>OneLake</a> ·
+    <a href='https://learn.microsoft.com/fabric/onelake/onelake-medallion-lakehouse-architecture'>Medallion Lakehouse Architecture</a> ·
+    <a href='https://learn.microsoft.com/fabric/data-engineering/spark-overview'>Spark in Fabric</a> ·
+    <a href='https://learn.microsoft.com/fabric/data-factory/pipeline-overview'>Fabric Data Pipelines</a> ·
+    <a href='https://learn.microsoft.com/fabric/real-time-intelligence/event-streams/overview'>Fabric Eventstream</a> ·
+    <a href='https://learn.microsoft.com/fabric/data-engineering/lakehouse-and-delta-tables'>Delta Tables in Lakehouse</a> ·
+    <a href='https://github.com/Acestus/portfolio/blob/main/src/portfolio/pro/fabric.cljs' target='_blank' rel='noopener noreferrer'>View SPA Source</a> ·
+    <a href='/fabric.html'>Back to Demo →</a>
   </div>
 </body>
 </html>

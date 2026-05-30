@@ -11,9 +11,13 @@
             {:title "CAF Naming Puzzle"     :href "/matcher.html"    :icon "🧩"  :desc "Match resources to CAF-compliant names"}
             {:title "Tech Breakout"         :href "/breakout.html"   :icon "🧱"  :desc "Smash through tech-themed bricks"}
             {:title "Cloud Lift"            :href "/helicopter.html" :icon "☁️"  :desc "Migrate workloads to the cloud, one rescue at a time"}]}
+   {:category "🆕 Microsoft Build 2026"
+    :items [{:title "Workflow Toolkit"      :href "/workflow.html"   :icon "🧰"  :desc "File-driven AI ops — open source on GitHub"}
+            {:title "Copilot-Ops Console"   :href "/copilotops.html" :icon "🤖"  :desc "Rounds · voice wall · markdown↔API sync"}
+            {:title "Fabric Capacity Tuner" :href "/fabriccap.html"  :icon "🧵"  :desc "Size F-SKUs · simulate 430 throttling · cut waste"}
+            {:title "Pricing Optimizer"     :href "/pricing.html"    :icon "💰"  :desc "Azure · Fabric · AI Foundry FinOps with RI/SP"}]}
    {:category "📊 Professional"
     :items [{:title "Fabric Pipeline"       :href "/fabric.html"     :icon "💎"  :desc "Medallion architecture — Bronze → Silver → Gold"}
-            {:title "Pricing Optimizer"    :href "/pricing.html"    :icon "💰"  :desc "Optimize SKUs, tagging, naming, and cost transparency"}
             {:title "M365 Administration"  :href "/m365.html"       :icon "🛠"  :desc "Entra, Intune, JML workflows and access packages"}
             {:title "Policy Dashboard"      :href "/policy.html"     :icon "🛡"  :desc "Azure Policy governance at scale"}
             {:title "Log Pipeline"          :href "/logs.html"       :icon "📡"  :desc "Real-time Event Hub → Eventhouse flow"}

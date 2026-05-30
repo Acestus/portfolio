@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <title>Copilot-Ops Console — Where AI Meets the Ticket</title>
+  <style>
+    :root { --accent: #0078d4; --accent-dark: #106ebe; --bg: #faf9f8; --text: #323130; --summary: #e1f5fe; }
+    * { box-sizing: border-box; }
+    body { margin: 0 auto; max-width: 1200px; padding: 24px; background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .back-link { display: inline-block; margin-bottom: 1rem; font-weight: 600; }
+    h1 { color: var(--accent); border-bottom: 3px solid var(--accent); padding-bottom: 0.5rem; margin-top: 0; }
+    h2 { color: var(--accent-dark); border-left: 4px solid var(--accent); padding-left: 15px; margin-top: 2.25rem; }
+    h3 { color: var(--accent-dark); margin-top: 1.5rem; }
+    .summary { background: var(--summary); border-left: 5px solid var(--accent); border-radius: 4px; padding: 1rem; margin: 1rem 0 1.5rem; }
+    .metrics { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0; }
+    .metric-card { background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-bottom: 3px solid var(--accent); padding: 1rem; flex: 1 1 180px; min-width: 170px; }
+    .metric-value { color: var(--accent); font-size: 1.6rem; font-weight: 700; }
+    .metric-label { color: #605e5c; font-size: 0.95rem; }
+    .flow { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.5rem; margin: 1.5rem 0; }
+    .pill { background: var(--accent); color: #fff; padding: 0.65rem 1rem; border-radius: 999px; font-weight: 600; }
+    .arrow { color: var(--accent-dark); font-size: 1.25rem; font-weight: 700; }
+    .code-block { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 6px; overflow: auto; white-space: pre; font-family: Consolas, Monaco, 'Courier New', monospace; font-size: 0.92rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; background: #fff; }
+    th, td { border: 1px solid #d2d0ce; padding: 0.8rem; text-align: left; vertical-align: top; }
+    th { background: var(--accent); color: #fff; }
+    tbody tr:nth-child(even) { background: #f3f2f1; }
+    tbody tr:hover { background: #deecf9; }
+    .callout { background: #fff3cd; border-left: 5px solid #ffc107; border-radius: 4px; padding: 1rem; margin: 1rem 0; }
+    .footer-link { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #d2d0ce; }
+    @media (max-width: 768px) {
+      body { padding: 16px; }
+      .metrics { flex-direction: column; }
+      .flow { flex-direction: column; }
+      .arrow { transform: rotate(90deg); }
+      .table-wrap { overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+<header class="site-nav" role="banner">
+  <a class="site-name" href="/">acestus.com</a>
+  <nav role="navigation" aria-label="Main">
+    <button class="nav-toggle" aria-controls="main-nav" aria-expanded="false">☰</button>
+    <div class="nav-links" id="main-nav">
+      <a class="nav-link" href="/">Portfolio</a>
+    </div>
+  </nav>
+</header>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var toggle = document.querySelector('.nav-toggle');
+  var links = document.getElementById('main-nav');
+  if (!toggle || !links) return;
+
+  toggle.addEventListener('click', function() {
+    var isOpen = links.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+
+  links.querySelectorAll('a').forEach(function(a) {
+    a.addEventListener('click', function() {
+      links.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      links.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+});
+</script>
+
+  <a class='back-link' href='/copilotops.html'>← Back to Demo</a>
+  <h1>Copilot-Ops Console — Where AI Meets the Ticket</h1>
+
+  <div class='summary'>
+    The Copilot-Ops Console is a portfolio demo of an AI-assisted operations desk where the operator does not ask a chatbot what to do next; they orchestrate a disciplined work system. Six ticket lanes, composable Copilot skills, voice-aware worklogs, and push-driven markdown synchronization turn Jira and ServiceDesk Plus work into a file-backed control loop that is auditable, automatable, and still human-led.
+  </div>
+
+  <div class='metrics'>
+    <div class='metric-card'><div class='metric-value'>6</div><div class='metric-label'>Lanes</div></div>
+    <div class='metric-card'><div class='metric-value'>WIP=1</div><div class='metric-label'>Per Lane</div></div>
+    <div class='metric-card'><div class='metric-value'>2</div><div class='metric-label'>Voice Modes</div></div>
+    <div class='metric-card'><div class='metric-value'>Push</div><div class='metric-label'>Driven Sync</div></div>
+  </div>
+
+  <div class='flow'>
+    <span class='pill'>Dispatch</span><span class='arrow'>→</span>
+    <span class='pill'>Investigate</span><span class='arrow'>→</span>
+    <span class='pill'>Worklog</span><span class='arrow'>→</span>
+    <span class='pill'>Comment</span><span class='arrow'>→</span>
+    <span class='pill'>Sync</span><span class='arrow'>→</span>
+    <span class='pill'>Standup</span>
+  </div>
+
+  <h2>The Rounds Model: 6 Lanes, WIP=1 Each</h2>
+  <p>The core operating model is a six-lane kanban board. Three lanes represent Jira infrastructure work: urgent, manual, and background. Three lanes mirror the ServiceDesk Plus support world: urgent, approval, and background. Each lane allows exactly one active ticket. When a ticket moves to waiting or done, a dispatcher pulls the next highest-scored item for that lane.</p>
+  <p>This is less about displaying cards and more about enforcing single-piece flow. The operator can see all work in flight without becoming the scheduler, because the console makes the constraint visible: only one urgent Jira item, one manual Jira item, one background Jira item, one urgent support case, one approval case, and one background support case are active at once.</p>
+  <p>Waiting work does not count against WIP. That distinction matters in operations because many tickets are blocked on an approver, vendor, user confirmation, or a system window. Moving blocked items to waiting frees the lane without losing context, while keeping the follow-up obligation explicit.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Lane</th><th>System</th><th>Purpose</th><th>Dispatch Rule</th></tr></thead>
+      <tbody>
+        <tr><td>🔴 Lane 1</td><td>Jira</td><td>Urgent platform work</td><td>Highest urgency and operational risk first</td></tr>
+        <tr><td>🔵 Lane 2</td><td>Jira</td><td>Manual work requiring judgment</td><td>Human-decision work that cannot be fully automated</td></tr>
+        <tr><td>🟢 Lane 3</td><td>Jira</td><td>Background automation and cleanup</td><td>Agent-friendly work with low interruption cost</td></tr>
+        <tr><td>🔴 Lane 4</td><td>SDP</td><td>End-user urgent support</td><td>User-impacting requests and break/fix cases</td></tr>
+        <tr><td>🟠 Lane 5</td><td>SDP</td><td>Approval-driven work</td><td>Requests blocked on entitlement or approver state</td></tr>
+        <tr><td>🟢 Lane 6</td><td>SDP</td><td>Background support work</td><td>Provisioning, cleanup, and low-risk service tasks</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class='callout'>
+    <strong>Different from chat:</strong> a chat assistant waits for prompts and returns answers. This console starts from the work system: WIP limits, ticket state, investigation gates, file-backed logs, and API reconciliation. AI is not the place where state lives; AI is the assistant that helps move state safely.
+  </div>
+
+  <h2>Investigation-First Skill Design (knowledge-clerk → ticket-investigator pattern)</h2>
+  <p>The most important design choice is that skills do not jump straight from ticket title to remediation. A knowledge clerk checks precedent first: runbooks, prior ticket patterns, architecture notes, and known caveats. Then a ticket investigator gathers evidence, asks clarifying questions when confidence is low, and only proposes a plan when the evidence supports one.</p>
+  <p>That pattern protects operators from the classic failure mode of automation: fast, confident action against the wrong problem. The investigator skill treats a ticket as an evidence bundle, not a prompt. It can read the issue file, fetch current tracker state, inspect related cases, run command-line checks, and capture what it found before any change is made.</p>
+  <p>The result is a practical version of agentic automation: deterministic scripts perform known actions, while AI helps with triage, summarization, prioritization, and choosing the next investigative step. This follows the 90/10 rule: keep the workflow deterministic, then add intelligence where language and judgment are useful.</p>
+
+  <div class='flow'>
+    <span class='pill'>Pattern Memory</span><span class='arrow'>→</span>
+    <span class='pill'>Context Bundle</span><span class='arrow'>→</span>
+    <span class='pill'>Clarifying Interview</span><span class='arrow'>→</span>
+    <span class='pill'>Evidence</span><span class='arrow'>→</span>
+    <span class='pill'>Plan</span><span class='arrow'>→</span>
+    <span class='pill'>Action</span>
+  </div>
+
+  <h2>The Voice Wall: Internal vs End-User</h2>
+  <p>Operations work has two audiences. The first is the internal operator who needs a precise investigative record: what was checked, what changed, what evidence proved it, and what remains unknown. The second is the requester or stakeholder who needs plain-language status: what happened, what they should expect, and how they can verify it.</p>
+  <p>The Voice Wall makes that split visible. WORKLOG entries are always internal voice. COMMENT entries change voice by system: Jira comments remain internal investigative voice, while SDP comments become end-user voice. That prevents the same sentence from trying to serve two incompatible purposes.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>System</th><th>COMMENT Voice</th><th>Audience</th><th>Sanitized Example</th></tr></thead>
+      <tbody>
+        <tr><td>Jira</td><td>Internal, past-tense, investigative</td><td>Platform team and future operators</td><td>Confirmed the gateway allowlist matched the inbound rule; remaining risk was consumer-group lag, not firewall reachability.</td></tr>
+        <tr><td>SDP</td><td>End-user, present-tense, plain language</td><td>Requester and approver</td><td>Your access is active. Restart the Office apps, then confirm the Copilot button appears in the ribbon.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>That discipline matters for auditability. A Jira ticket can preserve the operator's reasoning without sounding strange to a support requester. An SDP case can give a user clear next steps without leaking the messy internal path that led there.</p>
+
+  <h2>Skill Composition Patterns</h2>
+  <p>The demo treats Copilot skills as composable units rather than one giant assistant. One skill starts the day, another runs rounds, another investigates tickets, another writes worklogs, and another closes the day with a standup summary. Each skill owns a narrow responsibility and hands state to the next skill through markdown files and tracker APIs.</p>
+  <p>A common workday path looks like this:</p>
+
+  <div class='code-block'>start-my-day
+  → rounds
+  → knowledge-clerk
+  → ticket-investigator
+  → jira-worklog or sdp-worklog
+  → waiting-ticket-followup
+  → end-my-day</div>
+
+  <p>That sequence is intentionally boring. It mirrors how reliable operations teams already work: pick the right item, understand it, act, document, synchronize, and report. AI improves the speed and coverage of the loop, but the loop itself remains inspectable.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Outcome</th><th>Skill Chain</th><th>What Gets Preserved</th></tr></thead>
+      <tbody>
+        <tr><td>Morning board</td><td><code>start-my-day → rounds</code></td><td>Active lanes, stale waiting work, and focus blocks</td></tr>
+        <tr><td>Ticket execution</td><td><code>rounds → ticket-investigator → jira-worklog</code></td><td>Evidence, command trail, worklog duration, and tracker comment</td></tr>
+        <tr><td>Support close-out</td><td><code>sdp-investigator → sdp-worklog</code></td><td>User-facing update, tasks, links, approval state, and flow label</td></tr>
+        <tr><td>End-of-day report</td><td><code>end-my-day</code></td><td>Timers, completed work, waiting items, and standup narrative</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Markdown as the Source of Truth (push to main → CI reconciles)</h2>
+  <p>The console's state model is deliberately simple: files in <code>issues/</code> and <code>cases/</code> are the durable operational record. Jira and ServiceDesk Plus remain the systems of engagement, but the work narrative is authored locally in markdown, committed, and reconciled by GitHub Actions on push to <code>main</code>.</p>
+  <p>This gives the operator a normal software-delivery workflow for operations: diffs, commits, history, reviewable text, and repeatable reconciliation. The sync jobs parse WORKLOG, COMMENT, task, link, approval, and flow markers, then call the appropriate APIs. Duplicate prevention can be handled with content hashes so a rerun does not repost the same entry.</p>
+
+  <h3>Sample Issue File</h3>
+  <div class='code-block'>---
+key: INFRA-###
+summary: Capacity throttling on shared workload
+status: In Progress
+labels: [flow:active, lane:urgent, agentic:3]
+---
+
+## Description
+
+A shared platform workload is approaching throttling limits during peak processing.
+
+## Investigation
+
+- Reviewed current capacity settings.
+- Compared queue depth against the last successful run.
+- Verified no recent firewall or identity changes explain the symptom.
+
+## Actions
+
+### 2026-05-20
+
+WORKLOG: 45m — Investigated capacity throttling and validated the bottleneck was throughput, not network access.
+COMMENT: Confirmed capacity pressure during the peak processing window. Next step is to raise the throughput setting and monitor lag after the next run.
+
+## Follow-up
+
+**Status:** Waiting — approval required from Approver before capacity change.
+
+- [ ] Approver confirms temporary scale-up window
+- [ ] Platform Engineer applies setting change
+- [ ] Validate queue depth after next run</div>
+
+  <div class='flow'>
+    <span class='pill'>issues/</span><span class='arrow'>→</span>
+    <span class='pill'>git commit</span><span class='arrow'>→</span>
+    <span class='pill'>push main</span><span class='arrow'>→</span>
+    <span class='pill'>GitHub Actions</span><span class='arrow'>→</span>
+    <span class='pill'>Jira / SDP APIs</span>
+  </div>
+
+  <p>The same pattern extends to support cases. A case file can carry tasks, web links, linked requests, and approval state. The file does not replace the service desk; it gives the operator an auditable way to prepare and reconcile updates without clicking through forms for every small change.</p>
+  <p>
+    Treating markdown as operational state also makes automation reviewable.
+    A proposed update is just a diff before it becomes an API call.
+    That is the bridge between conversational assistance and production-grade change control.
+  </p>
+
+  <h2>Why This Matters at Build 2026 (the operator-as-orchestrator model)</h2>
+  <p>Microsoft Build 2026 is likely to continue the shift from AI as a sidecar chat window to AI as an orchestration layer over real systems. The Copilot-Ops Console demonstrates that shift in a practical, operations-friendly form. The operator is not replaced; the operator becomes the conductor of constrained agents, deterministic scripts, and synchronized systems of record.</p>
+  <p>The model fits modern Microsoft platform patterns. Microsoft Foundry can host models and agents. Semantic Kernel can orchestrate tools. Microsoft Graph can supply identity-aware context. GitHub Actions can reconcile repository state to APIs. The key architectural decision is not which model answers the question; it is where truth, permission, approval, and audit live.</p>
+  <p>For operational teams, that means the next generation of Copilot experiences should look less like an all-knowing chat box and more like a disciplined console: lanes, gates, traces, voices, files, commits, and reconciled APIs. AI meets the ticket, but the ticket remains grounded in workflow.</p>
+
+  <div class='callout'>
+    <strong>Build takeaway:</strong> the winning pattern is operator-as-orchestrator. Let Copilot dispatch, summarize, investigate, draft, and reconcile — but keep state in durable systems, keep writes deterministic, and keep humans at approval boundaries.
+  </div>
+
+  <div class='footer-link'>
+    <strong>References:</strong>
+    <a href='https://learn.microsoft.com/azure/foundry/what-is-foundry'>Microsoft Foundry</a> ·
+    <a href='https://learn.microsoft.com/semantic-kernel/get-started/supported-languages'>Semantic Kernel</a> ·
+    <a href='https://learn.microsoft.com/graph/overview'>Microsoft Graph</a> ·
+    <a href='https://learn.microsoft.com/azure/search/retrieval-augmented-generation-overview'>Retrieval Augmented Generation</a> ·
+    <a href='https://learn.microsoft.com/azure/ai-services/content-safety/overview'>Azure AI Content Safety</a> ·
+    <a href='/copilotops.html'>Back to Demo →</a>
+  </div>
+</body>
+</html>

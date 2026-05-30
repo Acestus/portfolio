@@ -107,4 +107,21 @@
   {:target :browser
    :output-dir "resources/public/js/m365"
    :asset-path "/js/m365"
-   :modules {:main {:init-fn portfolio.pro.m365/init}}}}}
+   :modules {:main {:init-fn portfolio.pro.m365/init}}}
+  :workflow
+  {:target :browser
+   :output-dir "resources/public/js/workflow"
+   :asset-path "/js/workflow"
+   :modules {:main {:init-fn portfolio.pro.workflow/init}}}
+
+  :copilotops
+  {:target :browser
+   :output-dir "resources/public/js/copilotops"
+   :asset-path "/js/copilotops"
+   :modules {:main {:init-fn portfolio.pro.copilotops/init}}}
+
+  :fabriccap
+  {:target :browser
+   :output-dir "resources/public/js/fabriccap"
+   :asset-path "/js/fabriccap"
+   :modules {:main {:init-fn portfolio.pro.fabriccap/init}}}}}

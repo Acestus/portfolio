@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npx shadow-cljs watch hub platformer invaders matcher breakout helicopter fabric policy logs iac platform repl architecture agentic pricing m365",
-    "release": "npx shadow-cljs release hub platformer invaders matcher breakout helicopter fabric policy logs iac platform repl architecture agentic pricing m365",
+    "dev": "npx shadow-cljs watch hub platformer invaders matcher breakout helicopter fabric policy logs iac platform repl architecture agentic pricing m365 workflow copilotops fabriccap",
+    "release": "npx shadow-cljs release hub platformer invaders matcher breakout helicopter fabric policy logs iac platform repl architecture agentic pricing m365 workflow copilotops fabriccap",
     "clean": "rm -rf resources/public/js"
   },
   "devDependencies": {

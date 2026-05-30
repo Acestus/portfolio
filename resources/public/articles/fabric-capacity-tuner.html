@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <title>Fabric Capacity Tuner — Size F-SKUs, Tame 430s</title>
+  <style>
+    :root { --accent: #0078d4; --accent-dark: #106ebe; --bg: #faf9f8; --text: #323130; --summary: #e1f5fe; }
+    * { box-sizing: border-box; }
+    body { margin: 0 auto; max-width: 1200px; padding: 24px; background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .back-link { display: inline-block; margin-bottom: 1rem; font-weight: 600; }
+    h1 { color: var(--accent); border-bottom: 3px solid var(--accent); padding-bottom: 0.5rem; margin-top: 0; }
+    h2 { color: var(--accent-dark); border-left: 4px solid var(--accent); padding-left: 15px; margin-top: 2.25rem; }
+    h3 { color: var(--accent-dark); margin-top: 1.5rem; }
+    .summary { background: var(--summary); border-left: 5px solid var(--accent); border-radius: 4px; padding: 1rem; margin: 1rem 0 1.5rem; }
+    .metrics { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0; }
+    .metric-card { background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-bottom: 3px solid var(--accent); padding: 1rem; flex: 1 1 180px; min-width: 170px; }
+    .metric-value { color: var(--accent); font-size: 1.6rem; font-weight: 700; }
+    .metric-label { color: #605e5c; font-size: 0.95rem; }
+    .flow { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.5rem; margin: 1.5rem 0; }
+    .pill { background: var(--accent); color: #fff; padding: 0.65rem 1rem; border-radius: 999px; font-weight: 600; }
+    .arrow { color: var(--accent-dark); font-size: 1.25rem; font-weight: 700; }
+    .code-block { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 6px; overflow: auto; white-space: pre; font-family: Consolas, Monaco, 'Courier New', monospace; font-size: 0.92rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; background: #fff; }
+    th, td { border: 1px solid #d2d0ce; padding: 0.8rem; text-align: left; vertical-align: top; }
+    th { background: var(--accent); color: #fff; }
+    tbody tr:nth-child(even) { background: #f3f2f1; }
+    tbody tr:hover { background: #deecf9; }
+    .callout { background: #fff3cd; border-left: 5px solid #ffc107; border-radius: 4px; padding: 1rem; margin: 1rem 0; }
+    .footer-link { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #d2d0ce; }
+    @media (max-width: 768px) {
+      body { padding: 16px; }
+      .metrics { flex-direction: column; }
+      .flow { flex-direction: column; }
+      .arrow { transform: rotate(90deg); }
+      .table-wrap { overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+<header class="site-nav" role="banner">
+  <a class="site-name" href="/">acestus.com</a>
+  <nav role="navigation" aria-label="Main">
+    <button class="nav-toggle" aria-controls="main-nav" aria-expanded="false">☰</button>
+    <div class="nav-links" id="main-nav">
+      <a class="nav-link" href="/">Portfolio</a>
+    </div>
+  </nav>
+</header>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var toggle = document.querySelector('.nav-toggle');
+  var links = document.getElementById('main-nav');
+  if (!toggle || !links) return;
+
+  toggle.addEventListener('click', function() {
+    var isOpen = links.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+
+  links.querySelectorAll('a').forEach(function(a) {
+    a.addEventListener('click', function() {
+      links.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      links.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+});
+</script>
+
+  <a class='back-link' href='/fabriccap.html'>← Back to Demo</a>
+  <h1>Fabric Capacity Tuner — Size F-SKUs, Tame 430s</h1>
+
+  <div class='summary'>
+    Microsoft Fabric capacity sizing is a balancing act between cost, concurrency, and throttling risk. The Fabric Capacity Tuner demo turns that tradeoff into a live model: choose an F-SKU, select the mix of DirectQuery, Import Refresh, Spark Notebook, Pipeline Activity, Dataflow Gen2, and KQL Query workloads, then raise concurrency until utilization moves from healthy to 430-throttled. The operating lesson is simple: size for sustained load, schedule bursty background jobs, and fix CU-heavy Spark patterns before buying a larger SKU.
+  </div>
+
+  <div class='metrics'>
+    <div class='metric-card'><div class='metric-value'>8</div><div class='metric-label'>F-SKUs</div></div>
+    <div class='metric-card'><div class='metric-value'>6</div><div class='metric-label'>Workload Types</div></div>
+    <div class='metric-card'><div class='metric-value'>5</div><div class='metric-label'>Mitigations</div></div>
+    <div class='metric-card'><div class='metric-value'>430</div><div class='metric-label'>Throttled</div></div>
+  </div>
+
+  <div class='flow'>
+    <span class='pill'>Observe</span><span class='arrow'>→</span>
+    <span class='pill'>Decompose</span><span class='arrow'>→</span>
+    <span class='pill'>Schedule</span><span class='arrow'>→</span>
+    <span class='pill'>Mitigate</span><span class='arrow'>→</span>
+    <span class='pill'>Right-Size</span>
+  </div>
+
+  <h2>F-SKU Sizing 101</h2>
+  <p>Fabric F-SKUs are purchased capacity for a tenant or workspace estate. Each SKU gives a fixed number of Capacity Units (CU). Workspaces assigned to the capacity share that CU pool across Power BI, Data Factory, Data Engineering, Data Science, Real-Time Intelligence, Warehouse, and Lakehouse activity.</p>
+  <p>The simulator uses the same mental model an operator uses during an incident: compare concurrent CU demand against available SKU CU. Green means there is headroom, amber means monitor, orange means smoothing is absorbing pressure, and red means sustained demand exceeds the capacity envelope.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>SKU</th><th>Capacity Units</th><th>Approx. list price / month</th><th>Typical role</th></tr></thead>
+      <tbody>
+        <tr><td>F2</td><td>2 CU</td><td>$262.80</td><td>Small development, proof-of-concept, light reports</td></tr>
+        <tr><td>F4</td><td>4 CU</td><td>$525.60</td><td>Team sandbox with low concurrency</td></tr>
+        <tr><td>F8</td><td>8 CU</td><td>$1,051.20</td><td>Shared dev/test, light pipelines, simple semantic models</td></tr>
+        <tr><td>F16</td><td>16 CU</td><td>$2,102.40</td><td>Entry production with disciplined scheduling</td></tr>
+        <tr><td>F32</td><td>32 CU</td><td>$4,204.80</td><td>Medium production, multiple domains, mixed BI and ETL</td></tr>
+        <tr><td>F64</td><td>64 CU</td><td>$8,409.60</td><td>Large production, full smoothing, high BI concurrency</td></tr>
+        <tr><td>F128</td><td>128 CU</td><td>$16,819.20</td><td>Enterprise shared capacity with heavy Spark and Warehouse</td></tr>
+        <tr><td>F256</td><td>256 CU</td><td>$33,638.40</td><td>Very large tenant-wide platforms or isolated critical estates</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class='callout'>
+    <strong>Smoothing matters:</strong> Fabric evaluates throttling through smoothed usage, not just a single instant. Background work can be smoothed across a 24-hour rolling window on larger capacities, which is why a short spike does not always produce an immediate 430. Sustained overage is different: once the smoothing buffer is exhausted, new or continuing work can be delayed, rejected, or throttled.
+  </div>
+
+  <p>That is why the demo's thresholds are deliberately conservative. Under 50% utilization, there is room for mistakes. From 50% to 80%, teams should watch trends. From 80% to 100%, every new schedule or notebook matters. Above 100%, the operator should expect the capacity to spend down smoothing credits and eventually throttle.</p>
+  <p>The right response is not always an immediate scale-up. First, determine whether the pressure is interactive, background, or accidental. A user-facing DirectQuery peak deserves a different response than a forgotten notebook pool, an import refresh storm, or a dataflow that is scanning unchanged rows.</p>
+  <ul>
+    <li><strong>Interactive pressure</strong> needs immediate user-impact mitigation.</li>
+    <li><strong>Background pressure</strong> usually needs scheduling and smoothing.</li>
+    <li><strong>Accidental pressure</strong> needs guardrails, not a bigger invoice.</li>
+  </ul>
+
+  <h2>Capacity Units (CU): The Currency of Fabric</h2>
+  <p>Capacity Units are the budget Fabric spends to execute work. A Spark session consumes CU based on driver and executor cores. A report query consumes CU while the visual renders. A pipeline consumes CU while activities orchestrate movement and transformation. The shared capacity is healthy when the total smoothed demand stays below the SKU's available CU.</p>
+  <p>For Spark notebooks, a practical rule from production operations is that one vCore is approximately one CU. An oversized environment with 8 driver cores and 8 executor cores can consume an entire F16. If dynamic allocation is disabled, that session can hold the capacity even while a user is between notebook cells.</p>
+  <p>The most useful dashboard question is not “what is the average usage?” It is “which workspace, item, or workload is holding CU during the peak?” The Microsoft Fabric Capacity Metrics app is the first stop for that answer because it breaks down utilization by item and operation.</p>
+
+  <h2>Workload Profiles and Their CU Cost</h2>
+  <p>The demo models six workload types. The CU values are intentionally simplified so the simulator is teachable: each selected workload contributes to per-user CU demand, and concurrency multiplies it. In real operations, the exact number depends on query shape, model design, Spark configuration, data size, cache state, and whether the work is interactive or background.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Workload</th><th>Mode</th><th>Simulator CU</th><th>What drives cost</th><th>First optimization</th></tr></thead>
+      <tbody>
+        <tr><td>DirectQuery</td><td>Interactive</td><td>2 CU</td><td>Visual count, query complexity, source latency</td><td>Reduce visuals, aggregate tables, migrate to DirectLake where possible</td></tr>
+        <tr><td>Import Refresh</td><td>Background</td><td>4 CU</td><td>Dataset size, refresh frequency, transformation shape</td><td>Incremental refresh and overnight scheduling</td></tr>
+        <tr><td>Spark Notebook</td><td>Interactive or batch</td><td>8 CU</td><td>Driver/executor cores, shuffle volume, joins, file pruning</td><td>Right-size environment and enable dynamic allocation</td></tr>
+        <tr><td>Pipeline Activity</td><td>Background</td><td>2 CU</td><td>Copy volume, orchestration fan-out, retry behavior</td><td>Stagger schedules and avoid unnecessary polling loops</td></tr>
+        <tr><td>Dataflow Gen2</td><td>Background</td><td>6 CU</td><td>Power Query steps, joins, refresh window</td><td>Push filters earlier and materialize reusable tables</td></tr>
+        <tr><td>KQL Query</td><td>Interactive</td><td>3 CU</td><td>Time range, cardinality, joins, result size</td><td>Constrain time windows and pre-aggregate high-volume streams</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>When Fabric Returns HTTP 430</h2>
+  <p>HTTP 430 is the capacity signal. It is different from a generic API rate limit. In Fabric, a 430 means the capacity's smoothed usage has exceeded the allowed envelope and the service is protecting the capacity from more work. Operators often see this as failed notebook sessions, queued pipeline runs, delayed report renders, or API calls rejected during a peak.</p>
+  <p>Interactive throttling hurts users immediately because the person waiting for a visual, notebook cell, or SQL query is on the critical path. Background throttling is often less visible at first because scheduled jobs can be delayed, smoothed, or retried, but it still creates downstream freshness risk.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Status</th><th>Fabric-specific interpretation</th><th>What to do</th></tr></thead>
+      <tbody>
+        <tr><td>200</td><td>Request completed successfully.</td><td>No incident. Record latency and CU if optimizing.</td></tr>
+        <tr><td>202</td><td>Request accepted; Fabric is running it asynchronously.</td><td>Poll the operation status with backoff instead of tight loops.</td></tr>
+        <tr><td>429</td><td>API rate limit or too many requests at the service boundary.</td><td>Back off, add jitter, reduce request fan-out, check caller behavior.</td></tr>
+        <tr><td>430</td><td>Capacity throttled because smoothed CU usage exceeded allowance.</td><td>Check Capacity Metrics, stop runaway work, reschedule jobs, or scale up.</td></tr>
+        <tr><td>503</td><td>Capacity or service unavailable, paused, deleted, or temporarily unhealthy.</td><td>Verify capacity state, region health, and workspace assignment.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>The Mitigation Playbook</h2>
+  <p>A 430 is rarely solved by one change. The durable fix is a playbook: identify the consuming workload, reduce waste, move flexible work away from peaks, isolate blast radius, and then right-size the SKU with evidence.</p>
+
+  <h3>1. Overnight scheduling</h3>
+  <p><strong>Use when:</strong> import refreshes, Dataflow Gen2 runs, Spark training, table maintenance, or pipeline batches are not user-facing. Move them into off-hours windows so background smoothing can spread load across the day instead of colliding with interactive BI hours.</p>
+
+  <h3>2. Workspace splits</h3>
+  <p><strong>Use when:</strong> one domain or experimental team can starve everyone else. Assign high-risk workspaces to separate capacities, or at least separate production, non-production, and sandbox work. This turns a tenant-wide incident into a team-scoped one.</p>
+
+  <h3>3. DirectLake migration</h3>
+  <p><strong>Use when:</strong> import refresh is burning CU just to copy data that already lives in OneLake. DirectLake can reduce refresh pressure by reading Delta files directly while preserving interactive report performance for suitable semantic models.</p>
+
+  <h3>4. Pause non-prod outside business hours</h3>
+  <p><strong>Use when:</strong> dev, test, and sandbox capacities are idle overnight or on weekends. F-SKUs bill while running, so pause/resume automation can remove a large share of non-prod monthly spend without changing production posture.</p>
+
+  <h3>5. Right-size workloads before right-sizing SKUs</h3>
+  <p><strong>Use when:</strong> Capacity Metrics shows a small number of items causing peaks. Fix oversized Spark environments, inefficient joins, unbounded queries, excessive refresh frequency, and polling loops before moving from F32 to F64.</p>
+
+  <h2>PySpark Patterns That Save CU</h2>
+  <p>PySpark is the place where small code choices can become large capacity events. The highest-return patterns are broadcast joins for small dimensions, predicate pushdown, partition pruning, compact file layouts, and Z-ordering columns used in filters and joins. These patterns reduce shuffle, scan fewer files, and shorten the time each session holds CU.</p>
+  <p>Notebook authors should also right-size Spark settings. Use dynamic allocation for interactive work, avoid fixed executor counts unless a job truly needs them, and reduce <code>spark.sql.shuffle.partitions</code> from the default when working on small or medium datasets.</p>
+
+  <div class='code-block'>from pyspark.sql.functions import broadcast, col
+
+spark.conf.set("spark.sql.shuffle.partitions", "8")
+spark.conf.set("spark.databricks.delta.optimizeWrite.enabled", "true")
+spark.conf.set("spark.databricks.delta.autoCompact.enabled", "true")
+
+orders = (
+    spark.table("lh_sales_slv.sales_orders_clean")
+         .where((col("OrderDate") &gt;= "2026-01-01") &amp; (col("OrderDate") &lt; "2026-02-01"))
+         .select("OrderId", "CustomerId", "OrderDate", "NetAmount")
+)
+
+customers = (
+    spark.table("lh_sales_slv.dim_customer")
+         .select("CustomerId", "Segment", "Region")
+)
+
+result = (
+    orders
+      .join(broadcast(customers), "CustomerId", "left")
+      .repartition("OrderDate")
+)
+
+(result.write
+    .format("delta")
+    .mode("overwrite")
+    .option("replaceWhere", "OrderDate &gt;= '2026-01-01' AND OrderDate &lt; '2026-02-01'")
+    .saveAsTable("lh_sales_gld.fct_orders_month"))</div>
+
+  <p>The snippet keeps CU low by filtering early, selecting only needed columns, broadcasting a small dimension, partitioning the write by the date used for reruns, and avoiding a full-table overwrite. For large tables, pair this with Delta optimization and Z-ordering on high-selectivity columns used by report and warehouse queries.</p>
+
+  <h2>Right-Sizing: F32 vs F64 vs Pause Strategy</h2>
+  <p>Right-sizing starts with observed utilization, not fear. If an F32 is below 40% most of the week and only spikes during a nightly batch, the answer is probably scheduling or query tuning, not F64. If it spends business hours above 80% with interactive users waiting, F64 may be justified. If non-prod sits idle for 14 hours a day, pause strategy may save more than a downsize.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Choice</th><th>Best fit</th><th>Monthly implication</th><th>Risk</th></tr></thead>
+      <tbody>
+        <tr><td>Stay on F32</td><td>Peaks are rare, background, and controllable with schedule changes</td><td>About $4.2K/month</td><td>Requires discipline; runaway notebooks can still cause 430s</td></tr>
+        <tr><td>Move to F64</td><td>Interactive demand regularly exceeds F32 even after optimization</td><td>About $8.4K/month</td><td>Can hide inefficient workloads instead of fixing them</td></tr>
+        <tr><td>Pause non-prod</td><td>Dev/test/sandbox capacity is idle outside business hours</td><td>Often 60–70% savings on those capacities</td><td>Needs reliable automation and clear developer expectations</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>The practical operating loop is: observe seven days of Capacity Metrics, decompose by workspace and item, schedule flexible jobs away from the peak, mitigate inefficient patterns, and only then buy more CU. That loop keeps the platform reliable without turning every 430 into a procurement event.</p>
+
+  <div class='footer-link'>
+    <strong>References:</strong>
+    <a href='https://learn.microsoft.com/fabric/enterprise/licenses'>Microsoft Fabric licenses and capacity</a> ·
+    <a href='https://learn.microsoft.com/fabric/enterprise/metrics-app'>Microsoft Fabric Capacity Metrics app</a> ·
+    <a href='https://learn.microsoft.com/fabric/data-engineering/spark-compute'>Fabric Spark compute</a> ·
+    <a href='https://learn.microsoft.com/fabric/data-engineering/configure-starter-pools'>Configure starter pools</a> ·
+    <a href='https://learn.microsoft.com/fabric/data-engineering/delta-optimization-and-v-order'>Delta optimization and V-Order</a> ·
+    <a href='/fabriccap.html'>Back to Demo →</a>
+  </div>
+</body>
+</html>

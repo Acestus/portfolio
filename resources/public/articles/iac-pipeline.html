@@ -3,7 +3,7 @@
 <head>
   <meta charset='utf-8'>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
-  <title>IaC Deployment Pipeline — Bicep, AVM & Deployment Stacks</title>
+  <title>Infrastructure as Code — AVM, OIDC, and Deployment Stacks</title>
   <style>
     :root { --accent: #0078d4; --accent-dark: #106ebe; --bg: #faf9f8; --text: #323130; --summary: #e1f5fe; }
     * { box-sizing: border-box; }
@@ -13,6 +13,7 @@
     .back-link { display: inline-block; margin-bottom: 1rem; font-weight: 600; }
     h1 { color: var(--accent); border-bottom: 3px solid var(--accent); padding-bottom: 0.5rem; margin-top: 0; }
     h2 { color: var(--accent-dark); border-left: 4px solid var(--accent); padding-left: 15px; margin-top: 2.25rem; }
+    h3 { color: var(--accent-dark); margin-top: 1.5rem; }
     .summary { background: var(--summary); border-left: 5px solid var(--accent); border-radius: 4px; padding: 1rem; margin: 1rem 0 1.5rem; }
     .metrics { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0; }
     .metric-card { background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-bottom: 3px solid var(--accent); padding: 1rem; flex: 1 1 180px; min-width: 170px; }
@@ -27,7 +28,10 @@
     th { background: var(--accent); color: #fff; }
     tbody tr:nth-child(even) { background: #f3f2f1; }
     tbody tr:hover { background: #deecf9; }
+    .callout { background: #fff4e6; border-left: 5px solid #ffb900; border-radius: 4px; padding: 1rem; margin: 1rem 0; }
+    .success { background: #e8f5e8; border-left: 5px solid #107c10; }
     .footer-link { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #d2d0ce; }
+    code { background: #f3f2f1; color: #004578; padding: 0.1rem 0.25rem; border-radius: 3px; }
     @media (max-width: 768px) {
       body { padding: 16px; }
       .metrics { flex-direction: column; }
@@ -75,74 +79,204 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
   <a class='back-link' href='/iac.html'>← Back to Demo</a>
-  <h1>IaC Deployment Pipeline — Bicep, AVM &amp; Deployment Stacks</h1>
+  <h1>Infrastructure as Code — AVM, OIDC, and Deployment Stacks</h1>
 
   <div class='summary'>
-    Interactive visualization of a trunk-based IaC deployment pipeline. GitHub Actions uses OIDC federation to deploy Bicep templates built from Azure Verified Modules into Deployment Stacks, with what-if previews and drift detection shaping the release flow. The SPA animates each stage and anchors the story in concrete naming and deployment examples.
+    Microsoft Build 2026 refresh of the IaC pipeline behind the SPA: a trunk-based GitHub Actions path where Bicep composes Azure Verified Modules, authenticates through OIDC federated identity, deploys with Azure Deployment Stacks, and continuously checks for drift. The pattern treats the repository as desired state, the pipeline as the only production writer, and Azure as the runtime source of truth that must be reconciled back to code.
   </div>
 
   <div class='metrics'>
-    <div class='metric-card'><div class='metric-value'>8</div><div class='metric-label'>Bicep Stacks</div></div>
-    <div class='metric-card'><div class='metric-value'>12</div><div class='metric-label'>AVM Modules</div></div>
-    <div class='metric-card'><div class='metric-value'>0</div><div class='metric-label'>Detected Drift</div></div>
-    <div class='metric-card'><div class='metric-value'>Daily</div><div class='metric-label'>Deploy Cadence</div></div>
+    <div class='metric-card'><div class='metric-value'>AVM-First</div><div class='metric-label'>Use verified public registry modules before custom resources</div></div>
+    <div class='metric-card'><div class='metric-value'>OIDC</div><div class='metric-label'>Federated GitHub-to-Azure authentication with no static secrets</div></div>
+    <div class='metric-card'><div class='metric-value'>Stacks</div><div class='metric-label'>Lifecycle-managed deployments with explicit ownership</div></div>
+    <div class='metric-card'><div class='metric-value'>Trunk</div><div class='metric-label'>Short-lived feature branches, PR gates, main as production</div></div>
   </div>
 
   <div class='flow'>
-    <span class='pill'>Push to Main</span><span class='arrow'>→</span>
-    <span class='pill'>OIDC Federation</span><span class='arrow'>→</span>
-    <span class='pill'>Bicep What-If</span><span class='arrow'>→</span>
-    <span class='pill'>AVM Modules</span><span class='arrow'>→</span>
-    <span class='pill'>Deployment Stacks</span><span class='arrow'>→</span>
-    <span class='pill'>Azure</span>
+    <span class='pill'>Author</span><span class='arrow'>→</span>
+    <span class='pill'>PR Gate</span><span class='arrow'>→</span>
+    <span class='pill'>Plan</span><span class='arrow'>→</span>
+    <span class='pill'>Apply</span><span class='arrow'>→</span>
+    <span class='pill'>Drift Check</span>
   </div>
 
-  <h2>1. Trunk-Based Delivery</h2>
-  <p>The pipeline follows a Dave Farley style of trunk-based delivery: small changes integrated continuously, short-lived branches, and deployment logic exercised every day rather than saved for a release train. That matters more for infrastructure than many teams realize. Rare deployments make IaC look deterministic on paper and unpredictable in practice.</p>
-  <p>The SPA's animated flow reflects that philosophy. A timer cycles the active stage, visually emphasizing that delivery is a repeatable pipeline, not a heroic manual ceremony performed once a month.</p>
+  <h2>1. Azure Verified Modules (AVM) as the Building Blocks</h2>
+  <p>The platform team standardizes Azure infrastructure on <a href='https://learn.microsoft.com/azure/azure-resource-manager/bicep/modules'>Bicep modules</a> from the <a href='https://learn.microsoft.com/azure/azure-resource-manager/bicep/modules#public-module-registry'>public module registry</a>, especially Azure Verified Modules. AVM provides reviewed module contracts for common Azure resource types, so stack authors compose resource groups, identities, storage, networking, and platform services instead of hand-writing every ARM resource block.</p>
+  <p>This does not remove engineering judgment. Teams still decide naming, RBAC boundaries, tags, diagnostics, network posture, and lifecycle scope. AVM simply moves the low-level resource shape to a maintained baseline and lets the local stack focus on the platform pattern.</p>
 
-  <h2>2. OIDC Federation</h2>
-  <p>The security model is one of the strongest parts of the design. GitHub Actions authenticates to Azure through OIDC federation, which means no long-lived client secrets need to be stored in the repository or runner settings. The workflow requests a short-lived token bound to the repo, environment, and job context, and Azure validates the trust relationship before issuing access.</p>
-  <p>That reduces secret rotation overhead and shrinks the blast radius of CI compromise. More importantly, it aligns the delivery story with the platform story: if we tell application teams not to keep secrets in pipelines, our own infrastructure pipeline should model that standard.</p>
+  <div class='code-block'>targetScope = 'resourceGroup'
 
-  <h2>3. Azure Verified Modules (AVM-first approach)</h2>
-  <p>Choosing AVM first is an engineering strategy, not a branding preference. Verified modules encode known-good inputs, outputs, and deployment shapes for common Azure resources. That means teams spend less effort rewriting wrappers for storage accounts, identities, key vaults, or eventing resources and more effort composing higher-level platform patterns.</p>
-  <p>In practice, AVM-first usually leads to thinner custom Bicep: more composition, fewer bespoke resource definitions, and easier upgrades when Azure APIs evolve.</p>
+param project string = 'skpapp'
+param environment string = 'prd'
+param location string = 'westus2'
+param regionCode string = 'usw2'
 
-  <h2>4. Deployment Stacks</h2>
-  <p>Deployment Stacks solve a chronic IaC problem: lifecycle ambiguity. When resources are associated with a stack, deletion, drift reasoning, and scope ownership become more explicit. For platform teams managing many resource groups and environments, that is a major operational advantage over loose template deployments.</p>
+var storageName = 'st${project}${environment}${regionCode}001'
+var keyVaultName = 'kv-${project}-${environment}-${regionCode}-001'
+var controlIdentityName = 'umi-${project}-${environment}-${regionCode}-ctl'
+
+module controlIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0' = {
+  name: 'umi-control'
+  params: {
+    name: controlIdentityName
+    location: location
+  }
+}
+
+module storage 'br/public:avm/res/storage/storage-account:0.25.0' = {
+  name: 'storage'
+  params: {
+    name: storageName
+    location: location
+    skuName: 'Standard_LRS'
+    publicNetworkAccess: 'Disabled'
+  }
+}
+
+module keyVault 'br/public:avm/res/key-vault/vault:0.12.1' = {
+  name: 'key-vault'
+  params: {
+    name: keyVaultName
+    location: location
+    enablePurgeProtection: true
+  }
+}</div>
+
+  <div class='callout success'>
+    <strong>Build 2026 takeaway:</strong> AVM-first is a governance accelerator. It makes reusable infrastructure boring in the best way: reviewed module inputs, consistent outputs, and less custom code to audit.
+  </div>
+
+  <h2>2. The Dual UMI Pattern (control-plane vs data-plane managed identities)</h2>
+  <p>The SPA calls out two suffixes that matter: <code>ctl</code> and <code>dat</code>. A control-plane user-assigned managed identity deploys and updates infrastructure. A separate data-plane user-assigned managed identity is granted runtime access to Key Vault, Storage, Event Hubs, databases, and other workload services.</p>
+  <p>That separation prevents the deployment identity from becoming a universal runtime credential. It also makes reviews easier: control-plane RBAC answers “what can create or modify resources,” while data-plane RBAC answers “what can read or write workload data.”</p>
+
   <div class='table-wrap'>
     <table>
-      <thead><tr><th>Resource</th><th>Type</th><th>Change</th><th>Detail</th></tr></thead>
+      <thead><tr><th>Identity</th><th>CAF Name</th><th>Primary Scope</th><th>Typical Permissions</th></tr></thead>
       <tbody>
-        <tr><td>func-skpad-dev-usw2-001</td><td>Microsoft.Web/sites</td><td>modify</td><td>Update appSettings</td></tr>
-        <tr><td>st-skpad-dev-usw2-001</td><td>Microsoft.Storage/storageAccounts</td><td>no-change</td><td>Already aligned with desired state</td></tr>
-        <tr><td>kv-skpad-dev-usw2-001</td><td>Microsoft.KeyVault/vaults</td><td>no-change</td><td>No drift detected</td></tr>
-        <tr><td>evh-skpad-dev-usw2-001</td><td>Microsoft.EventHub/namespaces</td><td>create</td><td>New Event Hub namespace</td></tr>
+        <tr><td>Control-plane UMI</td><td><code>umi-{project}-{env}-{region}-ctl</code></td><td>Resource group or deployment stack</td><td>Deploy Bicep, assign managed identity to resources, configure diagnostics</td></tr>
+        <tr><td>Data-plane UMI</td><td><code>umi-{project}-{env}-{region}-dat</code></td><td>Service-specific data plane</td><td>Read Key Vault secrets, write blobs, publish Event Hub messages</td></tr>
+        <tr><td>Human access</td><td>Time-bound PIM role</td><td>Emergency or break-glass only</td><td>Minimum permissions, documented follow-up PR required</td></tr>
       </tbody>
     </table>
   </div>
-  <div class='code-block'>What-If Summary
-  ~ Microsoft.Web/sites/func-skpad-dev-usw2-001    Modify
-  = Microsoft.Storage/storageAccounts/st-skpad-dev-usw2-001    NoChange
-  = Microsoft.KeyVault/vaults/kv-skpad-dev-usw2-001            NoChange
-  + Microsoft.EventHub/namespaces/evh-skpad-dev-usw2-001       Create</div>
 
-  <h2>5. CAF Naming Convention</h2>
-  <p>The naming scheme is explicit and automatable. It encodes resource class, project, environment, region, and instance in a compact pattern that works equally well for humans, scripts, and policy checks.</p>
-  <div class='code-block'>{type}-{project}-{env}-{region}-{instance}
-func-skpad-dev-usw2-001
-st-skpad-dev-usw2-001
-kv-skpad-dev-usw2-001
-umi-skpad-dev-usw2-ctl</div>
-  <p>The final segment is especially useful. Numeric instances distinguish deployable units, while suffixes like <code>ctl</code> or <code>dat</code> can identify role or purpose. That small convention pays off everywhere from IAM scoping to support triage.</p>
+  <h2>3. OIDC Federated Identity (no long-lived secrets in GitHub Actions)</h2>
+  <p>GitHub Actions authenticates to Azure with <a href='https://learn.microsoft.com/azure/developer/github/connect-from-azure'>OpenID Connect federation</a>. The job requests a short-lived token, Microsoft Entra ID validates the federated credential for the repository and environment, and <code>azure/login</code> receives an Azure access token. No client secret is stored in GitHub, copied into a runner, or rotated by hand.</p>
+  <p>The variables in this excerpt are non-secret identifiers: client ID, tenant ID, and subscription ID. Real tenant IDs and subscriptions are intentionally represented here with Microsoft Learn-style placeholders.</p>
 
-  <h2>6. Dual-UMI Pattern</h2>
-  <p>A dual-UMI pattern separates control-plane and data-plane identity concerns. One user-assigned managed identity is used for deployment and resource orchestration. A second identity is used by the workload itself for runtime access to services such as Key Vault, Storage, or Event Hub. That boundary keeps least privilege enforceable and makes auditing easier.</p>
-  <p>In other words: the identity that creates resources should not automatically be the identity that reads production data. Mature IaC pipelines encode that distinction from day one.</p>
+  <div class='code-block'>name: Deploy Bicep Stack
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'stacks-bicep/**'
+      - '.github/workflows/deploy-bicep-stack.yaml'
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    environment: Production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure login with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }} # 00000000-0000-0000-0000-000000000000
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }} # Production / Connectivity / Identity
+
+      - name: What-if
+        run: |
+          az deployment group what-if \
+            --resource-group rg-skpapp-prd-usw2-001 \
+            --template-file stacks-bicep/skpapp/main.bicep \
+            --parameters stacks-bicep/skpapp/prd/main.prd.bicepparam</div>
+
+  <h2>4. Deployment Stacks (vs traditional ARM deployments; deny-settings)</h2>
+  <p>Traditional ARM or Bicep deployments apply a template to a scope, but lifecycle ownership can be ambiguous after the deployment finishes. <a href='https://learn.microsoft.com/azure/azure-resource-manager/bicep/deployment-stacks'>Azure Deployment Stacks</a> add a management layer around that deployment: Azure knows which resources belong to the stack, what should happen when resources disappear from the template, and whether unmanaged changes should be denied.</p>
+  <p>Deny settings are the sharp edge. They can block deletes or updates outside the stack, which makes production safer when used deliberately. The design goal is not to make emergencies impossible; it is to make out-of-band changes visible, time-bound, and followed by a PR so desired state catches up to reality.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Capability</th><th>Traditional Deployment</th><th>Deployment Stack</th></tr></thead>
+      <tbody>
+        <tr><td>Resource ownership</td><td>Implicit in deployment history</td><td>Explicit stack membership</td></tr>
+        <tr><td>Delete behavior</td><td>Resources can remain orphaned</td><td>Delete or detach behavior is configured</td></tr>
+        <tr><td>Drift controls</td><td>Detected by what-if or external checks</td><td>Can combine what-if with deny settings</td></tr>
+        <tr><td>Production guardrails</td><td>Usually policy, RBAC, and process</td><td>Policy, RBAC, process, plus stack-level deny settings</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class='code-block'>az stack group create \
+  --name stk-skpapp-prd-usw2-001 \
+  --resource-group rg-skpapp-prd-usw2-001 \
+  --template-file stacks-bicep/skpapp/main.bicep \
+  --parameters stacks-bicep/skpapp/prd/main.prd.bicepparam \
+  --deny-settings-mode denyDelete \
+  --action-on-unmanage detachAll \
+  --yes</div>
+
+  <h2>5. Trunk-Based CI/CD (main = production; feature branches via PR)</h2>
+  <p>The delivery model is trunk-based. Engineers create short-lived feature branches, open pull requests, run validation, and merge through protected gates. The main branch represents production-ready desired state. If a bad change lands, the rollback path is a git revert rather than a hand-built undo script.</p>
+  <p>This is especially important for infrastructure. Portal edits, local <code>az</code> commands, and workspace clickops all create configuration drift. The governance pattern is simple: exploration can happen in dev, but production writes come from CI/CD using federated identity.</p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Stage</th><th>Signal</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td>Author</td><td>Bicep, parameters, README, and tests changed together</td><td>Keep infrastructure, documentation, and validation aligned</td></tr>
+        <tr><td>PR Gate</td><td>Build, lint, what-if, and review</td><td>Catch syntax, policy, and blast-radius issues before merge</td></tr>
+        <tr><td>Plan</td><td><code>az deployment group what-if</code></td><td>Show create, modify, delete, and no-change effects</td></tr>
+        <tr><td>Apply</td><td><code>az stack group create</code></td><td>Reconcile Azure to the approved desired state</td></tr>
+        <tr><td>Drift Check</td><td>Scheduled what-if or stack audit</td><td>Find manual change before it becomes an incident</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>6. Modules, Stacks, and Composition (how main.bicep references AVM)</h2>
+  <p>A stack folder contains the composition root: <code>main.bicep</code>, environment-specific <code>main.{env}.bicepparam</code> files, and optional dashboards or runbooks. The root Bicep file should read like a platform bill of materials. It wires AVM modules together, passes shared tags and naming variables, and exposes only the outputs that downstream workloads actually need.</p>
+  <p>The pattern keeps local modules rare. If a resource type exists in AVM, use the public registry reference first. If a custom wrapper is necessary, it should encode a platform standard that AVM does not cover, not repackage a single resource for convenience.</p>
+
+  <h3>CAF Naming Table</h3>
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Resource</th><th>Prefix</th><th>CAF Pattern</th><th>Sanitized Example</th></tr></thead>
+      <tbody>
+        <tr><td>Resource group</td><td><code>rg-</code></td><td><code>rg-{project}-{env}-{region}-{instance}</code></td><td><code>rg-skpapp-prd-usw2-001</code></td></tr>
+        <tr><td>Function App</td><td><code>func-</code></td><td><code>func-{project}-{env}-{region}-{instance}</code></td><td><code>func-skpapp-prd-usw2-001</code></td></tr>
+        <tr><td>Key Vault</td><td><code>kv-</code></td><td><code>kv-{project}-{env}-{region}-{instance}</code></td><td><code>kv-skpapp-prd-usw2-001</code></td></tr>
+        <tr><td>Managed identity</td><td><code>umi-</code></td><td><code>umi-{project}-{env}-{region}-{purpose}</code></td><td><code>umi-skpapp-prd-usw2-ctl</code></td></tr>
+        <tr><td>Storage account</td><td><code>st</code></td><td><code>st{project}{env}{region}{instance}</code></td><td><code>stskpappprdusw2001</code></td></tr>
+        <tr><td>Virtual network</td><td><code>vnet-</code></td><td><code>vnet-{project}-{env}-{region}-{instance}</code></td><td><code>vnet-skpapp-prd-usw2-001</code></td></tr>
+        <tr><td>Address space</td><td>n/a</td><td>Documented in params</td><td><code>10.0.0.0/16</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class='callout'>
+    <strong>Sanitized operating model:</strong> the platform team promotes the same stack pattern across Production, Connectivity, and Identity subscriptions. Incident references use <code>INFRA-###</code>, tenant IDs use Microsoft documentation placeholders, and network examples use <code>10.0.0.0/16</code>.
+  </div>
 
   <div class='footer-link'>
-    <a href='https://github.com/Acestus/portfolio/blob/main/src/portfolio/pro/iac.cljs' target='_blank' rel='noopener noreferrer'>View Source Code</a>
+    <strong>References:</strong>
+    <a href='https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview'>Bicep</a> ·
+    <a href='https://learn.microsoft.com/azure/azure-resource-manager/bicep/modules'>Bicep modules</a> ·
+    <a href='https://learn.microsoft.com/azure/azure-resource-manager/bicep/deployment-stacks'>Deployment Stacks</a> ·
+    <a href='https://learn.microsoft.com/azure/developer/github/connect-from-azure'>GitHub OIDC for Azure</a> ·
+    <a href='https://learn.microsoft.com/entra/workload-id/workload-identity-federation'>Workload identity federation</a> ·
+    <a href='https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview'>Managed identities</a> ·
+    <a href='https://learn.microsoft.com/azure/cloud-adoption-framework/'>Cloud Adoption Framework</a> ·
+    <a href='https://github.com/Acestus/portfolio/blob/main/src/portfolio/pro/iac.cljs' target='_blank' rel='noopener noreferrer'>View SPA source</a> ·
+    <a href='/iac.html'>Back to Demo →</a>
   </div>
 </body>
 </html>
