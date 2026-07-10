@@ -3,7 +3,7 @@
 <head>
   <meta charset='utf-8'>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
-  <title>Active Directory &amp; GPO Fundamentals — Forests, Trusts, Scoping, DNS</title>
+  <title>Incident Triage: AD, GPO &amp; DNS — Sub-5-Minute Diagnosis</title>
   <style>
     :root { --accent: #0078d4; --accent-dark: #106ebe; --bg: #faf9f8; --text: #323130; --summary: #e1f5fe; }
     * { box-sizing: border-box; }
@@ -78,28 +78,43 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
   <a class='back-link' href='/'>← Back to Portfolio</a>
-  <h1>Active Directory &amp; GPO Fundamentals</h1>
+  <h1>Incident Triage: AD, GPO &amp; DNS</h1>
 
   <div class='summary'>
-    A quick-reference on core on-prem Active Directory and Group Policy concepts: how forests and domains trust each other, the two ways to scope a GPO, what a stale DNS record looks like when one hostname resolves to two IPs, and how to read the error a client throws when Kerberos delegation isn't allowed across a trust.
+    A sub-5-minute incident-response playbook for the on-prem identity layer: how to triage a GPO that isn't applying, a hostname resolving to two different IPs, and a cross-forest delegation failure — each broken into <strong>Symptom → Fast Checks → Likely Cause (ranked) → Mitigate vs. Fix → Blast Radius</strong>, the shape an SRE on-call rotation actually needs, not just the underlying AD theory.
   </div>
 
   <div class='metrics'>
+    <div class='metric-card'><div class='metric-value'>&lt;5 min</div><div class='metric-label'>Target: Mitigation, Not Root Cause</div></div>
     <div class='metric-card'><div class='metric-value'>2</div><div class='metric-label'>GPO Scoping Methods</div></div>
-    <div class='metric-card'><div class='metric-value'>Transitive</div><div class='metric-label'>Forest Trust Property</div></div>
     <div class='metric-card'><div class='metric-value'>Stale A Record</div><div class='metric-label'>Root Cause: Dual-IP Hostname</div></div>
-    <div class='metric-card'><div class='metric-value'>0x8009030E</div><div class='metric-label'>No Delegation Info — SSPI Error</div></div>
+    <div class='metric-card'><div class='metric-value'>Auth ≠ Delegation</div><div class='metric-label'>Forest Trust Gotcha</div></div>
   </div>
 
   <div class='flow'>
-    <span class='pill'>Forest</span><span class='arrow'>→</span>
-    <span class='pill'>Domain</span><span class='arrow'>→</span>
-    <span class='pill'>OU</span><span class='arrow'>→</span>
-    <span class='pill'>GPO Link</span><span class='arrow'>→</span>
-    <span class='pill'>Security Filter</span>
+    <span class='pill'>Symptom</span><span class='arrow'>→</span>
+    <span class='pill'>Fast Checks</span><span class='arrow'>→</span>
+    <span class='pill'>Likely Cause</span><span class='arrow'>→</span>
+    <span class='pill'>Mitigate</span><span class='arrow'>→</span>
+    <span class='pill'>Fix + Blast Radius</span>
   </div>
 
-  <h2>1. Forest Trusts and Transitivity</h2>
+  <h2>0. The Sub-5-Minute Triage Loop</h2>
+  <p>Every scenario below uses the same five-step shape, said out loud in an incident channel before diving into deep investigation. The target for the first five minutes is almost always <strong>mitigation</strong> — stopping user-facing impact — not a full root-cause fix. Separating those two explicitly is what keeps an incident bounded instead of turning into an open-ended debugging session.</p>
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Step</th><th>Question It Answers</th><th>Time Budget</th></tr></thead>
+      <tbody>
+        <tr><td>1. Symptom</td><td>What is the user/system actually seeing?</td><td>Immediate — this is the page/alert</td></tr>
+        <tr><td>2. Fast Checks</td><td>What 2–3 cheap checks confirm or rule out the top cause?</td><td>~2 min</td></tr>
+        <tr><td>3. Likely Cause (ranked)</td><td>What's most probable first, with a fallback if check #1 doesn't confirm it?</td><td>~1 min</td></tr>
+        <tr><td>4. Mitigate vs. Fix</td><td>What stops the bleeding now vs. what prevents recurrence later?</td><td>~1–2 min to decide, mitigate immediately</td></tr>
+        <tr><td>5. Blast Radius</td><td>Who else is affected, and how do I roll back if this makes it worse?</td><td>Stated before acting, not after</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>1. Background: Forest Trusts and Transitivity</h2>
   <p>A forest is the top-level AD boundary — a set of domains sharing a schema, configuration partition, and global catalog. When two separate forests need to interoperate (common after mergers/acquisitions, or splitting a single company into separate security boundaries), you build a <strong>forest trust</strong> between the two forest root domains.</p>
   <p>The property that comes up constantly in interviews is <strong>transitivity</strong>:</p>
   <ul class="tight">
@@ -121,7 +136,16 @@ document.addEventListener('DOMContentLoaded', function() {
     </table>
   </div>
 
-  <h2>2. Two Ways to Scope a GPO</h2>
+  <h2>2. Incident: "A GPO Isn't Applying to Some Machines in an OU"</h2>
+  <div class='callout'>
+    <strong>Symptom →</strong> Policy missing on a subset of machines within a linked OU, everyone else fine.<br>
+    <strong>Fast checks (~2 min) →</strong> <code>gpresult /h report.html</code> on one affected machine — shows Applied vs. Denied and *why* in under 30 seconds. Confirm <code>gpupdate /force</code> isn't silently failing.<br>
+    <strong>Likely cause, ranked →</strong> (1) security filtering excludes that machine/user — check the Scope tab ACL first, it's the fastest and most common hit. (2) WMI filter not matching. (3) a higher-precedence Enforced GPO overriding further up the tree.<br>
+    <strong>Mitigate vs. fix →</strong> Mitigate: add the machine/group to the security filter or force a <code>gpupdate</code>. Fix: correct the underlying filter/group membership so it isn't a one-off.<br>
+    <strong>Blast radius →</strong> Contained to the filtered group — low risk to touch live.
+  </div>
+
+  <h3>Background: Two Ways to Scope a GPO</h3>
   <p>This is the one that trips people up because "scoping" sounds like one thing but AD gives you two independent scoping mechanisms that stack together.</p>
 
   <h3>A. Scoping by Linking (where the GPO applies structurally)</h3>
@@ -150,8 +174,17 @@ Security filtering (ACL: Apply Group Policy = Allow) AND WMI filter match
 Enforced (No Override) GPOs win over Block Inheritance
 Last-applied (closest to the object, i.e. OU-level) wins on setting conflicts</div>
 
-  <h2>3. DNS: One Hostname Resolving to Two Different IPs</h2>
-  <p>This is a classic "what do you do when..." troubleshooting question. A single FQDN resolving to two different IP addresses is <strong>not automatically a problem</strong> — it depends on why.</p>
+  <h2>3. Incident: "One Hostname Resolves to Two Different IPs"</h2>
+  <div class='callout'>
+    <strong>Symptom →</strong> Intermittent connection failures/timeouts to a named host; some clients succeed, some don't.<br>
+    <strong>Fast checks (~2 min) →</strong> <code>nslookup &lt;host&gt;</code> against 2+ DCs first — cheapest check, rules out simple replication lag (which self-clears). Then check the record's timestamp in DNS Manager: 0 = static (won't self-heal), nonzero = dynamic (should age out).<br>
+    <strong>Likely cause, ranked →</strong> (1) stale dynamic-registration record left behind after a re-IP, with scavenging off or too loose — most common in practice. (2) legitimate multi-homed host or round-robin LB — verify both IPs are actually live before assuming "stale." (3) split-horizon DNS returning different answers by view (expected, not a bug).<br>
+    <strong>Mitigate vs. fix →</strong> Mitigate: delete the stale record or force <code>ipconfig /registerdns</code> on the correct host — immediate. Fix: enable DNS scavenging/aging (7-day/7-day default) so it stops recurring without manual cleanup.<br>
+    <strong>Blast radius →</strong> Every client resolving that name risks hitting the dead IP — treat as user-facing until confirmed contained; rollback is trivial if wrong (re-add the record).
+  </div>
+
+  <h3>Background: Why This Happens</h3>
+  <p>A single FQDN resolving to two different IP addresses is <strong>not automatically a problem</strong> — it depends on why.</p>
 
   <h3>Legitimate reasons a hostname has multiple A/AAAA records</h3>
   <ul class="tight">
@@ -165,29 +198,40 @@ Last-applied (closest to the object, i.e. OU-level) wins on setting conflicts</d
   <p>The more common troubleshooting scenario in an AD environment: a domain-joined computer or DC re-IPs (DHCP renewal, NIC change, re-image) and <strong>dynamic DNS registration</strong> (the client self-registering via <code>ipconfig /registerdns</code> or the Netlogon service) adds the new A record but the old one never aged out — because scavenging isn't enabled, or the record is static/manually created and won't be touched by scavenging at all.</p>
   <p>Result: clients doing a lookup non-deterministically get routed to whichever record comes back first (or round-robin between both), so some connections succeed and some fail/timeout — intermittent, hard-to-reproduce connectivity complaints are the classic symptom.</p>
 
-  <h3>How I'd resolve it</h3>
-  <ol class="tight">
-    <li>Confirm with <code>nslookup</code> / <code>Resolve-DnsName</code> against multiple DCs — verify it's not just replication lag between DNS servers (AD-integrated zones replicate on their own schedule; a mismatch that clears after replication isn't the same bug as a genuinely duplicate stale record).</li>
-    <li>Check the record's <strong>timestamp</strong> in DNS Manager — a timestamp of 0 means static (won't scavenge); a real timestamp means dynamically registered and eligible for aging/scavenging once it's stale.</li>
-    <li>Identify which IP is actually live (ping/telnet the port, check the host's current <code>ipconfig</code>) and manually remove the stale record, or force re-registration with <code>ipconfig /registerdns</code> on the correct host.</li>
-    <li>Make sure <strong>DNS scavenging</strong> is enabled on the zone (aging enabled with sane no-refresh/refresh intervals — typically 7 days/7 days) so stale dynamic records age out automatically going forward instead of accumulating.</li>
-    <li>If it's a legitimate multi-homed host or load-balanced pair, leave both records but document it — the "fix" there is operational knowledge, not a DNS change.</li>
-  </ol>
+  <p class="tight">Operational note: if it's a legitimate multi-homed host or load-balanced pair, leave both records but document it — the "fix" there is operational knowledge, not a DNS change.</p>
 
+  <h2>4. Incident: Cross-Forest Auth Works, But a Downstream Call Fails ("Federated Transitive" Delegation)</h2>
   <div class='callout'>
-    One-liner for the interview: <em>"First I'd check if it's intentional — load balancing or multi-homing — versus stale. If it's stale, it's almost always a dynamic-registration record that didn't get cleaned up because scavenging isn't enabled or the interval is too loose. I'd verify the live IP, manually clear the stale record, and turn on aging/scavenging so it self-heals next time instead of me hunting it down manually again."</em>
+    <strong>Symptom →</strong> A user authenticates fine directly, but an app-to-app double-hop (web app impersonating the user to hit SQL/another back-end) fails across a forest trust.<br>
+    <strong>Fast checks (~2 min) →</strong> Reproduce and read the actual error — "target principal name is incorrect" or an SSPI/Kerberos failure specifically at the second hop is the signature. Confirm first-hop auth actually succeeded (rules out a plain trust/connectivity problem) before chasing delegation config.<br>
+    <strong>Likely cause, ranked →</strong> Forest trust transitivity gives you <em>authentication</em> across the boundary automatically, one hop deep — it does <strong>not</strong> give you <em>delegation</em>. Most likely: constrained/resource-based constrained delegation was never configured on both sides of the trust for that specific service account.<br>
+    <strong>Mitigate vs. fix →</strong> Mitigate: often none available in minutes — be honest that this isn't a fast hot-fix, it's a scoped config change with a maintenance window. Fix: configure constrained/RBCD delegation explicitly for the SPN pair; verify selective authentication on the trust isn't blocking it too.<br>
+    <strong>Blast radius →</strong> Limited to the specific double-hop workflow, not first-hop auth broadly — say this explicitly so the incident doesn't get over-escalated.
   </div>
 
-  <h2>4. Kerberos Delegation Across Trusts — Reading the Failure</h2>
-  <p>Nathan's question about a "federated transitive property" and delegation across domain forests is almost certainly pointing at <strong>Kerberos constrained delegation across a forest trust</strong>, and the well-known failure mode when it's misconfigured.</p>
+  <h3>Background: Why Auth Succeeds but Delegation Fails</h3>
+  <p>This is almost certainly pointing at <strong>Kerberos constrained delegation across a forest trust</strong>, and the well-known failure mode when it's misconfigured.</p>
   <ul class="tight">
     <li>Within a single domain, <strong>unconstrained</strong> or <strong>constrained delegation</strong> (or the modern <strong>resource-based constrained delegation</strong>) lets a front-end service (e.g., a web app) impersonate a user to a back-end service (e.g., SQL) — the "double-hop" problem.</li>
     <li>Across a <strong>forest trust</strong>, delegation does not just work by default even though the trust is transitive for authentication. Constrained delegation historically could not cross a forest boundary at all; cross-forest delegation requires either selective authentication plus explicit SPN-level configuration, or (on modern Windows Server / Entra-integrated environments) resource-based constrained delegation configured on the resource side, referencing the calling account's SID from the other forest.</li>
     <li>When delegation isn't trusted across the boundary, the client-side symptom is typically an SSPI/Kerberos error surfaced by the app or the OS — most commonly <strong>"the target principal name is incorrect"</strong> or a delegation-not-permitted error, and on the wire a KDC will return <strong>KRB_AP_ERR_BADMATCH</strong> or a <strong>KDC_ERR_BADOPTION</strong> style failure when the requested delegation isn't authorized for that account/service pair.</li>
   </ul>
-  <div class='callout'>
-    Framing for the meeting: <em>"Forest trust transitivity gets you authentication across the boundary — a user in Forest A can authenticate to a resource in Forest B. It does not automatically get you delegation. If an app needs to impersonate that user one more hop past the resource (double-hop), you have to explicitly configure constrained or resource-based constrained delegation, and it has to be allowed on both sides of the trust. If that's not set up, you'll see Kerberos failures at the second hop even though the user's own authentication worked fine."</em>
+
+  <h2>5. General Incident-Management Loop (Beyond These Three Scenarios)</h2>
+  <p>The same shape generalizes past AD/DNS/GPO to any on-call incident:</p>
+  <div class='flow'>
+    <span class='pill'>Detect</span><span class='arrow'>→</span>
+    <span class='pill'>Triage</span><span class='arrow'>→</span>
+    <span class='pill'>Mitigate</span><span class='arrow'>→</span>
+    <span class='pill'>Fix</span><span class='arrow'>→</span>
+    <span class='pill'>Review</span>
   </div>
+  <ul class="tight">
+    <li><strong>Claim and communicate first.</strong> Acknowledge the incident, establish scope/blast radius, and post a status update early — even "still investigating" beats silence.</li>
+    <li><strong>Runbook-first instinct.</strong> Check for an existing runbook or known-error match before deep investigation. The fastest path to a sub-5-minute mitigation is pattern-matching to something that's happened before, not re-deriving root cause from scratch every time.</li>
+    <li><strong>Escalation discipline.</strong> Set a personal time-box — e.g., "if I don't have a mitigation path in 3 minutes, I loop in a second person" — rather than debugging solo past the point where it's still a fast incident.</li>
+    <li><strong>Blameless review.</strong> After mitigation, feed the fix back into monitoring or the runbook (DNS scavenging alerts, GPO drift detection) so the same class of incident is faster to catch — or doesn't happen — next time.</li>
+  </ul>
 
   <div class='footer-link'>
     <strong>References:</strong>
