@@ -3,7 +3,7 @@
 <head>
   <meta charset='utf-8'>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
-  <title>Incident Triage: AD, GPO &amp; DNS — Sub-5-Minute Diagnosis</title>
+  <title>Incident Triage: AD, GPO, DNS &amp; SQL/VM — Sub-5-Minute Diagnosis</title>
   <style>
     :root { --accent: #0078d4; --accent-dark: #106ebe; --bg: #faf9f8; --text: #323130; --summary: #e1f5fe; }
     * { box-sizing: border-box; }
@@ -78,17 +78,17 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
   <a class='back-link' href='/'>← Back to Portfolio</a>
-  <h1>Incident Triage: AD, GPO &amp; DNS</h1>
+  <h1>Incident Triage: AD, GPO, DNS &amp; SQL/VM</h1>
 
   <div class='summary'>
-    A sub-5-minute incident-response playbook for the on-prem identity layer: how to triage a GPO that isn't applying, a hostname resolving to two different IPs, and a cross-forest delegation failure — each broken into <strong>Symptom → Fast Checks → Likely Cause (ranked) → Mitigate vs. Fix → Blast Radius</strong>, the shape an SRE on-call rotation actually needs, not just the underlying AD theory.
+    A sub-5-minute incident-response playbook spanning the on-prem identity layer and the VM/SQL Server layer: how to triage a GPO that isn't applying, a hostname resolving to two different IPs, a cross-forest delegation failure, a slow or non-failing-over SQL Server, and a Hyper-V host that stops responding — each broken into <strong>Symptom → Fast Checks → Likely Cause (ranked) → Mitigate vs. Fix → Blast Radius</strong>, the shape an SRE on-call rotation actually needs, not just the underlying theory.
   </div>
 
   <div class='metrics'>
     <div class='metric-card'><div class='metric-value'>&lt;5 min</div><div class='metric-label'>Target: Mitigation, Not Root Cause</div></div>
     <div class='metric-card'><div class='metric-value'>2</div><div class='metric-label'>GPO Scoping Methods</div></div>
-    <div class='metric-card'><div class='metric-value'>Stale A Record</div><div class='metric-label'>Root Cause: Dual-IP Hostname</div></div>
     <div class='metric-card'><div class='metric-value'>Auth ≠ Delegation</div><div class='metric-label'>Forest Trust Gotcha</div></div>
+    <div class='metric-card'><div class='metric-value'>VM Layer ≠ SQL Layer</div><div class='metric-label'>Two Failure Domains, One Incident</div></div>
   </div>
 
   <div class='flow'>
@@ -217,7 +217,53 @@ Last-applied (closest to the object, i.e. OU-level) wins on setting conflicts</d
     <li>When delegation isn't trusted across the boundary, the client-side symptom is typically an SSPI/Kerberos error surfaced by the app or the OS — most commonly <strong>"the target principal name is incorrect"</strong> or a delegation-not-permitted error, and on the wire a KDC will return <strong>KRB_AP_ERR_BADMATCH</strong> or a <strong>KDC_ERR_BADOPTION</strong> style failure when the requested delegation isn't authorized for that account/service pair.</li>
   </ul>
 
-  <h2>5. General Incident-Management Loop (Beyond These Three Scenarios)</h2>
+  <h2>5. VM &amp; SQL Server Incidents (What a DBA-Background Manager Will Probe)</h2>
+  <p>A manager who came up through SQL DBA work will test whether an SRE understands the layers underneath "the database is slow" — VM/host resource contention, storage I/O, and SQL Server's own wait-stats model — not just AD/identity. Same triage shape applies.</p>
+
+  <h3>Incident: "SQL Server on a VM is suddenly slow"</h3>
+  <div class='callout'>
+    <strong>Symptom →</strong> Query timeouts or high latency reported by an app team; SQL Server itself is up, just slow.<br>
+    <strong>Fast checks (~2 min) →</strong> Check <strong>CPU ready time</strong> on the VM (Hyper-V/VMM: <code>Get-VM | Get-VMProcessor</code> or Performance Monitor <code>\Hyper-V Hypervisor Virtual Processor\CPU Wait Time Per Dispatch</code>) to rule out host-level CPU contention before touching SQL. In parallel, run <code>sp_whoisactive</code> or check <code>sys.dm_exec_requests</code> for blocking chains and top wait types.<br>
+    <strong>Likely cause, ranked →</strong> (1) VM-level resource contention — CPU ready time high because the host is oversubscribed, or Dynamic Memory ballooning the guest. (2) SQL-side blocking/lock chain from a long-running transaction or missing index causing scans. (3) Storage latency — <code>PAGEIOLATCH_*</code> waits pointing at slow disk (check <code>sys.dm_io_virtual_file_stats</code> for read/write stall times).<br>
+    <strong>Mitigate vs. fix →</strong> Mitigate: kill the blocking session if safe, or move the VM off an oversubscribed host / disable ballooning temporarily. Fix: right-size CPU/memory reservations, add the missing index, or move the data/log files to faster storage tier.<br>
+    <strong>Blast radius →</strong> Scope to this VM/instance first — check if other guests on the same Hyper-V host are also degraded (shared host contention) before assuming it's isolated to this one SQL instance.
+  </div>
+
+  <h3>Incident: "SQL Server / the VM won't fail over" (Always On Availability Group or Failover Cluster)</h3>
+  <div class='callout'>
+    <strong>Symptom →</strong> A node or the primary replica goes down and the Availability Group doesn't fail over automatically, or a VM in a Hyper-V/Failover Cluster doesn't live-migrate off a failing host.<br>
+    <strong>Fast checks (~2 min) →</strong> For AGs: <code>SELECT * FROM sys.dm_hadr_availability_replica_states</code> to check <code>synchronization_health</code> and whether the AG is in automatic vs. manual failover mode. For cluster/VMM: check cluster quorum state (<code>Get-ClusterQuorum</code> / Failover Cluster Manager) — a lost quorum blocks failover entirely even if nodes are healthy.<br>
+    <strong>Likely cause, ranked →</strong> (1) Replica/node is configured for <strong>manual</strong> failover, not automatic — common in prod for controlled cutovers, easy to mistake for a broken failover. (2) Quorum lost (not enough voting nodes/witness reachable), so the cluster refuses to act to avoid split-brain. (3) Synchronization is unhealthy (async commit mode, or the secondary is behind), so automatic failover is blocked to avoid data loss.<br>
+    <strong>Mitigate vs. fix →</strong> Mitigate: force a manual failover once you've confirmed data loss risk is acceptable, or restore quorum (bring a witness/node back, or force quorum in a true disaster). Fix: review failover mode and witness configuration so this class of incident doesn't require a manual judgment call under pressure next time.<br>
+    <strong>Blast radius →</strong> A forced failover with unsynced data is a real risk — say explicitly that you'd confirm RPO impact before forcing it, not just restore service blindly.
+  </div>
+
+  <h3>Incident: "VM host is unresponsive, SQL guest along with it"</h3>
+  <div class='callout'>
+    <strong>Symptom →</strong> A Hyper-V host stops responding to VMM/management; VMs on it (including a SQL Server guest) are unreachable.<br>
+    <strong>Fast checks (~2 min) →</strong> Confirm from a second management path (direct RDP/console to the host, or a different VMM management server) that it's actually the host and not just a VMM service/agent issue — VMM losing contact with a healthy host is a common false alarm.<br>
+    <strong>Likely cause, ranked →</strong> (1) VMM agent or WinRM communication failure on an otherwise-healthy host (most common — host is fine, management plane isn't). (2) Host actually hung/BSOD — cluster should trigger failover of VMs to another node if this is a clustered Hyper-V deployment. (3) Network partition isolating the host from both VMM and cluster heartbeat, which risks a false failover/split-brain if quorum is misconfigured.<br>
+    <strong>Mitigate vs. fix →</strong> Mitigate: if clustered, let/force the cluster move the SQL VM to a healthy node rather than waiting on the unresponsive host. Fix: restart the VMM agent or investigate the underlying host hang; if it's WinRM/agent-only, no VM impact occurred and no failover was needed.<br>
+    <strong>Blast radius →</strong> Every VM on that host is at risk, not just the SQL guest — check the full host inventory before declaring this a single-VM incident.
+  </div>
+
+  <h3>Quick-Recall Table: Concepts a SQL-DBA-Background Manager Will Ask About</h3>
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Concept</th><th>What It Means</th><th>Why an SRE Needs It</th></tr></thead>
+      <tbody>
+        <tr><td>CPU Ready Time</td><td>Time a vCPU is ready to run but waiting for the physical host scheduler</td><td>High ready time = host oversubscription, not a SQL problem — misdiagnosing this wastes the whole 5-minute budget on the wrong layer</td></tr>
+        <tr><td>Dynamic Memory / Ballooning</td><td>Hyper-V reclaiming guest memory under host pressure via a balloon driver</td><td>Can silently starve SQL Server's buffer pool even though the guest OS still reports "enough" memory — check Hyper-V dynamic memory settings before tuning <code>max server memory</code> in SQL</td></tr>
+        <tr><td>PAGEIOLATCH_* Waits</td><td>SQL Server waiting on a data file page read/write to complete</td><td>Points at storage, not query logic — correlate with <code>sys.dm_io_virtual_file_stats</code> stall times and the underlying VM's virtual disk/SAN latency</td></tr>
+        <tr><td>Always On Availability Group</td><td>SQL-level replication/failover across replicas, independent of the OS cluster's own failover</td><td>Two different failover layers (Windows Failover Cluster + AG) can each be healthy or unhealthy independently — check both, not just one</td></tr>
+        <tr><td>Quorum (Failover Clustering)</td><td>Voting mechanism deciding whether a cluster has enough surviving nodes/witness to safely act</td><td>Lost quorum blocks automatic failover on purpose, to avoid split-brain — explains "why didn't it just fail over" even when nodes look fine</td></tr>
+        <tr><td>RPO / RTO</td><td>Recovery Point Objective (how much data loss is acceptable) / Recovery Time Objective (how fast to restore)</td><td>Forcing a failover with an out-of-sync secondary trades RTO for RPO — be ready to state that trade-off explicitly, it's exactly the kind of judgment call a DBA-background manager will probe</td></tr>
+        <tr><td>Live Migration / VM Failover</td><td>Moving a running VM to another host, either planned (live migration) or reactive (cluster failover after host failure)</td><td>SQL guest availability depends on the VM layer succeeding first — an SRE needs both the Hyper-V/cluster view and the SQL/AG view to triage correctly</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>6. General Incident-Management Loop (Beyond These Scenarios)</h2>
   <p>The same shape generalizes past AD/DNS/GPO to any on-call incident:</p>
   <div class='flow'>
     <span class='pill'>Detect</span><span class='arrow'>→</span>
@@ -240,6 +286,10 @@ Last-applied (closest to the object, i.e. OU-level) wins on setting conflicts</d
     <a href='https://learn.microsoft.com/windows-server/identity/ad-ds/manage/understand-security-filters-gpo'>Security filtering for GPOs</a> ·
     <a href='https://learn.microsoft.com/windows-server/networking/dns/dns-top'>DNS aging and scavenging</a> ·
     <a href='https://learn.microsoft.com/windows-server/security/kerberos/kerberos-constrained-delegation-overview'>Kerberos constrained delegation overview</a> ·
+    <a href='https://learn.microsoft.com/sql/database-engine/sql-server-extended-events/use-the-system-health-session-to-troubleshoot-problems'>SQL Server wait stats &amp; troubleshooting</a> ·
+    <a href='https://learn.microsoft.com/sql/database-engine/availability-groups/windows/always-on-availability-groups-sql-server'>Always On Availability Groups overview</a> ·
+    <a href='https://learn.microsoft.com/windows-server/failover-clustering/manage-cluster-quorum'>Failover clustering quorum modes</a> ·
+    <a href='https://learn.microsoft.com/windows-server/virtualization/hyper-v/manage/manage-hyper-v-dynamic-memory'>Hyper-V Dynamic Memory</a> ·
     <a href='/'>Back to Portfolio →</a>
   </div>
 </body>

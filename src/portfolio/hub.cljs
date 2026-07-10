@@ -26,7 +26,7 @@
             {:title "Clojure REPL"          :href "/repl.html"       :icon "λ"   :desc "Live ClojureScript in your browser"}
             {:title "Architecture Studio"  :href "/architecture.html" :icon "🏛" :desc "C4 models and architecture decision records"}
             {:title "The Agentic Web"     :href "/agentic.html"      :icon "🦞" :desc "How OpenClaw is the HTTP of AI agents"}
-            {:title "Incident Triage: AD/GPO/DNS" :href "/articles/ad-gpo-fundamentals.html" :icon "🏢" :desc "Sub-5-min SRE triage: GPO scope, dual-IP DNS, cross-forest delegation"}]}
+            {:title "Incident Triage: AD/SQL/VM" :href "/articles/ad-gpo-fundamentals.html" :icon "🏢" :desc "Sub-5-min SRE triage: GPO scope, dual-IP DNS, delegation, SQL AG failover, Hyper-V"}]}
    {:category "🦀 Rust + WASM"
     :items [{:title "Particle Storm"        :href "/particles.html"  :icon "🌀"  :desc "3,000 particles with orbiting gravity wells"}
             {:title "Raytracer"             :href "/raytracer.html"  :icon "🔮"  :desc "Real-time ray-traced scene with reflections"}
