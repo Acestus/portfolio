@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <title>Active Directory &amp; GPO Fundamentals — Forests, Trusts, Scoping, DNS</title>
+  <style>
+    :root { --accent: #0078d4; --accent-dark: #106ebe; --bg: #faf9f8; --text: #323130; --summary: #e1f5fe; }
+    * { box-sizing: border-box; }
+    body { margin: 0 auto; max-width: 1200px; padding: 24px; background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .back-link { display: inline-block; margin-bottom: 1rem; font-weight: 600; }
+    h1 { color: var(--accent); border-bottom: 3px solid var(--accent); padding-bottom: 0.5rem; margin-top: 0; }
+    h2 { color: var(--accent-dark); border-left: 4px solid var(--accent); padding-left: 15px; margin-top: 2.25rem; }
+    h3 { color: var(--accent-dark); margin-top: 1.5rem; }
+    .summary { background: var(--summary); border-left: 5px solid var(--accent); border-radius: 4px; padding: 1rem; margin: 1rem 0 1.5rem; }
+    .metrics { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0; }
+    .metric-card { background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-bottom: 3px solid var(--accent); padding: 1rem; flex: 1 1 180px; min-width: 170px; }
+    .metric-value { color: var(--accent); font-size: 1.4rem; font-weight: 700; }
+    .metric-label { color: #605e5c; font-size: 0.95rem; }
+    .flow { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.5rem; margin: 1.5rem 0; }
+    .pill { background: var(--accent); color: #fff; padding: 0.65rem 1rem; border-radius: 999px; font-weight: 600; }
+    .arrow { color: var(--accent-dark); font-size: 1.25rem; font-weight: 700; }
+    .code-block { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 6px; overflow: auto; white-space: pre; font-family: Consolas, Monaco, 'Courier New', monospace; font-size: 0.92rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; background: #fff; }
+    th, td { border: 1px solid #d2d0ce; padding: 0.8rem; text-align: left; vertical-align: top; }
+    th { background: var(--accent); color: #fff; }
+    tbody tr:nth-child(even) { background: #f3f2f1; }
+    tbody tr:hover { background: #deecf9; }
+    .callout { background: #fff3cd; border-left: 5px solid #ffc107; border-radius: 4px; padding: 1rem; margin: 1rem 0; }
+    ul.tight li, ol.tight li { margin-bottom: 0.4rem; }
+    .footer-link { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #d2d0ce; }
+    @media (max-width: 768px) {
+      body { padding: 16px; }
+      .metrics { flex-direction: column; }
+      .flow { flex-direction: column; }
+      .arrow { transform: rotate(90deg); }
+      .table-wrap { overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+<header class="site-nav" role="banner">
+  <a class="site-name" href="/">acestus.com</a>
+  <nav role="navigation" aria-label="Main">
+    <button class="nav-toggle" aria-controls="main-nav" aria-expanded="false">☰</button>
+    <div class="nav-links" id="main-nav">
+      <a class="nav-link" href="/">Portfolio</a>
+    </div>
+  </nav>
+</header>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var toggle = document.querySelector('.nav-toggle');
+  var links = document.getElementById('main-nav');
+  if (!toggle || !links) return;
+
+  toggle.addEventListener('click', function() {
+    var isOpen = links.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+
+  links.querySelectorAll('a').forEach(function(a) {
+    a.addEventListener('click', function() {
+      links.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      links.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+});
+</script>
+
+  <a class='back-link' href='/'>← Back to Portfolio</a>
+  <h1>Active Directory &amp; GPO Fundamentals</h1>
+
+  <div class='summary'>
+    A quick-reference on core on-prem Active Directory and Group Policy concepts: how forests and domains trust each other, the two ways to scope a GPO, what a stale DNS record looks like when one hostname resolves to two IPs, and how to read the error a client throws when Kerberos delegation isn't allowed across a trust.
+  </div>
+
+  <div class='metrics'>
+    <div class='metric-card'><div class='metric-value'>2</div><div class='metric-label'>GPO Scoping Methods</div></div>
+    <div class='metric-card'><div class='metric-value'>Transitive</div><div class='metric-label'>Forest Trust Property</div></div>
+    <div class='metric-card'><div class='metric-value'>Stale A Record</div><div class='metric-label'>Root Cause: Dual-IP Hostname</div></div>
+    <div class='metric-card'><div class='metric-value'>0x8009030E</div><div class='metric-label'>No Delegation Info — SSPI Error</div></div>
+  </div>
+
+  <div class='flow'>
+    <span class='pill'>Forest</span><span class='arrow'>→</span>
+    <span class='pill'>Domain</span><span class='arrow'>→</span>
+    <span class='pill'>OU</span><span class='arrow'>→</span>
+    <span class='pill'>GPO Link</span><span class='arrow'>→</span>
+    <span class='pill'>Security Filter</span>
+  </div>
+
+  <h2>1. Forest Trusts and Transitivity</h2>
+  <p>A forest is the top-level AD boundary — a set of domains sharing a schema, configuration partition, and global catalog. When two separate forests need to interoperate (common after mergers/acquisitions, or splitting a single company into separate security boundaries), you build a <strong>forest trust</strong> between the two forest root domains.</p>
+  <p>The property that comes up constantly in interviews is <strong>transitivity</strong>:</p>
+  <ul class="tight">
+    <li><strong>Transitive trust</strong> — trust flows automatically to every domain within the trusting forest. Domain-to-domain trusts inside a single forest (parent/child, tree-root) are transitive by default. A forest trust is also transitive across <em>all</em> domains in both forests — but only one level deep (forest A trusts forest B, it does not automatically extend to forest C that B trusts).</li>
+    <li><strong>Non-transitive trust</strong> — trust is scoped to exactly the two domains/forests you connected. Used for external trusts (NT4 domains, or one specific domain in another forest) where you want a tight, explicit boundary instead of exposing an entire forest.</li>
+  </ul>
+  <p>Practical framing for a "how would you link two AD forests" question: <em>"I'd establish a two-way (or one-way, depending on trust direction needed) forest trust with selective authentication enabled, so users are trusted across the boundary but each resource domain still explicitly grants access rather than inheriting blanket authentication rights. That keeps the trust transitive at the namespace/routing level but access-controlled at the resource level."</em></p>
+
+  <div class='table-wrap'>
+    <table>
+      <thead><tr><th>Trust Type</th><th>Transitivity</th><th>Typical Use</th></tr></thead>
+      <tbody>
+        <tr><td>Parent-Child (intra-forest)</td><td>Transitive</td><td>Automatic — created when a child domain is added to a forest</td></tr>
+        <tr><td>Tree-Root (intra-forest)</td><td>Transitive</td><td>New domain tree joining an existing forest</td></tr>
+        <tr><td>Forest Trust</td><td>Transitive across all domains in both forests (one hop)</td><td>Two companies/forests need broad cross-resource access (e.g., post-M&amp;A, or split security domains that still share services)</td></tr>
+        <tr><td>External Trust</td><td>Non-transitive</td><td>Trust one specific domain (often legacy NT4 or a single domain in another forest) without exposing the whole forest</td></tr>
+        <tr><td>Shortcut Trust</td><td>Transitive (follows existing path)</td><td>Optimize authentication path between two domains deep in a large/complex forest to skip walking the whole trust tree</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>2. Two Ways to Scope a GPO</h2>
+  <p>This is the one that trips people up because "scoping" sounds like one thing but AD gives you two independent scoping mechanisms that stack together.</p>
+
+  <h3>A. Scoping by Linking (where the GPO applies structurally)</h3>
+  <p>A GPO is a standalone object in the <em>Group Policy Objects</em> container — it does nothing until it's <strong>linked</strong> to a site, domain, or OU. Linking determines the structural scope: which part of the AD hierarchy the policy even has a chance to apply to. Link order and inheritance (with Block Inheritance / Enforced flags) control which GPO wins when multiple GPOs are linked up the tree.</p>
+  <ul class="tight">
+    <li>Link to a <strong>Site</strong> — applies to all computers physically in that AD site, regardless of domain/OU (rare, mostly for site-specific settings like proxy config)</li>
+    <li>Link to a <strong>Domain</strong> — applies to every object in the domain (broadest common scope — used for domain-wide baselines like password policy)</li>
+    <li>Link to an <strong>OU</strong> — applies to users/computers in that OU and (by default) its child OUs — the most common and most precise link scope</li>
+  </ul>
+
+  <h3>B. Scoping by Security Filtering / WMI Filtering (who/what it applies to, within the linked scope)</h3>
+  <p>Once a GPO is linked, you narrow <em>who it actually applies to</em> without moving objects between OUs:</p>
+  <ul class="tight">
+    <li><strong>Security filtering</strong> — the GPO has an ACL. By default "Authenticated Users" have Read + Apply Group Policy. Replace that with a specific security group, and only members of that group get the policy applied — even though the GPO is linked to a much broader OU. This is the standard way to do "apply this GPO to just these 40 laptops in a 2,000-object OU" without restructuring OUs.</li>
+    <li><strong>WMI filtering</strong> — attaches a WMI query to the GPO so it only applies to machines matching a hardware/OS condition (e.g., only Windows 11, only laptops with a specific model, only if free disk space &gt; X). Evaluated client-side at boot/logon; adds processing overhead so used sparingly.</li>
+  </ul>
+  <div class='callout'>
+    Interview-ready one-liner: <em>"Linking controls where in the AD tree a GPO can apply; security filtering and WMI filtering control who or what within that linked scope actually receives it. I usually leave the link broad — at the OU level — and use a security group in the security filter so I can add/remove targets without touching OU structure or re-linking anything."</em>
+  </div>
+
+  <h3>Order of Precedence (the classic "LSDOU" + filtering)</h3>
+  <div class='code-block'>Local policy → Site → Domain → OU (parent to child)
+  ...then within the resolved link scope:
+Security filtering (ACL: Apply Group Policy = Allow) AND WMI filter match
+  ...then conflict resolution:
+Enforced (No Override) GPOs win over Block Inheritance
+Last-applied (closest to the object, i.e. OU-level) wins on setting conflicts</div>
+
+  <h2>3. DNS: One Hostname Resolving to Two Different IPs</h2>
+  <p>This is a classic "what do you do when..." troubleshooting question. A single FQDN resolving to two different IP addresses is <strong>not automatically a problem</strong> — it depends on why.</p>
+
+  <h3>Legitimate reasons a hostname has multiple A/AAAA records</h3>
+  <ul class="tight">
+    <li><strong>Round-robin DNS load balancing</strong> — intentional, multiple records for the same name spread client connections across several hosts (common for stateless web/app tiers).</li>
+    <li><strong>Multi-homed host</strong> — a single server has two NICs on different subnets (management network + production network) and both got registered.</li>
+    <li><strong>Split-brain / split-horizon DNS</strong> — internal DNS view returns a private IP, external/public DNS view returns a public IP for the same FQDN (normal for anything published through a reverse proxy or firewall NAT).</li>
+    <li><strong>Migration in flight</strong> — a server was moved/rebuilt with a new IP and both old and new records are still present during a cutover window.</li>
+  </ul>
+
+  <h3>The problem case: stale/duplicate record from dynamic DNS registration</h3>
+  <p>The more common troubleshooting scenario in an AD environment: a domain-joined computer or DC re-IPs (DHCP renewal, NIC change, re-image) and <strong>dynamic DNS registration</strong> (the client self-registering via <code>ipconfig /registerdns</code> or the Netlogon service) adds the new A record but the old one never aged out — because scavenging isn't enabled, or the record is static/manually created and won't be touched by scavenging at all.</p>
+  <p>Result: clients doing a lookup non-deterministically get routed to whichever record comes back first (or round-robin between both), so some connections succeed and some fail/timeout — intermittent, hard-to-reproduce connectivity complaints are the classic symptom.</p>
+
+  <h3>How I'd resolve it</h3>
+  <ol class="tight">
+    <li>Confirm with <code>nslookup</code> / <code>Resolve-DnsName</code> against multiple DCs — verify it's not just replication lag between DNS servers (AD-integrated zones replicate on their own schedule; a mismatch that clears after replication isn't the same bug as a genuinely duplicate stale record).</li>
+    <li>Check the record's <strong>timestamp</strong> in DNS Manager — a timestamp of 0 means static (won't scavenge); a real timestamp means dynamically registered and eligible for aging/scavenging once it's stale.</li>
+    <li>Identify which IP is actually live (ping/telnet the port, check the host's current <code>ipconfig</code>) and manually remove the stale record, or force re-registration with <code>ipconfig /registerdns</code> on the correct host.</li>
+    <li>Make sure <strong>DNS scavenging</strong> is enabled on the zone (aging enabled with sane no-refresh/refresh intervals — typically 7 days/7 days) so stale dynamic records age out automatically going forward instead of accumulating.</li>
+    <li>If it's a legitimate multi-homed host or load-balanced pair, leave both records but document it — the "fix" there is operational knowledge, not a DNS change.</li>
+  </ol>
+
+  <div class='callout'>
+    One-liner for the interview: <em>"First I'd check if it's intentional — load balancing or multi-homing — versus stale. If it's stale, it's almost always a dynamic-registration record that didn't get cleaned up because scavenging isn't enabled or the interval is too loose. I'd verify the live IP, manually clear the stale record, and turn on aging/scavenging so it self-heals next time instead of me hunting it down manually again."</em>
+  </div>
+
+  <h2>4. Kerberos Delegation Across Trusts — Reading the Failure</h2>
+  <p>Nathan's question about a "federated transitive property" and delegation across domain forests is almost certainly pointing at <strong>Kerberos constrained delegation across a forest trust</strong>, and the well-known failure mode when it's misconfigured.</p>
+  <ul class="tight">
+    <li>Within a single domain, <strong>unconstrained</strong> or <strong>constrained delegation</strong> (or the modern <strong>resource-based constrained delegation</strong>) lets a front-end service (e.g., a web app) impersonate a user to a back-end service (e.g., SQL) — the "double-hop" problem.</li>
+    <li>Across a <strong>forest trust</strong>, delegation does not just work by default even though the trust is transitive for authentication. Constrained delegation historically could not cross a forest boundary at all; cross-forest delegation requires either selective authentication plus explicit SPN-level configuration, or (on modern Windows Server / Entra-integrated environments) resource-based constrained delegation configured on the resource side, referencing the calling account's SID from the other forest.</li>
+    <li>When delegation isn't trusted across the boundary, the client-side symptom is typically an SSPI/Kerberos error surfaced by the app or the OS — most commonly <strong>"the target principal name is incorrect"</strong> or a delegation-not-permitted error, and on the wire a KDC will return <strong>KRB_AP_ERR_BADMATCH</strong> or a <strong>KDC_ERR_BADOPTION</strong> style failure when the requested delegation isn't authorized for that account/service pair.</li>
+  </ul>
+  <div class='callout'>
+    Framing for the meeting: <em>"Forest trust transitivity gets you authentication across the boundary — a user in Forest A can authenticate to a resource in Forest B. It does not automatically get you delegation. If an app needs to impersonate that user one more hop past the resource (double-hop), you have to explicitly configure constrained or resource-based constrained delegation, and it has to be allowed on both sides of the trust. If that's not set up, you'll see Kerberos failures at the second hop even though the user's own authentication worked fine."</em>
+  </div>
+
+  <div class='footer-link'>
+    <strong>References:</strong>
+    <a href='https://learn.microsoft.com/windows-server/identity/ad-ds/plan/planning-domain-trusts'>AD DS domain and forest trusts</a> ·
+    <a href='https://learn.microsoft.com/windows-server/identity/ad-ds/manage/group-policy/group-policy-processing'>Group Policy processing and precedence</a> ·
+    <a href='https://learn.microsoft.com/windows-server/identity/ad-ds/manage/understand-security-filters-gpo'>Security filtering for GPOs</a> ·
+    <a href='https://learn.microsoft.com/windows-server/networking/dns/dns-top'>DNS aging and scavenging</a> ·
+    <a href='https://learn.microsoft.com/windows-server/security/kerberos/kerberos-constrained-delegation-overview'>Kerberos constrained delegation overview</a> ·
+    <a href='/'>Back to Portfolio →</a>
+  </div>
+</body>
+</html>
