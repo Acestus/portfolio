@@ -1,0 +1,55 @@
+{{ $library := .Site.GetPage "/docs" }}
+<div class="docs-workspace">
+  <aside class="docs-sidebar">
+    <a class="docs-space-brand" href="/docs/"><span class="docs-space-icon" aria-hidden="true">▤</span><span>Knowledge base<small>acestus.com</small></span></a>
+    <button class="docs-menu-toggle" type="button" aria-controls="docs-navigation" aria-expanded="false">Browse documentation <span aria-hidden="true">⌄</span></button>
+    <nav id="docs-navigation" aria-label="Documentation navigation">
+      <a class="docs-overview" href="/docs/" {{ if .IsSection }}aria-current="page"{{ end }}>Overview</a>
+      {{ $current := . }}
+      {{ range $library.RegularPages.GroupByParam "space" }}
+      <details class="docs-nav-group" open><summary>{{ .Key }}</summary><ul>
+        {{ range .Pages.ByTitle }}<li><a href="{{ .RelPermalink }}" {{ if eq .RelPermalink $current.RelPermalink }}aria-current="page"{{ end }}>{{ .Title }}</a></li>{{ end }}
+      </ul></details>
+      {{ end }}
+      <a class="docs-back" href="/portfolio/">← Explore the portfolio</a>
+    </nav>
+  </aside>
+  <div class="docs-content">
+    <div class="docs-toolbar">
+      <nav class="docs-breadcrumb" aria-label="Breadcrumb"><a href="/docs/">Documentation</a>{{ if not .IsSection }}<span aria-hidden="true">/</span><span>{{ .Params.space }}</span>{{ end }}</nav>
+      {{ if not .IsSection }}<a class="docs-source" href="https://github.com/Acestus/portfolio/blob/main/site/content/docs/{{ .File.LogicalName }}">View source ↗</a>{{ end }}
+    </div>
+    <form class="docs-search" role="search" aria-label="Documentation" autocomplete="off">
+      <span class="docs-search-icon" aria-hidden="true">⌕</span><label class="visually-hidden" for="docs-search">Search documentation</label>
+      <input id="docs-search" type="search" placeholder="Search documentation…" aria-controls="docs-search-results" spellcheck="false" data-index="/docs/index.json"><kbd aria-hidden="true">/</kbd>
+    </form>
+    <section id="docs-search-results" class="docs-search-results" aria-label="Documentation search results" aria-live="polite" hidden></section>
+    {{ if .IsSection }}
+    <article class="docs-article docs-home">
+      <p class="docs-kicker">TECHNICAL DOCUMENTATION</p><h1>Documentation</h1>
+      <p class="docs-lead">Architecture notes, operational guides, and working examples. Find an answer or explore the system behind the work.</p>
+      <div class="docs-library-meta"><span class="docs-badge">Public knowledge base</span><span>{{ len $library.RegularPages }} guides</span><span>3 topic spaces</span></div>
+      <section id="topics"><h2>Explore by topic</h2><div class="docs-topic-grid">
+        {{ range $library.RegularPages.GroupByParam "space" }}
+        <article class="docs-topic-card"><span class="docs-topic-icon" aria-hidden="true">{{ if eq .Key "Architecture & delivery" }}◇{{ else if eq .Key "Cloud & operations" }}☁{{ else }}⌘{{ end }}</span><h3>{{ .Key }}</h3><p>{{ len .Pages }} guides</p><ul>{{ range first 3 .Pages.ByTitle }}<li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>{{ end }}</ul><a class="docs-topic-more" href="#{{ .Key | urlize }}">View all guides →</a></article>
+        {{ end }}
+      </div></section>
+      <section id="library" class="docs-directory"><h2>All documentation</h2><p class="docs-section-intro">A browsable reference library, organized around the work.</p>
+        {{ range $library.RegularPages.GroupByParam "space" }}<section class="docs-directory-group" id="{{ .Key | urlize }}"><h3>{{ .Key }}</h3><div class="docs-guide-grid">{{ range .Pages.ByTitle }}<a class="docs-guide" href="{{ .RelPermalink }}"><span aria-hidden="true">▤</span><div><h4>{{ .Title }}</h4><p>{{ .Description }}</p></div><b aria-hidden="true">↗</b></a>{{ end }}</div></section>{{ end }}
+      </section>
+    </article>
+    {{ else }}
+    <article class="docs-article">
+      <p class="docs-kicker">{{ .Params.space }}</p><h1>{{ .Title }}</h1>
+      <div class="docs-page-meta"><span class="docs-badge">Reference guide</span><span>{{ .ReadingTime }} min read</span>{{ with .Params.demo }}<a href="{{ . }}">Open working example ↗</a>{{ end }}</div>
+      <div class="docs-prose">{{ .Content }}</div>
+      <div class="docs-page-end"><span>Keep exploring.</span><a href="/docs/">← Back to documentation</a>{{ with .Params.demo }}<a href="{{ . }}">Try the working example ↗</a>{{ end }}</div>
+    </article>
+    {{ end }}
+  </div>
+  <aside class="docs-toc">
+    <p class="docs-toc-title">ON THIS PAGE</p>
+    {{ if .IsSection }}<nav aria-label="On this page"><ul><li><a href="#topics">Explore by topic</a></li><li><a href="#library">All documentation</a></li></ul></nav><div class="docs-help"><span aria-hidden="true">↗</span><h2>Learn by doing.</h2><p>Pair the guides with interactive tools and examples.</p><a href="/portfolio/">Explore the portfolio →</a></div>
+    {{ else }}{{ .TableOfContents | replaceRE `<nav id="TableOfContents">` `<nav id="TableOfContents" aria-label="On this page">` | safeHTML }}{{ end }}
+  </aside>
+</div>

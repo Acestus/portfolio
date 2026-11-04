@@ -1,0 +1,28 @@
+{
+  "title": "Engineering delivery architecture",
+  "source": "User-supplied Pasted text.txt",
+  "sourceSha256": "04a7ff930bb7a3ba12d26c0646a21cd5c46ce9d66957173cbda25faadd3bed8b",
+  "specificationVersion": "1.0",
+  "evidenceDate": "2026-11-03",
+  "publication": "Full sanitized specification, with restored Markdown tables/headings/native code fences and public reference links; original requirements and historical observations retained.",
+  "sections": [
+    "1. How to use this specification",
+    "2. Architecture: independent repositories, one delivery model",
+    "3. Source-of-truth and dependency rules",
+    "4. Copilot skills and the Projects CLI",
+    "5. Agent authorship, human authority, and credentials",
+    "6. GPR: the commit-to-PR-to-auto-merge interface",
+    "7. Auto-merge is controlled by repository rules",
+    "8. Shared workflows: central engine, thin callers",
+    "9. CI/CD lifecycle and immutable evidence",
+    "10. Dependabot: maintenance through the same review path",
+    "11. Infrastructure as code: Bicep stacks and environments",
+    "12. Full ATDD workflow: examples before implementation",
+    "13. ATDD readiness, provenance, and honest reporting",
+    "14. Hugo reference application: build, deploy, and test the behavior",
+    "15. Embedded engineering style guide, version 1.0",
+    "16. Reconstruction sequence for an AI agent",
+    "17. Definition of done for the reconstructed process",
+    "18. Observed baseline and limitations"
+  ]
+}

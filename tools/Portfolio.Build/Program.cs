@@ -79,8 +79,12 @@ public static class BuildFiles
     }
     public static void VerifyOutput(string directory)
     {
-        foreach (var relative in new[] { "index.html", "resume/index.html", "portfolio/index.html", "articles/index.html", "404.html", "site.css", "site.js", "downloads/william-weeks-balconi-resume.pdf", "articles/architecture-studio.html" })
+        foreach (var relative in new[] { "index.html", "resume/index.html", "portfolio/index.html", "articles/index.html", "404.html", "site.css", "site.js", "downloads/william-weeks-balconi-resume.pdf", "articles/architecture-studio.html", "scouting/index.html", "scouting/assets/app.js", "scouting/assets/styles.css", "docs/index.html", "docs/index.json", "docs/architecture-studio/index.html", "docs/engineering-delivery-architecture/index.html", "docs.css", "docs.js" })
             if (!File.Exists(ResolveInside(directory, relative))) throw new InvalidOperationException($"Missing output: {relative}");
+        var scouting = File.ReadAllText(ResolveInside(directory, "scouting/assets/app.js"));
+        if (new[] { "BAND_ICAL_URL", "calendarSeed", "calendarEvents" }.Any(scouting.Contains)
+            || Directory.Exists(ResolveInside(directory, "household")))
+            throw new InvalidOperationException("Reader-only calendar or household data must not enter the public professional artifact.");
         using var routeConfig = JsonDocument.Parse(File.ReadAllText(ResolveInside(directory, "staticwebapp.config.json")));
         var routes = routeConfig.RootElement.GetProperty("routes").EnumerateArray().Select(item => item.GetProperty("route").GetString()!.TrimEnd('/')).ToArray();
         if (routes.Distinct(StringComparer.OrdinalIgnoreCase).Count() != routes.Length) throw new InvalidOperationException("Azure rejects duplicate routes after trailing-slash and case normalization.");
@@ -96,7 +100,7 @@ public static class BuildFiles
         var source = (await ProcessRunner.ReadAsync("git", ["rev-parse", "HEAD"])).Trim();
         var dirty = !string.IsNullOrWhiteSpace(await ProcessRunner.ReadAsync("git", ["status", "--porcelain"]));
         var output = Path.Combine(root, "public");
-        var release = new { sourceCommit = source, dirty, acceptanceRepository = "Acestus/site-acceptance", acceptanceRevision = "3bf4b14349a55933189fa104251423a19de078c1", hugo = "0.164.0", producerRun = Environment.GetEnvironmentVariable("GITHUB_RUN_ID"), producerAttempt = Environment.GetEnvironmentVariable("GITHUB_RUN_ATTEMPT") };
+        var release = new { sourceCommit = source, dirty, acceptanceRepository = "Acestus/site-acceptance", acceptanceRevision = "f8c5647f2768bca58c0c1d86fd7216ed2a384415", hugo = "0.164.0", producerRun = Environment.GetEnvironmentVariable("GITHUB_RUN_ID"), producerAttempt = Environment.GetEnvironmentVariable("GITHUB_RUN_ATTEMPT") };
         File.WriteAllText(Path.Combine(output, "release.json"), JsonSerializer.Serialize(release));
         var files = Directory.EnumerateFiles(output, "*", SearchOption.AllDirectories).Where(file => Path.GetFileName(file) != "release-files.json")
             .OrderBy(file => file, StringComparer.Ordinal).Select(file => new { path = Path.GetRelativePath(output, file).Replace('\\', '/'), sha256 = Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(file))), bytes = new FileInfo(file).Length }).ToArray();

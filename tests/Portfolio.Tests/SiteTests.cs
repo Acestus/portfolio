@@ -36,6 +36,28 @@ public class IntegrationTests
         }
     }
     [Fact]
+    public void DocumentationIndexesEveryExistingPublicArticleAsAReadableGuide()
+    {
+        var output = Path.Combine(Root, "public");
+        using var index = JsonDocument.Parse(File.ReadAllText(Path.Combine(output, "docs/index.json")));
+        var guides = index.RootElement.EnumerateArray().ToArray();
+        Assert.NotEmpty(guides);
+        Assert.Contains(guides, x => x.GetProperty("url").GetString() == "/docs/engineering-delivery-architecture/" && x.GetProperty("text").GetString()!.Contains("18. Observed baseline and limitations"));
+        var urls = guides.Select(x => x.GetProperty("url").GetString()!).ToArray();
+        Assert.Equal(urls.Length, urls.Distinct(StringComparer.Ordinal).Count());
+        using var articles = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root, "data/articles.json")));
+        foreach (var article in articles.RootElement.EnumerateArray())
+            Assert.Contains("/docs/" + Path.GetFileNameWithoutExtension(article.GetProperty("url").GetString()) + "/", urls);
+        foreach (var guide in guides)
+        {
+            var url = guide.GetProperty("url").GetString()!;
+            Assert.StartsWith("/docs/", url);
+            Assert.True(File.Exists(BuildFiles.ResolveInside(output, url.TrimStart('/') + "index.html")));
+            Assert.True(guide.GetProperty("text").GetString()!.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Length > 50,
+                "Every indexed guide must contain its substantive public article text.");
+        }
+    }
+    [Fact]
     public void PublishedAssetsMatchTheirChecksums()
     {
         using var data = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root, "public/release-files.json")));
@@ -61,6 +83,21 @@ public class BrowserTests
         await Assertions.Expect(page.GetByRole(AriaRole.Button, new() { Name = "Print resume" })).ToBeVisibleAsync();
         Assert.True(await page.EvaluateAsync<bool>("document.documentElement.scrollWidth <= window.innerWidth"));
         await page.ScreenshotAsync(new() { Path = Path.Combine(Environment.GetEnvironmentVariable("PORTFOLIO_EVIDENCE") ?? Path.GetTempPath(), "resume-mobile.png"), FullPage = true });
+    }
+    [Fact]
+    public async Task DocumentationSearchTreatsReaderQueriesAsText()
+    {
+        var target = Environment.GetEnvironmentVariable("PORTFOLIO_TEST_URL") ?? throw new InvalidOperationException("PORTFOLIO_TEST_URL is required");
+        using var playwright = await Playwright.CreateAsync();
+        await using var browser = await playwright.Chromium.LaunchAsync(new() { Headless = true });
+        var page = await browser.NewPageAsync();
+        Assert.Equal(200, (await page.GotoAsync(new Uri(new Uri(target), "/docs/").AbsoluteUri))?.Status);
+        await page.GetByRole(AriaRole.Searchbox, new() { Name = "Search documentation", Exact = true })
+            .FillAsync("<img src=x onerror=window.docsSearchProbe=1>");
+        await Assertions.Expect(page.GetByRole(AriaRole.Region, new() { Name = "Documentation search results", Exact = true }))
+            .ToContainTextAsync("No documents found");
+        Assert.Equal(0, await page.Locator("#docs-search-results img").CountAsync());
+        Assert.True(await page.EvaluateAsync<bool>("typeof window.docsSearchProbe === 'undefined'"));
     }
     [Fact]
     public async Task AllRetainedDemosLoadTheirApplicationWithoutMissingLocalAssets()

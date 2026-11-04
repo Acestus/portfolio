@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pack 60 Scouting Plan</title>
+    <meta
+      name="description"
+      content="Public Pack 60 den activity plan for the 2026-2027 year."
+    />
+    <link rel="canonical" href="https://acestus.com/scouting/" />
+    <link rel="stylesheet" href="/scouting/assets/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-art" aria-hidden="true">
+        <svg viewBox="0 0 960 280" role="img">
+          <defs>
+            <linearGradient id="sky" x1="0" x2="1">
+              <stop offset="0" stop-color="#d8ecff" />
+              <stop offset="1" stop-color="#f8e8bc" />
+            </linearGradient>
+          </defs>
+          <rect width="960" height="280" fill="url(#sky)" />
+          <path d="M0 205 C140 156 251 177 360 139 C474 100 604 146 704 113 C813 78 892 98 960 68 L960 280 L0 280 Z" fill="#315a3c" />
+          <path d="M0 232 C154 193 280 217 418 174 C563 129 708 185 960 128 L960 280 L0 280 Z" fill="#233f31" />
+          <circle cx="792" cy="65" r="34" fill="#f0b64f" />
+          <g fill="#153326">
+            <path d="M94 198 l38 -86 l38 86 h-24 l31 52 h-90 l31 -52 z" />
+            <path d="M768 176 l29 -70 l29 70 h-18 l24 44 h-70 l24 -44 z" />
+            <path d="M835 198 l34 -83 l34 83 h-22 l29 50 h-83 l29 -50 z" />
+          </g>
+        </svg>
+      </div>
+      <nav class="topbar" aria-label="Page sections">
+        <a href="https://home.bluegreen.love/household/scouting-calendar/">Private calendar · Sign in</a>
+        <a href="#program">Program</a>
+        <a href="#pack">Pack Nights</a>
+        <button id="printButton" type="button">Print</button>
+      </nav>
+      <section class="intro">
+        <p class="eyebrow">Pack 60 · 2026-2027</p>
+        <h1>Scouting Plan</h1>
+        <p>
+          Public den activity plan for 2026–2027. Confirm dates using the private calendar.
+        </p>
+      </section>
+    </header>
+
+    <main>
+
+
+
+
+      <section class="panel" id="program">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Program Layer</p>
+            <h2>Den Meeting Activity Plan</h2>
+          </div>
+          <div class="filters" role="group" aria-label="Month filters">
+            <button class="active" type="button" data-filter="all">All</button>
+            <button type="button" data-filter="2026">2026</button>
+            <button type="button" data-filter="2027">2027</button>
+            <button type="button" data-filter="pack">Pack</button>
+          </div>
+        </div>
+        <div id="programList" class="timeline"></div>
+      </section>
+
+      <section class="panel" id="pack">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Milestones</p>
+            <h2>Pack Meeting Highlights</h2>
+          </div>
+        </div>
+        <div id="packCards" class="pack-grid"></div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Pack 60 scouting plan</span>
+      <span>Live calendar and private details require reader access.</span>
+    </footer>
+
+    <script src="/scouting/assets/app.js" type="module"></script>
+  </body>
+</html>
