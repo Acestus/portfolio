@@ -90,3 +90,8 @@ The user approved executable contract f8c5647 before implementation. Its local
 Portfolio selection requires nine scenarios; Journal's redirect/privacy slice
 requires two after Portfolio is live. The full live regression inventory is 12.
 Application tests remain distinct from those independent observations.
+
+The current verifier deliberately accepts only its pinned contract revision.
+A rollback to an artifact produced under an older contract needs a reviewed
+compatibility change before dispatch; changing a hash input cannot bypass this
+guard. No hosted rollback drill is claimed by this release.
