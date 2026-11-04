@@ -1,118 +1,96 @@
-name: Deploy Portfolio
-
+name: Deploy-Portfolio
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
-
+    inputs:
+      source_run_id:
+        description: Successful main Test-Portfolio run, independently verified before deployment
+        type: string
+        required: true
+      site_sha256:
+        description: SHA-256 of the exact independently verified site.tar
+        type: string
+        required: true
 permissions:
-  id-token: write
   contents: read
-
+  actions: read
 concurrency:
-  group: deploy-portfolio
+  group: portfolio-production
   cancel-in-progress: false
-
-env:
-  NODE_VERSION: '20'
-  RESOURCE_GROUP_NAME: rg-portfolio-dev
-  SWA_NAME: swa-portfolio-dev-scus-001
-
 jobs:
-  build-and-deploy:
-    name: Build & Deploy
+  verify:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
-    environment: dev
-
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
-      - uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-
-      - name: Install Rust + wasm-pack
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: wasm32-unknown-unknown
-
-      - name: Install wasm-pack
-        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build Rust WASM crates
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Verify trusted producer before obtaining delivery privileges
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN_ID: ${{ inputs.source_run_id }}
         run: |
-          wasm-pack build rust/particles --target web --out-dir ../../resources/public/wasm/particles --no-typescript
-          wasm-pack build rust/raytracer --target web --out-dir ../../resources/public/wasm/raytracer --no-typescript
-          wasm-pack build rust/life --target web --out-dir ../../resources/public/wasm/life --no-typescript
-
-      - name: Compile all builds
-        run: npx shadow-cljs compile hub platformer invaders matcher breakout helicopter fabric policy logs iac platform repl architecture agentic pricing m365
-
-      - name: Verify output artifacts
+          [[ "$SOURCE_RUN_ID" =~ ^[0-9]+$ ]] || exit 1
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID" > producer.json
+          jq -e --arg repo "$GITHUB_REPOSITORY" '.repository.full_name == $repo and .head_repository.full_name == $repo and .event == "push" and .head_branch == "main" and .path == ".github/workflows/Test-Portfolio.yaml" and .conclusion == "success"' producer.json
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: portfolio-site
+          path: retained
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.source_run_id }}
+      - name: Check archive and exact file inventory
+        env:
+          EXPECTED_SITE_SHA256: ${{ inputs.site_sha256 }}
+        run: python3 scripts/verify_candidate.py retained producer.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: verified-portfolio
+          path: |
+            retained/site.tar
+            retained/release.json
+            producer.json
+          retention-days: 90
+          if-no-files-found: error
+  deploy:
+    needs: verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: dev
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: verified-portfolio
+      - name: Extract the verified site
         run: |
-          for build in hub platformer invaders matcher breakout helicopter fabric policy logs iac platform repl architecture agentic pricing m365; do
-            test -f "resources/public/js/${build}/main.js" || { echo "❌ Missing: ${build}/main.js"; exit 1; }
-            echo "✅ ${build}/main.js exists"
-          done
-
-      - name: Release build
-        run: npm run release
-
-      # ── Azure login ────────────────────────────────────────────────
-      - name: Azure Login (OIDC)
-        uses: azure/login@v3
+          mkdir site
+          tar -xf retained/site.tar -C site
+      - uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           audience: api://AzureADTokenExchange
-
-      # ── Ensure resource group exists ───────────────────────────────
-      - name: Ensure resource group
+      - name: Acquire ephemeral upload credential for the existing app
+        id: credential
         run: |
-          az group create \
-            --name "$RESOURCE_GROUP_NAME" \
-            --location southcentralus \
-            --tags ManagedBy=https://github.com/Acestus/portfolio CreatedBy=acestus || true
-
-      # ── Infrastructure ─────────────────────────────────────────────
-      - name: Deploy Bicep template
-        id: infra
-        run: |
-          RESULT=$(az deployment group create \
-            --name "deploy-portfolio-$(date +%s)" \
-            --resource-group "$RESOURCE_GROUP_NAME" \
-            --template-file infra/portfolio/main.bicep \
-            --query 'properties.outputs' -o json)
-          TOKEN=$(echo "$RESULT" | jq -r '.deploymentToken.value')
-          echo "::add-mask::$TOKEN"
-          echo "SWA_TOKEN=$TOKEN" >> "$GITHUB_ENV"
-          echo "hostname=$(echo "$RESULT" | jq -r '.defaultHostname.value')" >> "$GITHUB_OUTPUT"
-
-      # ── Deploy to Static Web App ───────────────────────────────────
-      - name: Deploy
-        uses: Azure/static-web-apps-deploy@v1
+          token=$(az staticwebapp secrets list --name swa-portfolio-dev-scus-001 --resource-group rg-portfolio-dev --query properties.apiKey -o tsv)
+          test -n "$token"
+          echo "::add-mask::$token"
+          echo "token=$token" >> "$GITHUB_OUTPUT"
+      - uses: Azure/static-web-apps-deploy@4d27395796ac319302594769cfe812bd207490b1 # v1
         with:
-          azure_static_web_apps_api_token: ${{ env.SWA_TOKEN }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          azure_static_web_apps_api_token: ${{ steps.credential.outputs.token }}
           action: upload
-          app_location: resources/public
+          app_location: site
           skip_app_build: true
-
-      - name: Deployment Summary
-        if: always()
+          production_branch: main
+      - name: Record deployed artifact identity
+        env:
+          SITE_SHA256: ${{ inputs.site_sha256 }}
+          SOURCE_RUN_ID: ${{ inputs.source_run_id }}
         run: |
-          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
-          echo "**Environment:** dev" >> $GITHUB_STEP_SUMMARY
-          echo "**Resource Group:** $RESOURCE_GROUP_NAME" >> $GITHUB_STEP_SUMMARY
-          echo "**Hostname:** ${{ steps.infra.outputs.hostname }}" >> $GITHUB_STEP_SUMMARY
+          echo "Deployed source run $SOURCE_RUN_ID; exact archive SHA-256 $SITE_SHA256" >> "$GITHUB_STEP_SUMMARY"
+          echo "Independent post-deployment verification is required before claiming acceptance." >> "$GITHUB_STEP_SUMMARY"

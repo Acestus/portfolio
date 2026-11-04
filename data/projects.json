@@ -1,0 +1,170 @@
+[
+  {
+    "title": "Architecture Studio",
+    "url": "/architecture.html",
+    "category": "Architecture",
+    "description": "C4 models, architecture decisions, and diagrams as code.",
+    "style": "green",
+    "symbol": "[ ]"
+  },
+  {
+    "title": "Infrastructure Pipeline",
+    "url": "/iac.html",
+    "category": "Delivery",
+    "description": "Explore infrastructure as code, deployment gates, and Azure patterns.",
+    "style": "sand",
+    "symbol": "→"
+  },
+  {
+    "title": "Fabric Capacity Tuner",
+    "url": "/fabriccap.html",
+    "category": "Data platforms",
+    "description": "Explore capacity sizing and throttling in Microsoft Fabric.",
+    "style": "blue",
+    "symbol": "≋"
+  },
+  {
+    "title": "Workflow Toolkit",
+    "url": "/workflow.html",
+    "category": "Automation",
+    "description": "A practical look at file-driven operational workflows.",
+    "style": "sand",
+    "symbol": "⌘"
+  },
+  {
+    "title": "Platform Console",
+    "url": "/platform.html",
+    "category": "Platform engineering",
+    "description": "Explore self-service provisioning and infrastructure operations.",
+    "style": "green",
+    "symbol": "▤"
+  },
+  {
+    "title": "Log Pipeline",
+    "url": "/logs.html",
+    "category": "Observability",
+    "description": "Follow events through a cloud analytics pipeline.",
+    "style": "blue",
+    "symbol": "≋"
+  },
+  {
+    "title": "Fabric Pipeline",
+    "url": "/fabric.html",
+    "category": "Data platforms",
+    "description": "An interactive view of medallion data architecture.",
+    "style": "green",
+    "symbol": "◇"
+  },
+  {
+    "title": "Policy Dashboard",
+    "url": "/policy.html",
+    "category": "Governance",
+    "description": "Explore policy evaluation and governance patterns.",
+    "style": "sand",
+    "symbol": "✓"
+  },
+  {
+    "title": "Microsoft 365 Administration",
+    "url": "/m365.html",
+    "category": "Identity",
+    "description": "Explore administration, identity, and lifecycle workflows.",
+    "style": "blue",
+    "symbol": "⊞"
+  },
+  {
+    "title": "Pricing Optimizer",
+    "url": "/pricing.html",
+    "category": "FinOps",
+    "description": "An interactive exploration of cloud cost decisions.",
+    "style": "sand",
+    "symbol": "$"
+  },
+  {
+    "title": "Copilot-Ops Console",
+    "url": "/copilotops.html",
+    "category": "Automation",
+    "description": "Explore the operator’s view of file-driven AI workflows.",
+    "style": "green",
+    "symbol": "⌘"
+  },
+  {
+    "title": "The Agentic Web",
+    "url": "/agentic.html",
+    "category": "Architecture",
+    "description": "Explore interfaces and the operator-in-the-loop model.",
+    "style": "blue",
+    "symbol": "↗"
+  },
+  {
+    "title": "Clojure REPL",
+    "url": "/repl.html",
+    "category": "Functional programming",
+    "description": "Experiment with ClojureScript in the browser.",
+    "style": "green",
+    "symbol": "λ"
+  },
+  {
+    "title": "Particle Storm",
+    "url": "/particles.html",
+    "category": "Rust + WebAssembly",
+    "description": "Explore particles, gravity, and browser-side computation.",
+    "style": "blue",
+    "symbol": "✳"
+  },
+  {
+    "title": "Raytracer",
+    "url": "/raytracer.html",
+    "category": "Rust + WebAssembly",
+    "description": "Watch a scene rendered through progressive ray tracing.",
+    "style": "sand",
+    "symbol": "◒"
+  },
+  {
+    "title": "Game of Life",
+    "url": "/life.html",
+    "category": "Rust + WebAssembly",
+    "description": "Explore Conway’s cellular automaton in the browser.",
+    "style": "green",
+    "symbol": "▦"
+  },
+  {
+    "title": "Cloud Platformer",
+    "url": "/platformer.html",
+    "category": "Arcade",
+    "description": "A playful cloud infrastructure platform game.",
+    "style": "blue",
+    "symbol": "↑"
+  },
+  {
+    "title": "Space Invaders",
+    "url": "/invaders.html",
+    "category": "Arcade",
+    "description": "An arcade experiment with a security theme.",
+    "style": "green",
+    "symbol": "✦"
+  },
+  {
+    "title": "CAF Naming Puzzle",
+    "url": "/matcher.html",
+    "category": "Arcade",
+    "description": "Match cloud resources to naming conventions.",
+    "style": "sand",
+    "symbol": "⊞"
+  },
+  {
+    "title": "Tech Breakout",
+    "url": "/breakout.html",
+    "category": "Arcade",
+    "description": "A browser-side breakout experiment.",
+    "style": "blue",
+    "symbol": "▰"
+  },
+  {
+    "title": "Cloud Lift",
+    "url": "/helicopter.html",
+    "category": "Arcade",
+    "description": "A cloud migration rescue game.",
+    "style": "green",
+    "symbol": "↑"
+  }
+]

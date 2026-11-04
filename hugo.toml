@@ -1,0 +1,22 @@
+baseURL = 'https://portfolio.acestus.com/'
+locale = 'en-us'
+title = 'William Weeks-Balconi'
+contentDir = 'site/content'
+layoutDir = 'site/layouts'
+publishDir = 'public'
+disableKinds = ['taxonomy', 'term', 'RSS']
+enableRobotsTXT = true
+[markup.goldmark.renderer]
+unsafe = false
+[module]
+  [[module.mounts]]
+    source = 'resources/public'
+    target = 'static'
+    files = ['! index.html', '! staticwebapp.config.json', '! js/**']
+  [[module.mounts]]
+    source = 'site/static'
+    target = 'static'
+
+  [[module.mounts]]
+    source = '.build/legacy-js'
+    target = 'static/js'
