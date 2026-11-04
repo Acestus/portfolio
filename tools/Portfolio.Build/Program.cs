@@ -93,7 +93,7 @@ public static class BuildFiles
         var source = (await ProcessRunner.ReadAsync("git", ["rev-parse", "HEAD"])).Trim();
         var dirty = !string.IsNullOrWhiteSpace(await ProcessRunner.ReadAsync("git", ["status", "--porcelain"]));
         var output = Path.Combine(root, "public");
-        var release = new { sourceCommit = source, dirty, acceptanceRepository = "Acestus/site-acceptance", acceptanceRevision = "0439dcb52bf850fbec2c75feb164c286452c529f", hugo = "0.164.0", producerRun = Environment.GetEnvironmentVariable("GITHUB_RUN_ID"), producerAttempt = Environment.GetEnvironmentVariable("GITHUB_RUN_ATTEMPT") };
+        var release = new { sourceCommit = source, dirty, acceptanceRepository = "Acestus/site-acceptance", acceptanceRevision = "ff65bc81321762d5fa1404c02e654ba7d13cabb5", hugo = "0.164.0", producerRun = Environment.GetEnvironmentVariable("GITHUB_RUN_ID"), producerAttempt = Environment.GetEnvironmentVariable("GITHUB_RUN_ATTEMPT") };
         File.WriteAllText(Path.Combine(output, "release.json"), JsonSerializer.Serialize(release));
         var files = Directory.EnumerateFiles(output, "*", SearchOption.AllDirectories).Where(file => Path.GetFileName(file) != "release-files.json")
             .OrderBy(file => file, StringComparer.Ordinal).Select(file => new { path = Path.GetRelativePath(output, file).Replace('\\', '/'), sha256 = Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(file))), bytes = new FileInfo(file).Length }).ToArray();

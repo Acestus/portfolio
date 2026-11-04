@@ -4,7 +4,7 @@ title = 'William Weeks-Balconi'
 contentDir = 'site/content'
 layoutDir = 'site/layouts'
 publishDir = 'public'
-disableKinds = ['taxonomy', 'term', 'RSS']
+disableKinds = ['taxonomy', 'term']
 enableRobotsTXT = true
 [markup.goldmark.renderer]
 unsafe = false

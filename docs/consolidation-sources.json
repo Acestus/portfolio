@@ -1,0 +1,77 @@
+{
+  "acceptanceRevision": "ff65bc81321762d5fa1404c02e654ba7d13cabb5",
+  "sources": [
+    {
+      "repository": "Acestus/blog-cloud",
+      "commit": "2969223d518688e32786aeef0603328bba93c0bc",
+      "files": [
+        {
+          "path": "content/posts/sources-i-follow.md",
+          "sha256": "e467d88d7a2ce97e89bf9ef5d35b3ca792b3a0c0b116e5c32c86741b6b7be9f6",
+          "workingCopyDiffers": false
+        },
+        {
+          "path": "content/posts/starting-this-blog.md",
+          "sha256": "b6159de6092fcc3e35cef3dfb772bb7d00e7ef3589f34b1bea50fc5c9f0a4da9",
+          "workingCopyDiffers": false
+        },
+        {
+          "path": "content/posts/why-i-love-trunk-based-development.md",
+          "sha256": "ad446d369dd1975c30636afd506f0b62d8655eabbf8e37765531d2aac3567552",
+          "workingCopyDiffers": false
+        },
+        {
+          "path": "content/posts/june-openclaw-field-report.md",
+          "sha256": "ffef2632b0bce936fca8cd1a54cd10a3460efa6ddc927c7c05e577aa7f5878ec",
+          "workingCopyDiffers": false
+        },
+        {
+          "path": "content/posts/homeschool-dashboard-business-idea.md",
+          "sha256": "09cf6d8486496cd5bfb5587a5e3b1b211705a6a3c447988c60681f8550b0bdc5",
+          "workingCopyDiffers": false
+        },
+        {
+          "path": "content/posts/how-i-m-getting-the-best-results-from-ai-lately.md",
+          "sha256": "85884f3ebda31ea939b17d40f045dfa1c9003e8a4cbcb637f2dc2de3978a83fd",
+          "workingCopyDiffers": false
+        },
+        {
+          "path": "content/posts/purpose-built-ai-a-field-toolkit-for-engineering-operations.md",
+          "sha256": "ab33efdc29e38eede1955625225945e6efe0a85aaa077c46ce76e77f02fd9f16",
+          "workingCopyDiffers": false
+        }
+      ]
+    },
+    {
+      "repository": "Acestus/fabricweb",
+      "commit": "0f5f23234b9b0976b135f0cb11e68adccca6c3b4",
+      "files": [
+        {
+          "path": "content/_index.md",
+          "sha256": "130055a952c3597e7eb2c7c72c5a8c76135e9345816cd89649f24d46a7c0f6c5",
+          "workingCopyDiffers": true
+        },
+        {
+          "path": "content/about/_index.md",
+          "sha256": "2f62eb1df79628be67aab556b2e1fb02c67a79cf7489f5d1434574c3f4b846cb",
+          "workingCopyDiffers": false
+        },
+        {
+          "path": "content/contact/_index.md",
+          "sha256": "3b49ee174138c751ae45b2e51482e454a469334b432ef2225b859110ca8b9f9d",
+          "workingCopyDiffers": true
+        },
+        {
+          "path": "content/services/_index.md",
+          "sha256": "44fdbba60001edcd1cf3a78f892c6ea44aee1403f802eb3437c2e3f94fef2077",
+          "workingCopyDiffers": true
+        },
+        {
+          "path": "static/downloads/fabric-cicd-readiness-guide.pdf",
+          "sha256": "780615c12121f887ea934d4e71054a43b6808e7b00b13d6fd0d8291a02596257",
+          "workingCopyDiffers": false
+        }
+      ]
+    }
+  ]
+}
