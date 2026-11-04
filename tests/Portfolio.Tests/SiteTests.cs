@@ -11,6 +11,15 @@ public class UnitTests
     [InlineData("/etc/passwd")]
     public void AssetPathsCannotEscapeThePublicationRoot(string path) => Assert.Throws<ArgumentException>(() => BuildFiles.ResolveInside("/tmp/site", path));
 
+    [Theory]
+    [InlineData("[{\"route\":\"/api/events\",\"rewrite\":\"/404.html\",\"statusCode\":404}]")]
+    [InlineData("[{\"route\":\"/scouting/\"},{\"route\":\"/SCOUTING\"}]")]
+    public void AzureRoutesRejectIncompatibleRulesBeforeUpload(string json)
+    {
+        using var document = JsonDocument.Parse(json);
+        Assert.Throws<InvalidOperationException>(() => BuildFiles.VerifyRoutes(document.RootElement));
+    }
+
     [Fact]
     public void RelativeAssetPathsRetainTheirLocation() => Assert.Equal("/tmp/site/downloads/resume.pdf", BuildFiles.ResolveInside("/tmp/site", "downloads/resume.pdf"));
 }

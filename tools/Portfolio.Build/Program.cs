@@ -86,8 +86,7 @@ public static class BuildFiles
             || Directory.Exists(ResolveInside(directory, "household")))
             throw new InvalidOperationException("Reader-only calendar or household data must not enter the public professional artifact.");
         using var routeConfig = JsonDocument.Parse(File.ReadAllText(ResolveInside(directory, "staticwebapp.config.json")));
-        var routes = routeConfig.RootElement.GetProperty("routes").EnumerateArray().Select(item => item.GetProperty("route").GetString()!.TrimEnd('/')).ToArray();
-        if (routes.Distinct(StringComparer.OrdinalIgnoreCase).Count() != routes.Length) throw new InvalidOperationException("Azure rejects duplicate routes after trailing-slash and case normalization.");
+        VerifyRoutes(routeConfig.RootElement.GetProperty("routes"));
         var bytes = File.ReadAllBytes(ResolveInside(directory, "downloads/william-weeks-balconi-resume.pdf"));
         if (bytes.Length < 1000 || System.Text.Encoding.ASCII.GetString(bytes, 0, 5) != "%PDF-") throw new InvalidOperationException("Resume PDF is not valid output.");
         var resume = File.ReadAllText(ResolveInside(directory, "resume/index.html"));
@@ -95,6 +94,16 @@ public static class BuildFiles
         if (Directory.EnumerateFiles(directory, "*.map", SearchOption.AllDirectories).Any() || Directory.Exists(Path.Combine(directory, "js/hub/cljs-runtime"))) throw new InvalidOperationException("Development-only assets must not be published.");
         Console.WriteLine("Verified generated pages, resume PDF and absence of legacy resume dependencies/development assets.");
     }
+    public static void VerifyRoutes(JsonElement rules)
+    {
+        var routes = rules.EnumerateArray().ToArray();
+        var paths = routes.Select(item => item.GetProperty("route").GetString()!.TrimEnd('/')).ToArray();
+        if (paths.Distinct(StringComparer.OrdinalIgnoreCase).Count() != paths.Length)
+            throw new InvalidOperationException("Azure rejects duplicate routes after trailing-slash and case normalization.");
+        if (routes.Any(rule => rule.TryGetProperty("rewrite", out _) && rule.TryGetProperty("statusCode", out _)))
+            throw new InvalidOperationException("Azure route rules cannot combine rewrite and statusCode. Use a status-only rule and responseOverrides for an error page.");
+    }
+
     public static async Task WriteManifestAsync(string root)
     {
         var source = (await ProcessRunner.ReadAsync("git", ["rev-parse", "HEAD"])).Trim();
