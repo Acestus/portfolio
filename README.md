@@ -1,8 +1,10 @@
 # William Weeks-Balconi — portfolio and resume
 
-A Hugo site at https://portfolio.acestus.com with the canonical resume, a generated
+A Hugo site at https://acestus.com with the canonical resume, a generated
 PDF, interactive cloud demonstrations and technical writing. Existing demo and
-article URLs are preserved.
+article URLs are preserved. The public knowledge base lives at `/docs/`, including
+the supplied engineering delivery architecture; the public Pack 60 plan lives at
+`/scouting/`. Its private calendar remains on Journal.
 
 Read [repo-architecture.md](repo-architecture.md) first for boundaries, commands,
 provenance, deployment, rollback and current limitations. Resume content lives in

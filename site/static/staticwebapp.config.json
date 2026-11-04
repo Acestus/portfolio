@@ -1,6 +1,16 @@
 {
   "routes": [
     {
+      "route": "/api/events",
+      "rewrite": "/404.html",
+      "statusCode": 404
+    },
+    {
+      "route": "/household/*",
+      "rewrite": "/404.html",
+      "statusCode": 404
+    },
+    {
       "route": "/projects/",
       "redirect": "/portfolio/",
       "statusCode": 301

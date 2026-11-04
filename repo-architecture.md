@@ -27,7 +27,7 @@ PORTFOLIO_TEST_URL to run application tests. CI documents the exact commands.
 Test-Portfolio builds and qualifies without cloud privileges on PR and main.
 It retains a single site.tar and its hashes for 90 days. Independently reviewed
 behavior contracts live in private Acestus/site-acceptance at approved revision
-0439dcb52bf850fbec2c75feb164c286452c529f. They import no application internals.
+f8c5647f2768bca58c0c1d86fd7216ed2a384415. They import no application internals.
 Run them against the exact retained candidate before dispatching deployment,
 then again against the live site. Build/test feedback is not human acceptance.
 
@@ -35,8 +35,8 @@ Deploy-Portfolio is manual and main-source only. It accepts a successful main
 producer run and the independently verified archive hash. Its unprivileged job
 checks repository/event/ref/workflow/run/attempt/source and every file digest
 before the Dev job (the existing publicly served app) can request OIDC privileges. It uploads those bytes
-to the existing SWA; it does not provision infrastructure. The domain remains
-portfolio.acestus.com. Unknown paths return real 404, not a homepage fallback.
+to the existing SWA; it does not provision infrastructure. The canonical public domain is
+acestus.com; portfolio.acestus.com remains an alias. Unknown paths return real 404, not a homepage fallback.
 
 Desired infrastructure remains owned by the existing infra/portfolio stack.
 Cloud inventory is authoritative for actual state. No Bicep deployment or
@@ -62,3 +62,36 @@ verifying the live result. Never rebuild and call it the same release. Missing
 or expired artifacts/receipts block restoration. Source reversion, DNS recovery,
 data recovery and infrastructure reversal are distinct operations. The initial
 live snapshot is a backup for review, not a prior qualified release receipt.
+
+## Public documentation and scouting
+
+`site/content/docs/` owns the authored Hugo knowledge base. Edit Markdown here;
+`resources/public/articles/` keeps legacy article URLs and is not a second docs
+authoring surface. `data/docs-import.json` records the one-time 22-article public
+import and source hashes. The importer refuses to overwrite authored guides.
+`data/architecture-source.json` identifies the full user-supplied sanitized
+specification, its 18 sections and original SHA-256. Its November 3 baseline is
+historical reference-system evidence, not a current audit of this website.
+
+Docs templates provide topic navigation, breadcrumbs and heading contents.
+`docs.js` searches only the generated public `/docs/index.json`, renders reader
+queries as text and reports unavailable searches honestly. No server search or
+private Journal content is involved. `/articles/` retains the professional blog
+and legacy technical article URLs; `/docs/` provides the knowledge-base reading
+experience. `/portfolio/` and `/resume/` remain canonical sections on the apex.
+
+`site/static/scouting/` contains only the public Pack 60 plan and two assets.
+The calendar links to the reader-restricted Journal site; no calendar feed,
+private household files or calendar API is copied. Professional private calendar
+and event API paths return 404. Publish and independently verify this candidate
+before Journal removes its public copies and adds exact permanent redirects.
+
+The user approved executable contract f8c5647 before implementation. Its local
+Portfolio selection requires nine scenarios; Journal's redirect/privacy slice
+requires two after Portfolio is live. The full live regression inventory is 12.
+Application tests remain distinct from those independent observations.
+
+The current verifier deliberately accepts only its pinned contract revision.
+A rollback to an artifact produced under an older contract needs a reviewed
+compatibility change before dispatch; changing a hash input cannot bypass this
+guard. No hosted rollback drill is claimed by this release.

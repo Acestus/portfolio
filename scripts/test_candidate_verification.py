@@ -7,7 +7,7 @@ class CandidateVerificationTests(unittest.TestCase):
  def run_candidate(self, *, source='fixture-source', extra=None, tamper=False):
   with tempfile.TemporaryDirectory() as folder:
    root=Path(folder)
-   release={'sourceCommit':source,'dirty':False,'acceptanceRevision':'3bf4b14349a55933189fa104251423a19de078c1','producerRun':'123','producerAttempt':'1'}
+   release={'sourceCommit':source,'dirty':False,'acceptanceRevision':'f8c5647f2768bca58c0c1d86fd7216ed2a384415','producerRun':'123','producerAttempt':'1'}
    files={'release.json':json.dumps(release).encode(),'index.html':b'<h1>Synthetic candidate</h1>'}
    inventory=[{'path':p,'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)} for p,b in files.items()]
    files['release-files.json']=json.dumps(inventory).encode()
