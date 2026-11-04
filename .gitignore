@@ -9,3 +9,14 @@ rust/target/
 .nrepl-port
 .env
 *.log
+
+public/
+.hugo_build.lock
+tools/**/bin/
+tools/**/obj/
+tests/**/bin/
+tests/**/obj/
+TestResults/
+artifacts/
+
+.build/

@@ -1,0 +1,112 @@
+[
+  {
+    "title": "Architecture Studio — C4, ADRs, and Diagrams as Code",
+    "url": "/articles/architecture-studio.html",
+    "description": "The Microsoft Build 2026 refresh positions the Architecture Studio as a practical engineering surface for communicating cloud architecture. The SPA renders an interactive C4 model, lets viewers drill …"
+  },
+  {
+    "title": "Agentic Web — Skills, MCP, and the New Operator Loop",
+    "url": "/articles/agentic-web.html",
+    "description": "Microsoft Build 2026 reframes the agentic web around a practical loop: the user states intent, the agent selects a reusable skill, MCP exposes a trustworthy tool surface, an action is proposed, and th…"
+  },
+  {
+    "title": "Azure Policy at Scale — Modify, Audit, Deny, Remediate",
+    "url": "/articles/policy-dashboard.html",
+    "description": "The Microsoft Build 2026 refresh frames the SPA as an Azure governance operations dashboard. It shows how a platform team manages 29 active assignments across modify, audit, deny, and DeployIfNotExist…"
+  },
+  {
+    "title": "CAF Naming — The Convention That Scales",
+    "url": "/articles/caf-matcher.html",
+    "description": "The Microsoft Build 2026 refresh turns the CAF matcher from a simple puzzle explainer into a governance article about naming that scales. The SPA teaches the same muscle memory platform teams need in …"
+  },
+  {
+    "title": "ClojureScript REPL Playground",
+    "url": "/articles/clojure-repl.html",
+    "description": "Live in-browser ClojureScript evaluation powered by SCI (Small Clojure Interpreter). No server is required; code is evaluated locally in the browser, examples are injected into the editor, and Ctrl+En…"
+  },
+  {
+    "title": "Cloud Platformer — Navigating Azure Infrastructure",
+    "url": "/articles/cloud-platformer.html",
+    "description": "Retro 8-bit game where you collect Azure resource icons across cloud platforms. Under the hood it is a compact ClojureScript canvas game: a single atom holds world state, requestAnimationFrame drives …"
+  },
+  {
+    "title": "Copilot-Ops Console — Where AI Meets the Ticket",
+    "url": "/articles/copilot-ops-console.html",
+    "description": "The Copilot-Ops Console is a portfolio demo of an AI-assisted operations desk where the operator does not ask a chatbot what to do next; they orchestrate a disciplined work system. Six ticket lanes, c…"
+  },
+  {
+    "title": "Fabric Capacity Tuner — Size F-SKUs, Tame 430s",
+    "url": "/articles/fabric-capacity-tuner.html",
+    "description": "Microsoft Fabric capacity sizing is a balancing act between cost, concurrency, and throttling risk. The Fabric Capacity Tuner demo turns that tradeoff into a live model: choose an F-SKU, select the mi…"
+  },
+  {
+    "title": "Fabric Medallion Pipeline — Microsoft Build 2026",
+    "url": "/articles/fabric-pipeline.html",
+    "description": "This Microsoft Build 2026 refresh explains the SPA as a production-style Microsoft Fabric medallion architecture: raw events or files enter Bronze, PySpark notebooks cleanse and conform them in Silver…"
+  },
+  {
+    "title": "Incident Triage: AD, GPO, DNS & SQL/VM",
+    "url": "/articles/ad-gpo-fundamentals.html",
+    "description": "A sub-5-minute incident-response playbook spanning the on-prem identity layer and the VM/SQL Server layer: how to triage a GPO that isn't applying, a hostname resolving to two different IPs, a cross-f…"
+  },
+  {
+    "title": "Infrastructure as Code — AVM, OIDC, and Deployment Stacks",
+    "url": "/articles/iac-pipeline.html",
+    "description": "Microsoft Build 2026 refresh of the IaC pipeline behind the SPA: a trunk-based GitHub Actions path where Bicep composes Azure Verified Modules, authenticates through OIDC federated identity, deploys w…"
+  },
+  {
+    "title": "M365 Administration — JML, Access Packages, and Copilot Governance",
+    "url": "/articles/m365-admin.html",
+    "description": "The Microsoft Build 2026 refresh turns the M365 administration demo into a governance operating model for the M365 tenant. The SPA shows how Entra lifecycle workflows, access packages, Intune complian…"
+  },
+  {
+    "title": "Platform Engineering Console — Self-Service Provisioning",
+    "url": "/articles/platform-console.html",
+    "description": "The Microsoft Build 2026 refresh reframes the console as a self-service provisioning surface for Microsoft Fabric workspaces. The SPA demonstrates how an infrastructure team can offer safe paved roads…"
+  },
+  {
+    "title": "Pricing & Cost Optimizer — Fabric, AI Foundry, and Commitment Terms",
+    "url": "/articles/pricing-optimizer.html",
+    "description": "The Microsoft Build 2026 refresh turns the demo into a FinOps planning surface for Azure, Microsoft Fabric, and AI Foundry. The SPA now compares six SKU categories, applies commitment-term discounts p…"
+  },
+  {
+    "title": "Real-Time Log Pipeline — Event Hub to Eventhouse KQL",
+    "url": "/articles/log-pipeline.html",
+    "description": "Microsoft Build 2026 portfolio deep dive for a real-time security and application log pipeline. The SPA shows the operational path: emit structured events, buffer them through Azure Event Hubs, route …"
+  },
+  {
+    "title": "Space Invaders — Defending Against Misconfigurations",
+    "url": "/articles/space-invaders.html",
+    "description": "Classic space invaders reskinned with Azure security threats as enemies. The SPA turns governance failures into a readable threat catalog, then implements the game loop with a compact ClojureScript st…"
+  },
+  {
+    "title": "Tech Breakout — Smashing Through Azure Services",
+    "url": "/articles/tech-breakout.html",
+    "description": "Brick-breaker where bricks are Azure services and the paddle stands in for a delivery pipeline keeping the platform alive. The implementation is a clean example of small-game physics in ClojureScript:…"
+  },
+  {
+    "title": "Workflow Toolkit — File-Driven AI Ops",
+    "url": "/articles/workflow-toolkit.html",
+    "description": "File-driven operations beat yet another SaaS dashboard because the operator keeps ownership of the truth: tickets, time, follow-ups, approvals, and standup notes are durable markdown files that can be…"
+  },
+  {
+    "title": "🌀 Particle Storm — Rust + WASM",
+    "url": "/articles/particle-storm.html",
+    "description": "JavaScript is fast, but for tight inner loops updating thousands of particles per frame, Rust's zero-cost abstractions and LLVM-optimized WASM output provide measurably smoother animation. The particl…"
+  },
+  {
+    "title": "🔮 Raytracer — Rust + WASM",
+    "url": "/articles/raytracer.html",
+    "description": "For each pixel, a ray is cast from the camera through the image plane into the scene. The ray tests intersection against every sphere. At the hit point, we compute lighting (diffuse + specular) from t…"
+  },
+  {
+    "title": "🚁 Choplifter — Rescue Mission",
+    "url": "/articles/helicopter.html",
+    "description": "TL;DR: A homage to the classic 1982 Choplifter by Broderbund. Fly your helicopter into enemy territory, land near buildings to rescue hostages, and fly them back to base — while dodging tanks and jets…"
+  },
+  {
+    "title": "🧬 Game of Life — Rust + WASM",
+    "url": "/articles/game-of-life.html",
+    "description": "Each cell follows four simple rules:…"
+  }
+]
