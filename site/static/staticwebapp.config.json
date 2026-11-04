@@ -1,6 +1,21 @@
 {
   "routes": [
     {
+      "route": "/fabric/services",
+      "redirect": "/services/fabric/services/",
+      "statusCode": 301
+    },
+    {
+      "route": "/fabric/about",
+      "redirect": "/services/fabric/about/",
+      "statusCode": 301
+    },
+    {
+      "route": "/fabric/contact",
+      "redirect": "/services/fabric/contact/",
+      "statusCode": 301
+    },
+    {
       "route": "/platformer",
       "rewrite": "/platformer.html"
     },
