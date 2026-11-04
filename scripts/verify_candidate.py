@@ -10,7 +10,7 @@ archive=directory/'site.tar'
 if hashlib.sha256(archive.read_bytes()).hexdigest()!=expected:raise SystemExit('Candidate archive digest mismatch')
 release=json.loads((directory/'release.json').read_text())
 if release['sourceCommit']!=producer['head_sha'] or release['dirty']:raise SystemExit('Source identity mismatch or dirty source')
-if release['acceptanceRevision']!='ff65bc81321762d5fa1404c02e654ba7d13cabb5':raise SystemExit('Unexpected executable contract revision')
+if release['acceptanceRevision']!='3bf4b14349a55933189fa104251423a19de078c1':raise SystemExit('Unexpected executable contract revision')
 if str(release['producerRun'])!=str(producer['id']) or str(release['producerAttempt'])!=str(producer['run_attempt']):raise SystemExit('Producer run/attempt mismatch')
 with tarfile.open(archive) as tar:
  members=tar.getmembers()

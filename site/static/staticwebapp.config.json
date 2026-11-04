@@ -1,6 +1,66 @@
 {
   "routes": [
     {
+      "route": "/projects/",
+      "redirect": "/portfolio/",
+      "statusCode": 301
+    },
+    {
+      "route": "/writing/",
+      "redirect": "/articles/",
+      "statusCode": 301
+    },
+    {
+      "route": "/cloud/",
+      "redirect": "/articles/",
+      "statusCode": 301
+    },
+    {
+      "route": "/cloud/index.xml",
+      "redirect": "/articles/index.xml",
+      "statusCode": 301
+    },
+    {
+      "route": "/blog/",
+      "redirect": "/articles/",
+      "statusCode": 301
+    },
+    {
+      "route": "/cloud/sources-i-follow/",
+      "redirect": "/articles/sources-i-follow/",
+      "statusCode": 301
+    },
+    {
+      "route": "/cloud/starting-this-blog/",
+      "redirect": "/articles/starting-this-blog/",
+      "statusCode": 301
+    },
+    {
+      "route": "/cloud/why-i-love-trunk-based-development/",
+      "redirect": "/articles/why-i-love-trunk-based-development/",
+      "statusCode": 301
+    },
+    {
+      "route": "/cloud/june-openclaw-field-report/",
+      "redirect": "/articles/june-openclaw-field-report/",
+      "statusCode": 301
+    },
+    {
+      "route": "/cloud/homeschool-dashboard-business-idea/",
+      "redirect": "/articles/homeschool-dashboard-business-idea/",
+      "statusCode": 301
+    },
+    {
+      "route": "/cloud/how-i-m-getting-the-best-results-from-ai-lately/",
+      "redirect": "/articles/how-i-m-getting-the-best-results-from-ai-lately/",
+      "statusCode": 301
+    },
+    {
+      "route": "/cloud/purpose-built-ai-a-field-toolkit-for-engineering-operations/",
+      "redirect": "/articles/purpose-built-ai-a-field-toolkit-for-engineering-operations/",
+      "statusCode": 301
+    },
+    {
       "route": "/fabric/services/",
       "redirect": "/services/fabric/services/",
       "statusCode": 301
@@ -12,21 +72,6 @@
     },
     {
       "route": "/fabric/contact/",
-      "redirect": "/services/fabric/contact/",
-      "statusCode": 301
-    },
-    {
-      "route": "/fabric/services",
-      "redirect": "/services/fabric/services/",
-      "statusCode": 301
-    },
-    {
-      "route": "/fabric/about",
-      "redirect": "/services/fabric/about/",
-      "statusCode": 301
-    },
-    {
-      "route": "/fabric/contact",
       "redirect": "/services/fabric/contact/",
       "statusCode": 301
     },

@@ -1,4 +1,4 @@
-baseURL = 'https://portfolio.acestus.com/'
+baseURL = 'https://acestus.com/'
 locale = 'en-us'
 title = 'William Weeks-Balconi'
 contentDir = 'site/content'
