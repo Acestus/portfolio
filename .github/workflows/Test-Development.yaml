@@ -1,5 +1,12 @@
 name: Test-Development
 'on':
+  workflow_run:
+    workflows:
+    - Publish-Development
+    types:
+    - completed
+    branches:
+    - main
   workflow_dispatch:
     inputs:
       source_run_id:
@@ -14,7 +21,33 @@ permissions:
   contents: read
   actions: read
 jobs:
+  release:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      source_run_id: ${{ steps.release.outputs.source_run_id }}
+      archive_sha256: ${{ steps.release.outputs.archive_sha256 }}
+    steps:
+    - name: Select the successful publish release
+      id: release
+      env:
+        GH_TOKEN: ${{ github.token }}
+        SOURCE_RUN_ID: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.id || inputs.source_run_id }}
+        ARCHIVE_SHA256: ${{ inputs.archive_sha256 }}
+      run: |-
+        [[ "$SOURCE_RUN_ID" =~ ^[0-9]+$ ]] || exit 1
+        if [[ "$GITHUB_EVENT_NAME" == workflow_run ]]; then
+          attempt=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID" --jq .run_attempt)
+          [[ "$attempt" =~ ^[0-9]+$ ]] || exit 1
+          gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "portfolio-site-attempt-$attempt" --dir retained
+          ARCHIVE_SHA256=$(sha256sum retained/site.tar | cut -d' ' -f1)
+        fi
+        [[ "$ARCHIVE_SHA256" =~ ^[0-9a-f]{64}$ ]] || exit 1
+        echo "source_run_id=$SOURCE_RUN_ID" >> "$GITHUB_OUTPUT"
+        echo "archive_sha256=$ARCHIVE_SHA256" >> "$GITHUB_OUTPUT"
   pipeline:
+    needs: release
     permissions:
       contents: read
       actions: read
@@ -23,5 +56,5 @@ jobs:
     with:
       stage: development
       operation: test
-      source_run_id: ${{ inputs.source_run_id }}
-      archive_sha256: ${{ inputs.archive_sha256 }}
+      source_run_id: ${{ needs.release.outputs.source_run_id }}
+      archive_sha256: ${{ needs.release.outputs.archive_sha256 }}
