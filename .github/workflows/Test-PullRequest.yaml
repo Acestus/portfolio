@@ -1,0 +1,16 @@
+name: Test-PullRequest
+'on':
+  pull_request:
+    branches:
+    - main
+    types:
+    - opened
+    - synchronize
+    - reopened
+permissions:
+  contents: read
+jobs:
+  commit-stage:
+    uses: ./.github/workflows/_Qualify.yaml
+    with:
+      preview: true

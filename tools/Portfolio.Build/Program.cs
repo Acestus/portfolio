@@ -13,13 +13,13 @@ Directory.SetCurrentDirectory(root);
 switch (args.FirstOrDefault())
 {
     case "build":
-        if (!args.Contains("--skip-legacy")) await ProcessRunner.RunAsync("npm", ["run", "release"]);
-        BuildFiles.StageLegacyScripts(root);
+        await ProcessRunner.RunAsync("bun", ["run", "build:assets"]);
         var hugo = Environment.GetEnvironmentVariable("HUGO_BINARY") ?? "hugo";
         var version = await ProcessRunner.ReadAsync(hugo, ["version"]);
         if (!version.Contains("v0.164.0")) throw new InvalidOperationException("Hugo 0.164.0 is required.");
         await ProcessRunner.RunAsync(hugo, ["--minify", "--cleanDestinationDir"]);
         await PdfRenderer.RenderAsync(root);
+        File.Copy(Path.Combine(root, "public/resume/index.html"), Path.Combine(root, "public/downloads/william-weeks-balconi-resume.doc"), true);
         BuildFiles.VerifyOutput(Path.Combine(root, "public"));
         await BuildFiles.WriteManifestAsync(root);
         break;
@@ -28,7 +28,7 @@ switch (args.FirstOrDefault())
         var server = SiteServer.Create(Path.Combine(root, "public"), args.Length > 1 ? int.Parse(args[1]) : 1315);
         await server.RunAsync();
         break;
-    default: Console.WriteLine("Portfolio.Build build [--skip-legacy] | verify | serve [port]"); return 2;
+    default: Console.WriteLine("Portfolio.Build build | verify | serve [port]"); return 2;
 }
 return 0;
 
@@ -61,21 +61,6 @@ public static class BuildFiles
         var result = Path.GetFullPath(Path.Combine(root, relative));
         if (!result.StartsWith(root, StringComparison.Ordinal)) throw new ArgumentException("Asset path is outside its root.");
         return result;
-    }
-    public static void StageLegacyScripts(string root)
-    {
-        var names = Regex.Matches(File.ReadAllText(Path.Combine(root, "shadow-cljs.edn")), ":output-dir \\\"resources/public/js/([^\\\"]+)\\\"")
-            .Select(match => match.Groups[1].Value).ToArray();
-        if (names.Length != 19 || names.Distinct().Count() != 19) throw new InvalidOperationException("Expected the reviewed inventory of 19 ClojureScript builds.");
-        var destination = Path.Combine(root, ".build/legacy-js");
-        if (Directory.Exists(destination)) Directory.Delete(destination, true);
-        foreach (var name in names)
-        {
-            var source = ResolveInside(Path.Combine(root, "resources/public/js"), name + "/main.js");
-            if (!File.Exists(source) || new FileInfo(source).Length < 100) throw new InvalidOperationException($"Missing compiled legacy build: {name}");
-            var target = ResolveInside(destination, name + "/main.js");
-            Directory.CreateDirectory(Path.GetDirectoryName(target)!); File.Copy(source, target);
-        }
     }
     public static void VerifyOutput(string directory)
     {

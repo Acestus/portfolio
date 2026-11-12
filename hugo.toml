@@ -18,5 +18,9 @@ unsafe = false
     target = 'static'
 
   [[module.mounts]]
-    source = '.build/legacy-js'
+    source = '.build/browser-js'
     target = 'static/js'
+
+  [[module.mounts]]
+    source = '.build/browser-assets'
+    target = 'static'

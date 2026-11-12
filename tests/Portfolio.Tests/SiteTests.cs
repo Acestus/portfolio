@@ -120,14 +120,94 @@ public class BrowserTests
         {
             var page = await browser.NewPageAsync();
             var missing = new List<string>();
+            var errors = new List<string>();
+            page.PageError += (_, error) => errors.Add(error);
             page.Response += (_, response) => { if (response.Status >= 400 && new Uri(response.Url).Authority == new Uri(target).Authority) missing.Add(response.Url); };
             var response = await page.GotoAsync(new Uri(new Uri(target), project.GetProperty("url").GetString()!).AbsoluteUri);
             Assert.Equal(200, response?.Status);
             await Assertions.Expect(page.Locator("#app")).Not.ToBeEmptyAsync(new() { Timeout = 15000 });
             await page.WaitForTimeoutAsync(300);
             Assert.Empty(missing);
+            Assert.Empty(errors);
             await page.CloseAsync();
         }
     }
 
+}
+
+public class MigrationTests
+{
+    private static string Root => Environment.GetEnvironmentVariable("PORTFOLIO_ROOT") ?? Directory.GetCurrentDirectory();
+    private static string Target => Environment.GetEnvironmentVariable("PORTFOLIO_TEST_URL") ?? throw new InvalidOperationException("PORTFOLIO_TEST_URL is required");
+
+    [Fact]
+    public void AllLegacyBlogLinksHaveExplicitPreservingRedirects()
+    {
+        using var ledger = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root, "data/website-migration.json")));
+        using var config = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root, "public/staticwebapp.config.json")));
+        foreach (var post in ledger.RootElement.EnumerateArray())
+        {
+            var oldRoute = "/blog/" + post.GetProperty("slug").GetString() + "/";
+            var target = post.GetProperty("target").GetString()!;
+            Assert.Contains(config.RootElement.GetProperty("routes").EnumerateArray(), route =>
+                route.GetProperty("route").GetString() == oldRoute && route.GetProperty("redirect").GetString() == target);
+            Assert.True(File.Exists(Path.Combine(Root, "public", target.TrimStart('/'), "index.html")));
+        }
+        Assert.True(File.Exists(Path.Combine(Root, "public/downloads/william-weeks-balconi-resume.doc")));
+        Assert.True(File.Exists(Path.Combine(Root, "public/static/photo.png")));
+    }
+
+    [Fact]
+    public async Task NativePlatformTabsChangePanelsWithoutGlobalEventState()
+    {
+        using var playwright = await Playwright.CreateAsync();
+        await using var browser = await playwright.Chromium.LaunchAsync(new() { Headless = true });
+        var page = await browser.NewPageAsync();
+        var errors = new List<string>();
+        page.PageError += (_, error) => errors.Add(error);
+        await page.GotoAsync(Target + "/platform.html");
+        foreach (var label in new[] { "Copilot Agents", "PIM Access", "Workspaces" })
+        {
+            await page.GetByRole(AriaRole.Button, new() { Name = label, Exact = true }).ClickAsync();
+            await Assertions.Expect(page.Locator(".tab-btn.active")).ToHaveTextAsync(label);
+        }
+        Assert.Empty(errors);
+    }
+
+    [Fact]
+    public async Task RetainedReplEvaluatesWithButtonAndKeyboard()
+    {
+        using var playwright = await Playwright.CreateAsync();
+        await using var browser = await playwright.Chromium.LaunchAsync(new() { Headless = true });
+        var page = await browser.NewPageAsync();
+        await page.GotoAsync(Target + "/repl.html");
+        await page.Locator(".repl-editor").FillAsync("(+ 20 22)");
+        await page.Locator(".repl-run-btn").ClickAsync();
+        await Assertions.Expect(page.Locator(".repl-output")).ToContainTextAsync("42");
+        await page.Locator(".repl-clear-btn").ClickAsync();
+        await page.Locator(".repl-editor").FillAsync("(reduce + [1 2 3])");
+        await page.Locator(".repl-editor").PressAsync("Control+Enter");
+        await Assertions.Expect(page.Locator(".repl-output")).ToContainTextAsync("6");
+    }
+
+    [Theory]
+    [InlineData("helicopter")]
+    [InlineData("platformer")]
+    [InlineData("invaders")]
+    [InlineData("breakout")]
+    public async Task NativeGamesKeepRunningAfterInput(string game)
+    {
+        using var playwright = await Playwright.CreateAsync();
+        await using var browser = await playwright.Chromium.LaunchAsync(new() { Headless = true });
+        var page = await browser.NewPageAsync();
+        var errors = new List<string>();
+        page.PageError += (_, error) => errors.Add(error);
+        await page.GotoAsync(Target + "/" + game + ".html");
+        await page.Locator("canvas").ClickAsync();
+        await page.Keyboard.DownAsync("ArrowRight");
+        await page.Keyboard.PressAsync("Space");
+        await page.WaitForTimeoutAsync(600);
+        await page.Keyboard.UpAsync("ArrowRight");
+        Assert.Empty(errors);
+    }
 }

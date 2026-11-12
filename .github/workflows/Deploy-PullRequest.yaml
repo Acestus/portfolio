@@ -1,0 +1,67 @@
+name: Deploy-PullRequest
+'on':
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: Successful Test-PullRequest run for the current PR head
+        type: string
+        required: true
+      archive_sha256:
+        description: Verified SHA-256 of site.tar
+        type: string
+        required: true
+      pr_number:
+        description: Same-repository open PR number
+        type: string
+        required: true
+  pull_request_target:
+    branches:
+    - main
+    types:
+    - closed
+permissions:
+  contents: read
+  actions: read
+jobs:
+  preview:
+    if: github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    uses: ./.github/workflows/_Deliver.yaml
+    with:
+      stage: pull-request
+      operation: preview
+      source_run_id: ${{ inputs.source_run_id }}
+      archive_sha256: ${{ inputs.archive_sha256 }}
+      pr_number: ${{ inputs.pr_number }}
+  cleanup:
+    if: github.event_name == 'pull_request_target'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: pull-request
+    permissions:
+      contents: read
+      id-token: write
+    concurrency:
+      group: swa-portfolio-delivery
+      cancel-in-progress: false
+    steps:
+    - uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906
+      with:
+        client-id: ${{ vars.AZURE_CLIENT_ID }}
+        tenant-id: ${{ vars.AZURE_TENANT_ID }}
+        subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        audience: api://AzureADTokenExchange
+    - name: Remove only this closed PR named environment
+      env:
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+        SWA_NAME: ${{ vars.SWA_NAME || 'swa-portfolio-dev-scus-001' }}
+        RESOURCE_GROUP: ${{ vars.SWA_RESOURCE_GROUP || 'rg-portfolio-dev' }}
+      run: |-
+        [[ "$PR_NUMBER" =~ ^[0-9]+$ ]] || exit 1
+        exists=$(az staticwebapp environment list --name "$SWA_NAME" --resource-group "$RESOURCE_GROUP" --query "[?name=='pr-$PR_NUMBER'].name | [0]" -o tsv)
+        if [[ -n "$exists" ]]; then
+          az staticwebapp environment delete --name "$SWA_NAME" --resource-group "$RESOURCE_GROUP" --environment-name "pr-$PR_NUMBER" --yes --output none
+        fi

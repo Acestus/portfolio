@@ -20,3 +20,6 @@ TestResults/
 artifacts/
 
 .build/
+
+__pycache__/
+*.pyc

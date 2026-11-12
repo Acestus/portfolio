@@ -1,24 +1,36 @@
 """Validate retained, untrusted site bytes without executing candidate code."""
 import hashlib,json,os,sys,tarfile
 from pathlib import Path,PurePosixPath
+from release_policy import check_source,check_gate
 
 directory=Path(sys.argv[1])
 producer=json.loads(Path(sys.argv[2]).read_text())
+repository=os.environ['GITHUB_REPOSITORY']
+check_source(producer,repository,preview=os.environ.get('DELIVERY_STAGE')=='pull-request',
+ allow_current=os.environ.get('DELIVERY_OPERATION')=='publish',current_run=os.environ.get('GITHUB_RUN_ID',''))
 expected=os.environ['EXPECTED_SITE_SHA256']
 if len(expected)!=64 or any(c not in '0123456789abcdef' for c in expected):raise SystemExit('A real lowercase SHA-256 is required')
 archive=directory/'site.tar'
+if archive.stat().st_size>100_000_000:raise SystemExit('Candidate archive exceeds approved bound')
 if hashlib.sha256(archive.read_bytes()).hexdigest()!=expected:raise SystemExit('Candidate archive digest mismatch')
 release=json.loads((directory/'release.json').read_text())
 if release['sourceCommit']!=producer['head_sha'] or release['dirty']:raise SystemExit('Source identity mismatch or dirty source')
 if release['acceptanceRevision']!='f8c5647f2768bca58c0c1d86fd7216ed2a384415':raise SystemExit('Unexpected executable contract revision')
+if release['acceptanceRepository']!='Acestus/site-acceptance':raise SystemExit('Unexpected executable contract repository')
 if str(release['producerRun'])!=str(producer['id']) or str(release['producerAttempt'])!=str(producer['run_attempt']):raise SystemExit('Producer run/attempt mismatch')
-with tarfile.open(archive) as tar:
- members=tar.getmembers()
- if len(members)>1000 or sum(m.size for m in members)>100_000_000:raise SystemExit('Candidate exceeds approved bounds')
+with tarfile.open(archive,mode='r:') as tar:
  files={}
- for member in members:
+ seen_members=set()
+ count=0
+ total_bytes=0
+ for member in tar:
+  count+=1
+  total_bytes+=member.size
+  if count>1000 or total_bytes>100_000_000:raise SystemExit('Candidate exceeds approved bounds')
   path=PurePosixPath(member.name)
-  if path.is_absolute() or '..' in path.parts or member.issym() or member.islnk() or not(member.isdir() or member.isfile()):raise SystemExit('Unsafe archive member')
+  if path.is_absolute() or '..' in path.parts or str(path)!=member.name or '\\' in member.name or ':' in member.name or any(ord(c)<32 for c in member.name) or member.size<0 or member.issym() or member.islnk() or not(member.isdir() or member.isfile()):raise SystemExit('Unsafe archive member')
+  if member.name in seen_members:raise SystemExit('Duplicate archive member')
+  seen_members.add(member.name)
   if member.isfile():
    key=str(path)
    if key in files:raise SystemExit('Duplicate archive path')
@@ -32,4 +44,7 @@ with tarfile.open(archive) as tar:
   seen.add(path)
   if hashlib.sha256(files[path]).hexdigest()!=item['sha256'] or len(files[path])!=item['bytes']:raise SystemExit('File inventory digest mismatch')
  if json.loads(files['release.json'])!=release:raise SystemExit('Archive/release metadata mismatch')
-print('Verified exact source, producer, archive and complete per-file inventory before cloud authentication.')
+ for required in ('index.html','staticwebapp.config.json','resume/index.html','portfolio/index.html','articles/index.html'):
+  if required not in files:raise SystemExit('Missing required site file: '+required)
+if 'DELIVERY_STAGE' in os.environ:check_gate(producer,expected)
+print('Verified exact source, producer, archive, complete file inventory and required stage evidence before cloud authentication.')

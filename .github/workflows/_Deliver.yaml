@@ -1,0 +1,220 @@
+name: Reusable verified delivery
+'on':
+  workflow_call:
+    inputs:
+      stage:
+        description: Logical delivery stage
+        type: string
+        required: true
+      operation:
+        description: publish, promote, restore, preview, or test
+        type: string
+        required: true
+      source_run_id:
+        description: Original build run
+        type: string
+        required: true
+      archive_sha256:
+        description: Exact archive SHA-256
+        type: string
+        required: true
+      evidence_run_id:
+        description: Prior successful stage run
+        type: string
+        required: false
+        default: ''
+      pr_number:
+        description: PR number
+        type: string
+        required: false
+        default: ''
+permissions:
+  contents: read
+  actions: read
+jobs:
+  verify:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      slot: ${{ steps.inspect.outputs.slot }}
+      site: ${{ steps.tested.outputs.site }}
+      api: ${{ steps.tested.outputs.api }}
+    steps:
+    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      with:
+        persist-credentials: false
+    - name: Inspect producer and required prior-stage evidence
+      id: inspect
+      env:
+        GH_TOKEN: ${{ github.token }}
+        SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+        ARCHIVE_SHA256: ${{ inputs.archive_sha256 }}
+        EVIDENCE_RUN_ID: ${{ inputs.evidence_run_id }}
+        DELIVERY_STAGE: ${{ inputs.stage }}
+        DELIVERY_OPERATION: ${{ inputs.operation }}
+        PR_NUMBER: ${{ inputs.pr_number }}
+      run: |
+        [[ "$SOURCE_RUN_ID" =~ ^[0-9]+$ ]] || exit 1
+        [[ "$ARCHIVE_SHA256" =~ ^[0-9a-f]{64}$ ]] || exit 1
+        gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID" > producer.json
+        echo "producer_attempt=$(jq -er ' .run_attempt' producer.json)" >> "$GITHUB_OUTPUT"
+        case "$DELIVERY_STAGE:$DELIVERY_OPERATION" in
+          development:publish) evidence_stage='' ;;
+          development:test|staging:promote) evidence_stage=development ;;
+          production:promote) evidence_stage=staging ;;
+          production:restore|production:test) evidence_stage=production ;;
+          pull-request:preview)
+            evidence_stage=''
+            [[ "$PR_NUMBER" =~ ^[0-9]+$ ]] || exit 1
+            gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" > pull-request.json
+            ;;
+          *) echo 'Unsupported stage and operation' >&2; exit 1 ;;
+        esac
+        if [[ -n "$evidence_stage" ]]; then
+          evidence_run="$EVIDENCE_RUN_ID"
+          if [[ "$evidence_stage" == development && -z "$evidence_run" ]]; then evidence_run="$SOURCE_RUN_ID"; fi
+          [[ "$evidence_run" =~ ^[0-9]+$ ]] || exit 1
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$evidence_run" > evidence-run.json
+          evidence_attempt=$(jq -er .run_attempt evidence-run.json)
+          gh run download "$evidence_run" --name "receipt-$evidence_stage-attempt-$evidence_attempt" --dir evidence
+        fi
+        slot="$DELIVERY_STAGE"
+        if [[ "$DELIVERY_STAGE" == production ]]; then slot=''; fi
+        if [[ "$DELIVERY_STAGE" == pull-request ]]; then slot="pr-$PR_NUMBER"; fi
+        echo "slot=$slot" >> "$GITHUB_OUTPUT"
+    - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+      with:
+        name: portfolio-site-attempt-${{ steps.inspect.outputs.producer_attempt }}
+        path: retained
+        github-token: ${{ github.token }}
+        run-id: ${{ inputs.source_run_id }}
+    - name: Verify bytes, producer and promotion evidence before Azure authentication
+      env:
+        DELIVERY_STAGE: ${{ inputs.stage }}
+        DELIVERY_OPERATION: ${{ inputs.operation }}
+        PR_NUMBER: ${{ inputs.pr_number }}
+        EXPECTED_SITE_SHA256: ${{ inputs.archive_sha256 }}
+      run: python3 scripts/verify_candidate.py retained producer.json
+    - name: Extract only the verified archive
+      run: |-
+        mkdir candidate
+        tar -xf retained/site.tar -C candidate
+    - name: Read the previously tested endpoint for standalone tests
+      id: tested
+      if: inputs.operation == 'test'
+      run: |-
+        echo "site=$(jq -er '.siteUrl' evidence/receipt.json)" >> "$GITHUB_OUTPUT"
+        echo "api=$(jq -r '.apiUrl // empty' evidence/receipt.json)" >> "$GITHUB_OUTPUT"
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      with:
+        name: verified-${{ inputs.stage }}-attempt-${{ github.run_attempt }}
+        path: candidate/
+        include-hidden-files: true
+        retention-days: 7
+        if-no-files-found: error
+  deploy:
+    if: inputs.operation != 'test'
+    needs: verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    environment:
+      name: ${{ inputs.stage == 'development' && 'dev' || inputs.stage == 'staging' && 'stg' || inputs.stage == 'production'
+        && 'prd' || 'pull-request' }}
+      url: ${{ steps.site.outputs.static_web_app_url }}
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    concurrency:
+      group: swa-portfolio-delivery
+      cancel-in-progress: false
+    env:
+      SWA_NAME: ${{ vars.SWA_NAME || 'swa-portfolio-dev-scus-001' }}
+      RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP || 'rg-portfolio-dev' }}
+      SWA_RESOURCE_GROUP: ${{ vars.SWA_RESOURCE_GROUP || 'rg-portfolio-dev' }}
+      DELIVERY_STAGE: ${{ inputs.stage }}
+      DELIVERY_OPERATION: ${{ inputs.operation }}
+      PR_NUMBER: ${{ inputs.pr_number }}
+      EXPECTED_SITE_SHA256: ${{ inputs.archive_sha256 }}
+    steps:
+    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      with:
+        persist-credentials: false
+    - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+      with:
+        name: verified-${{ inputs.stage }}-attempt-${{ github.run_attempt }}
+        path: candidate
+    - uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906
+      with:
+        client-id: ${{ vars.AZURE_CLIENT_ID }}
+        tenant-id: ${{ vars.AZURE_TENANT_ID }}
+        subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        audience: api://AzureADTokenExchange
+    - name: Resolve the existing resource targets
+      id: target
+      run: |
+        token=$(az staticwebapp secrets list --name "$SWA_NAME" --resource-group "$SWA_RESOURCE_GROUP" --query properties.apiKey -o tsv)
+        test -n "$token" && test "$token" != null
+        echo "::add-mask::$token"
+        echo "token=$token" >> "$GITHUB_OUTPUT"
+    - name: Deploy the retained site to the selected SWA environment
+      id: site
+      uses: Azure/static-web-apps-deploy@4d27395796ac319302594769cfe812bd207490b1
+      with:
+        azure_static_web_apps_api_token: ${{ steps.target.outputs.token }}
+        action: upload
+        app_location: candidate
+        skip_app_build: true
+        production_branch: main
+        deployment_environment: ${{ needs.verify.outputs.slot }}
+    - name: Test the deployed release
+      env:
+        PORTFOLIO_SITE_URL: ${{ steps.site.outputs.static_web_app_url }}
+      run: python3 scripts/check_deployment.py candidate
+    - name: Record successful stage evidence
+      env:
+        EXPECTED_SITE_SHA256: ${{ inputs.archive_sha256 }}
+        DELIVERY_STAGE: ${{ inputs.stage }}
+        DELIVERY_SITE_URL: ${{ steps.site.outputs.static_web_app_url }}
+      run: python3 scripts/release_policy.py receipt
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      with:
+        name: receipt-${{ inputs.stage }}-attempt-${{ github.run_attempt }}
+        path: receipt/
+        retention-days: 90
+        if-no-files-found: error
+    - name: Record outcome
+      if: always()
+      env:
+        RESULT: ${{ job.status }}
+        DIGEST: ${{ inputs.archive_sha256 }}
+      run: 'echo "Delivery: $DELIVERY_STAGE; status: $RESULT; archive SHA-256: $DIGEST" >> "$GITHUB_STEP_SUMMARY"'
+  test:
+    if: inputs.operation == 'test'
+    needs: verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    environment: ${{ inputs.stage == 'development' && 'dev' || inputs.stage == 'staging' && 'stg' || inputs.stage == 'production'
+      && 'prd' || 'pull-request' }}
+    concurrency:
+      group: swa-portfolio-delivery
+      cancel-in-progress: false
+    steps:
+    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      with:
+        persist-credentials: false
+    - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+      with:
+        name: verified-${{ inputs.stage }}-attempt-${{ github.run_attempt }}
+        path: candidate
+    - name: Repeat live checks against the selected successful release
+      env:
+        PORTFOLIO_SITE_URL: ${{ needs.verify.outputs.site }}
+      run: python3 scripts/check_deployment.py candidate

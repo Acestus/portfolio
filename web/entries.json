@@ -1,0 +1,21 @@
+{
+  "hub": "web/entries/hub.js",
+  "platformer": "web/entries/platformer.js",
+  "invaders": "web/entries/invaders.js",
+  "matcher": "web/entries/matcher.js",
+  "breakout": "web/entries/breakout.js",
+  "helicopter": "web/entries/helicopter.js",
+  "fabric": "web/entries/fabric.js",
+  "policy": "web/entries/policy.js",
+  "logs": "web/entries/logs.js",
+  "iac": "web/entries/iac.js",
+  "platform": "web/entries/platform.js",
+  "architecture": "web/entries/architecture.js",
+  "agentic": "web/entries/agentic.js",
+  "pricing": "web/entries/pricing.js",
+  "m365": "web/entries/m365.js",
+  "workflow": "web/entries/workflow.js",
+  "copilotops": "web/entries/copilotops.js",
+  "fabriccap": "web/entries/fabriccap.js",
+  "repl": "web/vendor/repl.js"
+}

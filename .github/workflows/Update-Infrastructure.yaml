@@ -1,0 +1,77 @@
+name: Update-Infrastructure
+'on':
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: Target environment
+        type: choice
+        required: true
+        options:
+        - development
+        - staging
+        - production
+        - pull-request
+      iac_commit:
+        description: Reviewed full SHA in Acestus/infra
+        type: string
+        required: true
+      pr_number:
+        description: Required for pull-request infrastructure
+        type: string
+        required: false
+        default: ''
+permissions:
+  contents: read
+jobs:
+  infrastructure:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment: ${{ inputs.stage == 'development' && 'dev' || inputs.stage == 'staging' && 'stg' || inputs.stage == 'production'
+      && 'prd' || 'pull-request' }}
+    permissions:
+      contents: read
+      id-token: write
+    concurrency:
+      group: swa-portfolio-delivery
+      cancel-in-progress: false
+    env:
+      SWA_NAME: ${{ vars.SWA_NAME || 'swa-portfolio-dev-scus-001' }}
+      RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP || 'rg-portfolio-dev' }}
+      SWA_RESOURCE_GROUP: ${{ vars.SWA_RESOURCE_GROUP || 'rg-portfolio-dev' }}
+      DELIVERY_STAGE: ${{ inputs.stage }}
+      DELIVERY_OPERATION: infrastructure
+      PR_NUMBER: ${{ inputs.pr_number }}
+      IAC_TEMPLATE: ${{ vars.IAC_TEMPLATE }}
+      IAC_PARAMETERS_FILE: ${{ vars.IAC_PARAMETERS_FILE }}
+    steps:
+    - name: Require an immutable reviewed infrastructure source
+      env:
+        IAC_COMMIT: ${{ inputs.iac_commit }}
+      run: |-
+        [[ "$IAC_COMMIT" =~ ^[0-9a-f]{40}$ ]] || exit 1
+        test -n "$IAC_TEMPLATE"
+        if [[ "$DELIVERY_STAGE" == pull-request ]]; then [[ "$PR_NUMBER" =~ ^[0-9]+$ ]] || exit 1; fi
+    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      with:
+        repository: Acestus/infra
+        ref: ${{ inputs.iac_commit }}
+        path: iac
+        persist-credentials: false
+        token: ${{ secrets.IAC_READ_TOKEN || github.token }}
+    - name: Inspect the selected template and parameter file before Azure authentication
+      run: |-
+        test -f "iac/$IAC_TEMPLATE"
+        if [[ -n "$IAC_PARAMETERS_FILE" ]]; then test -f "iac/$IAC_PARAMETERS_FILE"; fi
+    - uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906
+      with:
+        client-id: ${{ vars.AZURE_CLIENT_ID }}
+        tenant-id: ${{ vars.AZURE_TENANT_ID }}
+        subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        audience: api://AzureADTokenExchange
+    - name: Apply reviewed infrastructure to the existing resource group
+      run: |-
+        parameters=()
+        if [[ -n "$IAC_PARAMETERS_FILE" ]]; then parameters=(--parameters "@iac/$IAC_PARAMETERS_FILE"); fi
+        az deployment group create --name "swa-$GITHUB_RUN_ID" --resource-group "$RESOURCE_GROUP" \
+          --template-file "iac/$IAC_TEMPLATE" "${parameters[@]}" --query properties.provisioningState --output tsv

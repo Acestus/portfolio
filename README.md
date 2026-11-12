@@ -1,17 +1,19 @@
-# William Weeks-Balconi — portfolio and resume
+# Portfolio — canonical acestus.com source
 
-A Hugo site at https://acestus.com with the canonical resume, a generated
-PDF, interactive cloud demonstrations and technical writing. Existing demo and
-article URLs are preserved. The public knowledge base lives at `/docs/`, including
-the supplied engineering delivery architecture; the public Pack 60 plan lives at
-`/scouting/`. Its private calendar remains on Journal.
+Hugo renders the site; Bun builds the browser JavaScript. Portfolio is the canonical replacement for the former Clojure website. Deployment and DNS cutover are separate operational steps.
 
-Read [repo-architecture.md](repo-architecture.md) first for boundaries, commands,
-provenance, deployment, rollback and current limitations. Resume content lives in
-`site/content/resume/index.md`; edit it once to update both website and PDF.
-`docs/resume-migration.md` records the approved legacy source.
+## Build and verify
 
-The PR/main workflow builds and tests without Azure privileges. Publication is a
-separate manual operation using the exact retained main artifact after independent
-verification. This repository does not contain the independent acceptance contract
-or automatically approve its own behavior. No other Azure apps are deleted here.
+Use .NET 10 (global.json), Hugo extended 0.164.0 and Bun 1.3.14. Restore the locked .NET projects and install their matching Playwright Chromium before building.
+
+```sh
+dotnet restore tools/Portfolio.Build/Portfolio.Build.csproj --locked-mode
+dotnet restore tests/Portfolio.Tests/Portfolio.Tests.csproj --locked-mode
+bun test web/tests
+bun run build
+dotnet test tests/Portfolio.Tests/Portfolio.Tests.csproj
+```
+
+The build renders the resume PDF with Chromium. Browser tests additionally require a running generated-site server and `PORTFOLIO_TEST_URL`; see the qualification workflow for the complete automated sequence.
+
+The nine delivery workflows build once, retain a checked release archive, and promote those same bytes through named environments on one existing Azure Static Web App. See [delivery configuration](docs/swa-cicd.md), [architecture](repo-architecture.md), and [migration details](docs/hugo-bun-migration.md).

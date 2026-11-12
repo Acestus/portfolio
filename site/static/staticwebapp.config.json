@@ -156,6 +156,51 @@
       "route": "/resume.html",
       "redirect": "/resume/",
       "statusCode": 301
+    },
+    {
+      "route": "/blog/i-m-a-historian-by-training-the-first-thing-you-learn-is-the-hierarchy-of-sources-primary-sources-8d25c327/",
+      "redirect": "/articles/i-m-a-historian-by-training-the-first-thing-you-learn-is-the-hierarchy-of-sources-primary-sources/",
+      "statusCode": 301
+    },
+    {
+      "route": "/blog/purpose-built-ai-a-field-toolkit-for-engineering-operations-f069fef1/",
+      "redirect": "/articles/purpose-built-ai-a-field-toolkit-for-engineering-operations/",
+      "statusCode": 301
+    },
+    {
+      "route": "/blog/why-modern-movies-with-iphones-leave-me-cold-and-what-star-trek-gets-right-about-technology-6167feb0/",
+      "redirect": "/articles/why-modern-movies-with-iphones-leave-me-cold-and-what-star-trek-gets-right-about-technology/",
+      "statusCode": 301
+    },
+    {
+      "route": "/blog/great-writers-freeze-a-language-2e0af7fc/",
+      "redirect": "/articles/great-writers-freeze-a-language/",
+      "statusCode": 301
+    },
+    {
+      "route": "/blog/why-i-love-trunk-based-development-9e7b07c2/",
+      "redirect": "/articles/why-i-love-trunk-based-development/",
+      "statusCode": 301
+    },
+    {
+      "route": "/blog/the-power-of-our-words-1112cb8e/",
+      "redirect": "/articles/the-power-of-our-words/",
+      "statusCode": 301
+    },
+    {
+      "route": "/health",
+      "rewrite": "/health.txt",
+      "headers": {
+        "Content-Type": "text/plain; charset=utf-8"
+      }
+    },
+    {
+      "route": "/resume.doc",
+      "rewrite": "/downloads/william-weeks-balconi-resume.doc",
+      "headers": {
+        "Content-Type": "application/msword; charset=utf-8",
+        "Content-Disposition": "attachment; filename=\"william-weeks-balconi-resume.doc\""
+      }
     }
   ],
   "responseOverrides": {

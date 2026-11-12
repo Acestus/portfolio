@@ -1,0 +1,80 @@
+name: Reusable Hugo/Bun commit stage
+'on':
+  workflow_call:
+    inputs:
+      preview:
+        type: boolean
+        required: true
+    outputs:
+      archive_sha256:
+        value: ${{ jobs.qualify.outputs.archive_sha256 }}
+permissions:
+  contents: read
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    outputs:
+      archive_sha256: ${{ steps.digest.outputs.sha256 }}
+    steps:
+    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      with:
+        persist-credentials: false
+        ref: ${{ inputs.preview && github.event.pull_request.head.sha || github.sha }}
+    - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1
+      with:
+        global-json-file: global.json
+    - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
+      with:
+        bun-version: 1.3.14
+    - uses: peaceiris/actions-hugo@2752ce1d29631191ea3f27c23495fa06139a5b78
+      with:
+        hugo-version: 0.164.0
+        extended: true
+    - name: Test release policy and native browser modules
+      run: |-
+        python3 scripts/test_candidate_verification.py
+        python3 -m unittest discover -s tests -p 'test_release*.py'
+        bun test web/tests
+    - name: Restore the locked browser harness
+      run: |-
+        dotnet restore tests/Portfolio.Tests/Portfolio.Tests.csproj --locked-mode
+        dotnet build tests/Portfolio.Tests/Portfolio.Tests.csproj --no-restore
+        tools/Portfolio.Build/bin/Debug/net10.0/.playwright/node/linux-x64/node tools/Portfolio.Build/bin/Debug/net10.0/.playwright/package/cli.js install --with-deps chromium
+    - name: Build with Hugo and Bun; render the canonical resume PDF
+      run: bun run build
+    - name: Exercise the generated site and every retained demo
+      run: |-
+        dotnet tools/Portfolio.Build/bin/Debug/net10.0/Portfolio.Build.dll serve 1315 &
+        server_pid=$!
+        trap 'kill "$server_pid"' EXIT
+        for attempt in $(seq 1 30); do
+          if curl -fsS http://127.0.0.1:1315/ > /dev/null; then break; fi
+          sleep 1
+        done
+        mkdir -p artifacts/evidence
+        PORTFOLIO_ROOT="$PWD" PORTFOLIO_TEST_URL=http://127.0.0.1:1315 PORTFOLIO_EVIDENCE="$PWD/artifacts/evidence" dotnet test tests/Portfolio.Tests/Portfolio.Tests.csproj --no-build --no-restore --logger trx --results-directory artifacts/test-results
+    - name: Retain the tested bytes once
+      run: python3 scripts/package_candidate.py
+    - name: Record artifact identity
+      id: digest
+      run: echo "sha256=$(sha256sum artifacts/site.tar | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      with:
+        name: portfolio-site-attempt-${{ github.run_attempt }}
+        path: |
+          artifacts/site.tar
+          artifacts/site.tar.sha256
+          artifacts/release.json
+          artifacts/release-files.json
+        if-no-files-found: error
+        retention-days: ${{ inputs.preview && 7 || 90 }}
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      if: always()
+      with:
+        name: portfolio-test-evidence-attempt-${{ github.run_attempt }}
+        path: |
+          artifacts/test-results
+          artifacts/evidence
+        if-no-files-found: warn
+        retention-days: 14

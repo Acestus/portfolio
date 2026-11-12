@@ -1,0 +1,27 @@
+name: Promote-Staging
+'on':
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: Original successful Publish-Development build run
+        type: string
+        required: true
+      archive_sha256:
+        description: Verified SHA-256 of site.tar
+        type: string
+        required: true
+permissions:
+  contents: read
+  actions: read
+jobs:
+  pipeline:
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    uses: ./.github/workflows/_Deliver.yaml
+    with:
+      stage: staging
+      operation: promote
+      source_run_id: ${{ inputs.source_run_id }}
+      archive_sha256: ${{ inputs.archive_sha256 }}

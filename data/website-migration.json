@@ -1,0 +1,56 @@
+[
+  {
+    "slug": "i-m-a-historian-by-training-the-first-thing-you-learn-is-the-hierarchy-of-sources-primary-sources-8d25c327",
+    "title": " I'm a historian by training. The first thing you learn is the hierarchy of sources. Primary sources — first-hand accounts, original documents, directtestimony — are the raw material. Secondary sources are someone else's interpretation of that material. T",
+    "date": "2026-05-30T00:23:44Z",
+    "summary": "I'm a historian by training. The first thing you learn is the hierarchy of sources. Primary sources — first-hand accounts, original documents, directtestimony — are the raw material. Secondary…",
+    "sourceSha256": "6994572d1f029bb2c494e58c4cd35b8d927e3b3e863fa7b51d8299d7b8fa652d",
+    "target": "/articles/i-m-a-historian-by-training-the-first-thing-you-learn-is-the-hierarchy-of-sources-primary-sources/",
+    "disposition": "converted original public HTML to Hugo Markdown"
+  },
+  {
+    "slug": "purpose-built-ai-a-field-toolkit-for-engineering-operations-f069fef1",
+    "title": "Purpose-Built AI: A Field Toolkit for Engineering Operations",
+    "date": "2026-05-29T23:56:33Z",
+    "summary": "General-purpose AI assistants have an infinite goal space. Give one the instruction \"answer whatever the user asks\" and you've created a system with nodefensible perimeter — every question is a new…",
+    "sourceSha256": "fadee9c03b73f9c602f0fc9f6ecdac6c431c9f34da89f0ad2520df4fbbbb01fc",
+    "target": "/articles/purpose-built-ai-a-field-toolkit-for-engineering-operations/",
+    "disposition": "existing canonical article; authored version retained"
+  },
+  {
+    "slug": "why-modern-movies-with-iphones-leave-me-cold-and-what-star-trek-gets-right-about-technology-6167feb0",
+    "title": "Why Modern Movies with iPhones Leave Me Cold (And What Star Trek Gets Right About Technology)",
+    "date": "2026-05-03T03:50:57Z",
+    "summary": "Lately, I’ve been bothered by how so many movies treat the iPhone (or any phone) as the be-all, end-all device—every key moment, the climax even, just ends up being people yelling into a little slab…",
+    "sourceSha256": "d8ccdcb48689db214b7fcc69472554e8bb281eb635ca65ed6323f85f8b50ac0f",
+    "target": "/articles/why-modern-movies-with-iphones-leave-me-cold-and-what-star-trek-gets-right-about-technology/",
+    "disposition": "converted original public HTML to Hugo Markdown"
+  },
+  {
+    "slug": "great-writers-freeze-a-language-2e0af7fc",
+    "title": "Great Writers Freeze a Language",
+    "date": "2026-05-02T05:00:13Z",
+    "summary": "Looking back at history, I’m often reminded of that famous Mark Twain quote: “History doesn’t repeat itself, but it does rhyme.” I see proof of this in the words and phrases we still use today—many…",
+    "sourceSha256": "b78074f9e54a07ea1dc3ef6628846332915f8ac65990b76c5a682f2a395e9dd4",
+    "target": "/articles/great-writers-freeze-a-language/",
+    "disposition": "converted original public HTML to Hugo Markdown"
+  },
+  {
+    "slug": "why-i-love-trunk-based-development-9e7b07c2",
+    "title": "Why I Love Trunk-Based Development",
+    "date": "2026-05-02T04:48:37Z",
+    "summary": "For a long time, I used to think branching strategies were just a technical detail—something you picked once, then rarely thought about again. But the more I build and work with teams, the more I’ve…",
+    "sourceSha256": "2204efc07c4361e443f7dbdce074868b5a3844d79a3df4201364eb6924859cae",
+    "target": "/articles/why-i-love-trunk-based-development/",
+    "disposition": "existing canonical article; authored version retained"
+  },
+  {
+    "slug": "the-power-of-our-words-1112cb8e",
+    "title": "The Power of Our Words",
+    "date": "2026-05-02T04:11:10Z",
+    "summary": "Recently, I listened to a talk at my church that really stuck with me. A few things hit home—simple ideas on how to show love. 1. Fathers and Sons: If you have a son, tell him you’re proud of him.…",
+    "sourceSha256": "86735f2933b4f8dd9601646b8b6ceb68cecc318de701db9ba1de912e9bfbe6bc",
+    "target": "/articles/the-power-of-our-words/",
+    "disposition": "converted original public HTML to Hugo Markdown"
+  }
+]

@@ -1,0 +1,34 @@
+{
+  "migrationTool": "squint-cljs@0.16.213 (one-time source conversion; not a build dependency)",
+  "originalCommit": "c3941f87fd8a48e486a9166ea44ce5634e12791f",
+  "nativeSources": "web/modules/portfolio",
+  "sources": {
+    "src/portfolio/core.cljs": "279d1c7f3c3cfb4db254ba8373a70d31001e3a1ca0d08776aa99006d425aeae4",
+    "src/portfolio/hub.cljs": "31fd27809a3b1478f1a4c020b09e28970658df81192014ecc8bd39c62ac37631",
+    "src/portfolio/components.cljs": "d933a6a1b385e514a0239c598c75b7a0acd2b917600fed69cda23c70dc3c9f8d",
+    "src/portfolio/games/breakout.cljs": "af60d6cee65aa068bbcfe7adcf5cab1cdfebaad43db9ad9e2500281960648c4e",
+    "src/portfolio/games/invaders.cljs": "e0cb12c72091b3b1c1d6bc644623d1c8b4d1c6266d018f596410af08fef2866d",
+    "src/portfolio/games/matcher.cljs": "e96bb51e9c77f416108cc922da9ab36f53baa88bfdbc407e054e58ea447ed6c3",
+    "src/portfolio/games/helicopter.cljs": "5553638613a08416e15ecd3e3ea5cc86f07cb2997f36c8814c7802a88e5fd764",
+    "src/portfolio/games/engine.cljs": "1c7722b4f9381a2c8301330051aa74631292471e15168eb1711726512baa3a94",
+    "src/portfolio/games/platformer.cljs": "1bb0fa450d7b13e2c5b68da87900e125b86ee9d71ae1c658149e5f075c12c19d",
+    "src/portfolio/pro/repl.cljs": "3397fc46e1c22d826895e4878c2e77d26a630c79a2e53aa10dfa779e229ae3d8",
+    "src/portfolio/pro/copilotops.cljs": "d63689b823e3857503b1fbb1f214899755baa46c451d0d5b676094ab8c229a56",
+    "src/portfolio/pro/fabric.cljs": "a8e9c0c88ae867eb8b71210729aded80319d3f38a510e346b018d29525c87793",
+    "src/portfolio/pro/platform.cljs": "4ded5036eba188b0a22b8553926cb264af585091458c318e547c89ed93029503",
+    "src/portfolio/pro/fabriccap.cljs": "f06ab15e56c4d298b9366ee4862f7ee8f7eddd5eeb5acdf67b4df51ecb64d4d9",
+    "src/portfolio/pro/logs.cljs": "7381fe609d388c2f2ea2935d289340e38a08ddf02f07f1cf69bb731d60f93f0c",
+    "src/portfolio/pro/agentic.cljs": "84cbec431ce3e8236aac8696b5d61f574def5d595c8ef414e5b65ec46c221834",
+    "src/portfolio/pro/iac.cljs": "9cd8a4860e772b599bcc62563de0c07eaf5c8c4456ac390717680af50d2e2084",
+    "src/portfolio/pro/architecture.cljs": "e110f491d61d787a447e3dd225ca1308ce08ae3113e587225bd71ed1434b4994",
+    "src/portfolio/pro/m365.cljs": "3b37fa6b07d461341ea864c43dc6594f30f64cf4592992c0db3810dac822a396",
+    "src/portfolio/pro/workflow.cljs": "bfab0488020d53cfe7f468535fc15f6ce15b2a436a2417fe53cf43adfcf35375",
+    "src/portfolio/pro/pricing.cljs": "21d32d0bc4c9902d726b650fe83f361db788feddf2d4338d5c7d7b809fe3a122",
+    "src/portfolio/pro/policy.cljs": "9b1760e118239180e8041b58f10949ebab66ee695c2b96b72f00b46cb49aa13c"
+  },
+  "repl": {
+    "path": "web/vendor/repl.js",
+    "sha256": "79b5446f21bdbbf1e586fa05162d5c5918c3bcfee4c696913d5e6f51cd14b1de",
+    "reason": "Preserve the intentional SCI browser REPL without a compiler/JVM build dependency."
+  }
+}
