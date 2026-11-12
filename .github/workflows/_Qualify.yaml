@@ -17,7 +17,7 @@ jobs:
     outputs:
       archive_sha256: ${{ steps.digest.outputs.sha256 }}
     steps:
-    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+    - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
       with:
         persist-credentials: false
         ref: ${{ inputs.preview && github.event.pull_request.head.sha || github.sha }}
@@ -59,7 +59,7 @@ jobs:
     - name: Record artifact identity
       id: digest
       run: echo "sha256=$(sha256sum artifacts/site.tar | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
-    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+    - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
       with:
         name: portfolio-site-attempt-${{ github.run_attempt }}
         path: |
@@ -69,7 +69,7 @@ jobs:
           artifacts/release-files.json
         if-no-files-found: error
         retention-days: ${{ inputs.preview && 7 || 90 }}
-    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+    - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
       if: always()
       with:
         name: portfolio-test-evidence-attempt-${{ github.run_attempt }}
