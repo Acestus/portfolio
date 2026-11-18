@@ -14,19 +14,19 @@ The repository's GitHub Actions are organized as a small delivery system rather 
 
 ```text
 Pull request
-  └─ Pre-CI-PR
+  └─ Pre-CI-PullRequest
        └─ _Qualify (preview build, tests, retained candidate)
 
 Push to main
   └─ Publish-Development
        ├─ _Qualify (build, browser checks, site.tar, SHA-256)
        └─ _Deliver (verify → deploy Development → live checks → receipt)
-             └─ Post-CD-Dev (read-only checks in a separate run)
+             └─ Post-CD-Development (read-only checks in a separate run)
 
 Manual promotion
   ├─ Promote-Staging  → _Deliver (verify Development evidence → deploy Staging)
   ├─ Promote-Production → _Deliver (verify Staging evidence → deploy Production)
-  ├─ Post-CD-Prod  → _Deliver (repeat read-only Production checks)
+  ├─ Post-CD-Production  → _Deliver (repeat read-only Production checks)
   └─ Restore-Production → _Deliver (redeploy a retained, previously successful release)
 ```
 
@@ -50,7 +50,7 @@ That distinction matters. A deployment should publish the bytes that were tested
 
 ## Pull requests: test, do not publish
 
-`Pre-CI-PR` runs for opened, synchronized, and reopened pull requests targeting `main`. It calls `_Qualify` with `preview: true`, which checks out the pull request head revision and exercises the candidate without Azure credentials.
+`Pre-CI-PullRequest` runs for opened, synchronized, and reopened pull requests targeting `main`. It calls `_Qualify` with `preview: true`, which checks out the pull request head revision and exercises the candidate without Azure credentials.
 
 This is intentionally a trust boundary. Pull-request code is untrusted input, so the PR workflow builds and tests it, but it does not receive cloud deployment credentials. The candidate artifact is short-lived—useful for qualification, not an unreviewed production release.
 
@@ -68,7 +68,7 @@ The repository previously had a `Deploy-PullRequest` workflow for deploying PR c
 6. Live checks compare the deployed release with the candidate.
 7. A receipt records the successful release evidence.
 
-`Post-CD-Dev` is triggered after a successful `Publish-Development` run. It downloads the exact retained candidate and repeats read-only checks against the live Development endpoint. It can also be started manually when the operator already has the source run ID and digest.
+`Post-CD-Development` is triggered after a successful `Publish-Development` run. It downloads the exact retained candidate and repeats read-only checks against the live Development endpoint. It can also be started manually when the operator already has the source run ID and digest.
 
 The separate test run makes the evidence visible and reusable without confusing a post-deployment check with the publication itself.
 
