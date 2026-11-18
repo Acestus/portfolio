@@ -1,4 +1,4 @@
-name: Test-Production
+name: Post-CD-Prod
 'on':
   workflow_dispatch:
     inputs:

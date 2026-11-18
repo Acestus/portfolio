@@ -1,4 +1,4 @@
-name: Test-Development
+name: Post-CD-Dev
 'on':
   workflow_run:
     workflows:

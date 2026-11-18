@@ -273,7 +273,7 @@ This is a non-executable template until PLATFORM_OWNER and REVIEWED_PLATFORM_COM
 
 
 ```yaml
-name: Test-PullRequest
+name: Pre-CI-PR
 on:
   pull_request:
 permissions:
@@ -288,7 +288,7 @@ Do not pass arbitrary credentialed scripts or arbitrary cloud destinations throu
 
 ### Workflow naming and compatibility
 
-Use PascalCase Verb-Noun display names such as Test-PullRequest, Publish-Development, Promote-Staging, Promote-Production, Restore-Production, and Invoke-DotnetLifecycle. New workflow files use .yaml.
+Use PascalCase Verb-Noun display names such as Pre-CI-PR, Publish-Development, Promote-Staging, Promote-Production, Restore-Production, and Invoke-DotnetLifecycle. New workflow files use .yaml.
 
 Preserve established reusable filenames, job/check identifiers, and producer allowlists unless executing a reviewed coordinated migration. Renaming a file referenced by another repository is an API change, even if its contents are identical.
 
@@ -683,7 +683,7 @@ sample-app/
   .github/
     deployment/
     workflows/
-      Test-PullRequest.yaml
+      Pre-CI-PR.yaml
       Publish-Development.yaml
       Promote-Staging.yaml
       Promote-Production.yaml

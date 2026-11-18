@@ -6,13 +6,13 @@ Build once, test the result, and promote the same retained bytes. Each transitio
 
 | Workflow | Trigger and result |
 | --- | --- |
-| Test-PullRequest | PR changes qualify and package the current PR head without Azure credentials. |
+| Pre-CI-PR | PR changes qualify and package the current PR head without Azure credentials. |
 | Deploy-PullRequest | Manual deployment of a successful current same-repository PR candidate to `pr-N`; trusted PR-close cleanup removes that preview. |
 | Publish-Development | Main pushes qualify once, retain the candidate, deploy development, and check the live release. |
-| Test-Development | Automatically run read-only live checks in a separate Actions run after Publish-Development succeeds; also available manually. |
+| Post-CD-Dev | Automatically run read-only live checks in a separate Actions run after Publish-Development succeeds; also available manually. |
 | Promote-Staging | Manually deploy the retained candidate with successful development evidence. |
 | Promote-Production | Manually deploy that candidate with successful staging evidence. |
-| Test-Production | Manually repeat read-only live checks against a recorded production deployment. |
+| Post-CD-Prod | Manually repeat read-only live checks against a recorded production deployment. |
 | Restore-Production | Manually redeploy a retained candidate with evidence of its earlier successful production deployment. |
 | Update-Infrastructure | Manually apply an explicitly configured infrastructure template at a reviewed immutable commit. |
 
@@ -29,7 +29,7 @@ Infrastructure additionally requires `IAC_TEMPLATE` and optionally `IAC_PARAMETE
 ## Publish and promote
 
 1. Merge a qualified change to main. `Publish-Development` builds, runs browser checks, and uploads `portfolio-site-attempt-N` containing `site.tar`, its SHA-256, and release inventories.
-   Successful publication triggers a separate `Test-Development` workflow run, which resolves the exact retained candidate from that publish run and repeats live checks. Failed publications do not trigger tests. Deployment verification remains part of publication.
+   Successful publication triggers a separate `Post-CD-Dev` workflow run, which resolves the exact retained candidate from that publish run and repeats live checks. Failed publications do not trigger tests. Deployment verification remains part of publication.
 2. Record that producer run ID and the archive SHA-256 from its output. Use those as `source_run_id` and `archive_sha256` when promoting to staging.
 3. Promote production with the same producer and digest, and supply the successful staging run as `evidence_run_id`.
 4. For a restore, select a still-retained original candidate and a successful earlier production promotion/restore run for those exact bytes. No new build occurs.
