@@ -1,4 +1,4 @@
-name: Test-PullRequest
+name: Pre-CI-PR
 'on':
   pull_request:
     branches:
