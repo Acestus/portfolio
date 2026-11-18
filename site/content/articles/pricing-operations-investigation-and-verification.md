@@ -73,7 +73,18 @@ My background is in engineering and operations. I would bring that experience to
 
 The specific pricing platform, reporting tools, and approval process would be part of learning the role. I would start with the established data definitions and operating procedures, then apply my SQL and scripting experience where they improve investigation and validation.
 
-The Acestus portfolio includes a [Pricing & Cost Optimizer demonstration](https://acestus.com/pricing.html) and articles on [repeatable delivery](/articles/azure-functions-python-cicd/) and [AI-assisted engineering workflows](/articles/ai-software-factory/). They provide additional context for how I approach tools and operational evidence; they are portfolio examples, not claims of experience with Microsoft's internal pricing processes.
+## Selected portfolio examples
+
+These Acestus examples show how I approach analysis and operational work. They are demonstrations with illustrative data, not records of customer transactions or claims of experience with Microsoft's internal pricing processes.
+
+| Example | Connection to pricing operations | Explore |
+| --- | --- | --- |
+| Pricing & Cost Optimizer | Compare modeled costs and see how configuration choices affect an estimate. | [Open demonstration](https://acestus.com/pricing.html) · [Read article](https://acestus.com/docs/pricing-optimizer/) |
+| Log Pipeline | Follow events into a query layer and explore how queries support investigation and exception detection. | [Open demonstration](https://acestus.com/logs.html) · [Read article](https://acestus.com/docs/log-pipeline/) |
+| Copilot-Ops Console | Explore ticket flow, investigation context, and the distinction between operator notes and requester updates. | [Open demonstration](https://acestus.com/copilotops.html) · [Read article](https://acestus.com/docs/copilot-ops-console/) |
+| Workflow Toolkit | Explore how working records, review, and repeatable steps support consistent operational follow-through. | [Open demonstration](https://acestus.com/workflow.html) · [Read article](https://acestus.com/docs/workflow-toolkit/) |
+
+For the engineering practices behind these examples, see [repeatable delivery](https://acestus.com/articles/azure-functions-python-cicd/) and [AI-assisted engineering workflows](https://acestus.com/articles/ai-software-factory/).
 
 ## Read my resume
 
