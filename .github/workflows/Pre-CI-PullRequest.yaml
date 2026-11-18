@@ -1,4 +1,4 @@
-name: Pre-CI-PullRequest
+name: 01 Pre-CI-PullRequest
 'on':
   pull_request:
     branches:

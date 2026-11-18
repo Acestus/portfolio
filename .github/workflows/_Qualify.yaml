@@ -1,4 +1,4 @@
-name: Reusable Hugo/Bun commit stage
+name: 90 Reusable Hugo/Bun commit stage
 'on':
   workflow_call:
     inputs:

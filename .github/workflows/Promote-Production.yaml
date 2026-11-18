@@ -1,4 +1,4 @@
-name: Promote-Production
+name: 05 Promote-Production
 'on':
   workflow_dispatch:
     inputs:
