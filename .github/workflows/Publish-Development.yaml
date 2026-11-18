@@ -1,4 +1,4 @@
-name: Publish-Development
+name: 02 Publish-Development
 'on':
   push:
     branches:

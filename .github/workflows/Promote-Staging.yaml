@@ -1,4 +1,4 @@
-name: Promote-Staging
+name: 04 Promote-Staging
 'on':
   workflow_dispatch:
     inputs:

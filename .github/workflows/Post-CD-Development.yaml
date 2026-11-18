@@ -1,8 +1,8 @@
-name: Post-CD-Development
+name: 03 Post-CD-Development
 'on':
   workflow_run:
     workflows:
-    - Publish-Development
+    - 02 Publish-Development
     types:
     - completed
     branches:

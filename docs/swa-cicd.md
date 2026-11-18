@@ -6,17 +6,16 @@ Build once, test the result, and promote the same retained bytes. Each transitio
 
 | Workflow | Trigger and result |
 | --- | --- |
-| Pre-CI-PullRequest | PR changes qualify and package the current PR head without Azure credentials. |
-| Deploy-PullRequest | Manual deployment of a successful current same-repository PR candidate to `pr-N`; trusted PR-close cleanup removes that preview. |
-| Publish-Development | Main pushes qualify once, retain the candidate, deploy development, and check the live release. |
-| Post-CD-Development | Automatically run read-only live checks in a separate Actions run after Publish-Development succeeds; also available manually. |
-| Promote-Staging | Manually deploy the retained candidate with successful development evidence. |
-| Promote-Production | Manually deploy that candidate with successful staging evidence. |
-| Post-CD-Production | Manually repeat read-only live checks against a recorded production deployment. |
-| Restore-Production | Manually redeploy a retained candidate with evidence of its earlier successful production deployment. |
-| Update-Infrastructure | Manually apply an explicitly configured infrastructure template at a reviewed immutable commit. |
+| 01 Pre-CI-PullRequest | PR changes qualify and package the current PR head without Azure credentials. |
+| 02 Publish-Development | Main pushes qualify once, retain the candidate, deploy development, and check the live release. |
+| 03 Post-CD-Development | Automatically run read-only live checks in a separate Actions run after Publish-Development succeeds; also available manually. |
+| 04 Promote-Staging | Manually deploy the retained candidate with successful development evidence. |
+| 05 Promote-Production | Manually deploy that candidate with successful staging evidence. |
+| 06 Post-CD-Production | Manually repeat read-only live checks against a recorded production deployment. |
+| 80 Restore-Production | Manually redeploy a retained candidate with evidence of its earlier successful production deployment. |
+| 81 Update-Infrastructure | Manually apply an explicitly configured infrastructure template at a reviewed immutable commit. |
 
-`_Qualify` and `_Deliver` are reusable implementation workflows. Application delivery is serialized through `swa-portfolio-delivery`, including cleanup, checks, and infrastructure. GitHub concurrency does not guarantee FIFO ordering.
+`90 Reusable Hugo/Bun commit stage` (`_Qualify.yaml`) and `91 Reusable verified delivery` (`_Deliver.yaml`) are reusable implementation workflows. The numeric display-name prefixes order the Actions sidebar; triggers and dependencies control execution. Workflow filenames remain stable for callers and provenance checks. Application delivery is serialized through `swa-portfolio-delivery`, including cleanup, checks, and infrastructure. GitHub concurrency does not guarantee FIFO ordering.
 
 ## One SWA
 
@@ -28,8 +27,8 @@ Infrastructure additionally requires `IAC_TEMPLATE` and optionally `IAC_PARAMETE
 
 ## Publish and promote
 
-1. Merge a qualified change to main. `Publish-Development` builds, runs browser checks, and uploads `portfolio-site-attempt-N` containing `site.tar`, its SHA-256, and release inventories.
-   Successful publication triggers a separate `Post-CD-Development` workflow run, which resolves the exact retained candidate from that publish run and repeats live checks. Failed publications do not trigger tests. Deployment verification remains part of publication.
+1. Merge a qualified change to main. `02 Publish-Development` builds, runs browser checks, and uploads `portfolio-site-attempt-N` containing `site.tar`, its SHA-256, and release inventories.
+   Successful publication triggers a separate `03 Post-CD-Development` workflow run, which resolves the exact retained candidate from that publish run and repeats live checks. Failed publications do not trigger tests. Deployment verification remains part of publication.
 2. Record that producer run ID and the archive SHA-256 from its output. Use those as `source_run_id` and `archive_sha256` when promoting to staging.
 3. Promote production with the same producer and digest, and supply the successful staging run as `evidence_run_id`.
 4. For a restore, select a still-retained original candidate and a successful earlier production promotion/restore run for those exact bytes. No new build occurs.
