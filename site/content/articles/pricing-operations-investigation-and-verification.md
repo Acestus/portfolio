@@ -10,6 +10,8 @@ Pricing operations depends on careful investigation: understand a request, find 
 
 My experience includes writing SQL scripts to resolve credit card variances, optimizing cloud billing and cost management, building analytical relational databases, and using queries to investigate operational events. Those are practical foundations for work where the numbers need to reconcile and the resolution needs evidence.
 
+I hold a BS in Computer Science and a BA in History. That combination supports both sides of an investigation: analyzing the underlying data and explaining the evidence clearly to the people making a decision.
+
 ## Start with the individual request
 
 An effective investigation begins by defining the discrepancy. Which record or result is disputed? What was expected? Which rule, time period, or source establishes that expectation?
@@ -39,6 +41,14 @@ Cloud billing and cost management have given me experience working with financia
 
 For a pricing request, I would document the affected records, the evidence for the cause, the proposed resolution, and any approval or ownership boundary. Where a business rule is unclear, I would resolve that ambiguity with its owner before treating an assumption as policy.
 
+## Bring structure to pricing escalations
+
+If the role includes deal-desk support, I would approach an escalation as a bounded investigation: identify the affected quote or transaction, establish the applicable approved pricing rule, and compare the expected result with the recorded result. I would distinguish a data discrepancy from an exception that requires a business decision.
+
+That distinction matters when working with sales, finance, and program owners. Correcting a record and authorizing a pricing exception carry different responsibilities. My contribution would be to make the evidence, proposed action, and decision owner clear, then verify the approved outcome.
+
+I would also look for recurring friction between a request, its supporting data, and the systems that process it. My experience writing automation and technical documentation provides a foundation for contributing to pricing-tool improvements: define the rule, identify the failure case, test the change, and document how operators verify it. These are transferable practices, not a claim of prior ownership of an enterprise deal desk.
+
 ## Verify the result and look for recurrence
 
 My automation and CI/CD experience reinforces a useful operational habit: executing a change and proving its outcome are separate steps.
@@ -56,7 +66,11 @@ Recurring exceptions deserve a second question: can the process prevent this cla
 | Understand financial impact | Cloud billing and cost management optimization |
 | Verify outcomes | Infrastructure automation and CI/CD practices |
 | Communicate findings | Technical documentation and stakeholder coordination |
+| Support tool and process improvements | Automation scripting, analytical database work, and CI/CD practices |
+| Technical academic foundation | BS in Computer Science |
 
 My background is in engineering and operations. I would bring that experience to pricing work through careful query-based investigation, clear documentation, and verification that the requested outcome was achieved.
+
+The specific pricing platform, reporting tools, and approval process would be part of learning the role. I would start with the established data definitions and operating procedures, then apply my SQL and scripting experience where they improve investigation and validation.
 
 The Acestus portfolio includes a [Pricing & Cost Optimizer demonstration](/docs/pricing-optimizer/) and articles on [repeatable delivery](/articles/azure-functions-python-cicd/) and [AI-assisted engineering workflows](/articles/ai-software-factory/). They provide additional context for how I approach tools and operational evidence; they are portfolio examples, not claims of experience with Microsoft's internal pricing processes.
