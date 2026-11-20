@@ -49,6 +49,22 @@ class DeliveryPolicyTests(unittest.TestCase):
         policy.check_source(self.producer, 'Acestus/portfolio', allow_current=True, current_run='123')
         with self.assertRaises(ValueError): policy.check_source(self.producer, 'Acestus/portfolio', allow_current=True, current_run='456')
 
+    def test_automatic_stage_evidence_must_belong_to_current_producer(self):
+        run = dict(self.producer, conclusion=None)
+        receipt = dict(self.receipt, runId='123', stage='staging')
+        policy.check_evidence(run, receipt, self.producer, 'Acestus/portfolio', 'staging', 'a' * 64, current_run='123')
+        for changed, current in [(dict(run, id=456), '456'), (run, '456'),
+                                 (dict(run, event='workflow_dispatch'), '123'),
+                                 (dict(run, path='.github/workflows/Other.yaml'), '123')]:
+            with self.assertRaises(ValueError):
+                policy.check_evidence(changed, receipt, self.producer, 'Acestus/portfolio', 'staging', 'a' * 64, current_run=current)
+        with self.assertRaises(ValueError):
+            policy.check_evidence(run, dict(receipt, stage='production'), self.producer,
+                                  'Acestus/portfolio', 'production', 'a' * 64, current_run='123')
+        completed = dict(run, conclusion='success')
+        policy.check_evidence(completed, dict(receipt, stage='production'), self.producer,
+                              'Acestus/portfolio', 'production', 'a' * 64)
+
     def test_preview_must_be_current_open_same_repository_pr(self):
         run = dict(self.producer, event='pull_request', path='.github/workflows/Test-PullRequest.yaml', pull_requests=[{'number': 42}])
         pr = {'number': 42, 'state': 'open', 'head': {'sha': 'abc', 'repo': {'full_name': 'Acestus/portfolio'}}}

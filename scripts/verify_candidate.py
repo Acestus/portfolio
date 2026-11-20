@@ -7,7 +7,8 @@ directory=Path(sys.argv[1])
 producer=json.loads(Path(sys.argv[2]).read_text())
 repository=os.environ['GITHUB_REPOSITORY']
 check_source(producer,repository,preview=os.environ.get('DELIVERY_STAGE')=='pull-request',
- allow_current=os.environ.get('DELIVERY_OPERATION')=='publish',current_run=os.environ.get('GITHUB_RUN_ID',''))
+ allow_current=(os.environ.get('DELIVERY_STAGE'),os.environ.get('DELIVERY_OPERATION')) in
+  {('development','publish'),('staging','promote'),('production','promote')},current_run=os.environ.get('GITHUB_RUN_ID',''))
 expected=os.environ['EXPECTED_SITE_SHA256']
 if len(expected)!=64 or any(c not in '0123456789abcdef' for c in expected):raise SystemExit('A real lowercase SHA-256 is required')
 archive=directory/'site.tar'
