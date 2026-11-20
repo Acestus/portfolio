@@ -15,7 +15,7 @@ class LiveChecks(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.responses = []
-        for path in ('release.json', 'resume/index.html', 'portfolio/index.html', 'articles/index.html', 'downloads/william-weeks-balconi-resume.pdf'):
+        for path in ('release.json', 'resume/index.html', 'portfolio/index.html', 'articles/index.html', 'blog/index.html', 'downloads/william-weeks-balconi-resume.pdf'):
             target = self.root / path
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(path.encode())
@@ -29,14 +29,14 @@ class LiveChecks(unittest.TestCase):
     def test_expected_release_is_valid(self): self.check()
 
     def test_stale_bytes_rejected(self):
-        for index in range(5):
+        for index in range(6):
             previous = self.responses[index]
             self.responses[index] = (200, b'stale')
             with self.assertRaises(ValueError): self.check()
             self.responses[index] = previous
 
     def test_unknown_and_private_paths_are_not_homepage_fallbacks(self):
-        for index in range(5, 8):
+        for index in range(6, 9):
             previous = self.responses[index]
             self.responses[index] = (200, b'homepage')
             with self.assertRaises(ValueError): self.check()

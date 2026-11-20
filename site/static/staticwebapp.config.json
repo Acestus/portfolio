@@ -29,11 +29,6 @@
       "statusCode": 301
     },
     {
-      "route": "/blog/",
-      "redirect": "/articles/",
-      "statusCode": 301
-    },
-    {
       "route": "/cloud/sources-i-follow/",
       "redirect": "/articles/sources-i-follow/",
       "statusCode": 301
