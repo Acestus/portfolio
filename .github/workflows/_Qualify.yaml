@@ -40,12 +40,12 @@ jobs:
       run: |-
         dotnet restore tests/Portfolio.Tests/Portfolio.Tests.csproj --locked-mode
         dotnet build tests/Portfolio.Tests/Portfolio.Tests.csproj --no-restore
-        tools/Portfolio.Build/bin/Debug/net10.0/.playwright/node/linux-x64/node tools/Portfolio.Build/bin/Debug/net10.0/.playwright/package/cli.js install --with-deps chromium
+        tools/Portfolio.Build/bin/Debug/net11.0/.playwright/node/linux-x64/node tools/Portfolio.Build/bin/Debug/net11.0/.playwright/package/cli.js install --with-deps chromium
     - name: Build with Hugo and Bun; render the canonical resume PDF
       run: bun run build
     - name: Exercise the generated site and every retained demo
       run: |-
-        dotnet tools/Portfolio.Build/bin/Debug/net10.0/Portfolio.Build.dll serve 1315 &
+        dotnet tools/Portfolio.Build/bin/Debug/net11.0/Portfolio.Build.dll serve 1315 &
         server_pid=$!
         trap 'kill "$server_pid"' EXIT
         for attempt in $(seq 1 30); do
