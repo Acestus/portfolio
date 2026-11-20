@@ -1,5 +1,12 @@
 const longDate = new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric" });
 
+// Activity ideas for leaders to adapt; confirm meeting plans with the den.
+const denActivities = {
+  "2026-11-16": ["Make a picture of a way to help someone and share it with a buddy.", "Play a teamwork relay, then make a thank-you card for a community helper.", "Plan a small service project and assign each Scout a role."],
+  "2026-11-30": ["Look for colors and shapes on a short buddy nature walk.", "Make a nature journal and sketch three observations without collecting them.", "Practice reading a trail map and discuss how to leave the area as you found it."],
+  "2026-12-07": ["Make a cardboard car and race it down a gentle ramp.", "Build a marble track from tubes and experiment with its slope.", "Sketch a Pinewood Derby car design and test how ramp changes affect a toy car."]
+};
+
 const events = [
   { date: "2026-11-16", title: "Den meeting", details: "6:00 PM · Shady Shores Baptist Church" },
   { date: "2026-11-30", title: "Den meeting", details: "6:00 PM · Shady Shores Baptist Church" },
@@ -39,6 +46,11 @@ function renderEvents() {
       card.className = "program-item";
       const date = item.end ? `${longDate.format(localDate(item.date))} – ${longDate.format(localDate(item.end))}` : longDate.format(localDate(item.date));
       card.innerHTML = `<div class="program-date">${date}</div><div><h3>${item.title}</h3><p>${item.details}</p></div>`;
+      if (denActivities[item.date]) {
+        const activities = document.createElement("div");
+        activities.innerHTML = `<h4>Suggested den activities</h4><ul>${["Lions", "Tigers", "Bears"].map((rank, index) => `<li><strong>${rank}:</strong> ${denActivities[item.date][index]}</li>`).join("")}</ul>`;
+        card.lastElementChild.append(activities);
+      }
       if (item.url) {
         const link = document.createElement("a");
         link.href = item.url;
