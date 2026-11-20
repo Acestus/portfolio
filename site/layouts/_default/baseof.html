@@ -6,9 +6,10 @@
 <meta name="theme-color" content="#173a32"><link rel="canonical" href="{{ .Permalink }}">
 <link rel="icon" href="/images/acestus-logo.png" type="image/png"><link rel="stylesheet" href="/site.css">
 {{ if eq .Section "blog" }}<link rel="stylesheet" href="/blog.css">{{ end }}
+{{ if eq .Section "videos" }}<link rel="stylesheet" href="/videos.css">{{ end }}
 {{ if eq .Section "docs" }}<link rel="stylesheet" href="/docs.css"><script src="/docs.js" defer></script>{{ end }}
 <script src="/site.js" defer></script>
-</head><body{{ if eq .Section "docs" }} class="knowledge-body"{{ end }}>
+</head><body{{ if eq .Section "docs" }} class="knowledge-body"{{ else if eq .Section "videos" }} class="videos-body"{{ end }}>
 <a class="skip" href="#main">Skip to content</a>
 <header class="header"><a class="brand" href="/" aria-label="William Weeks-Balconi home"><img class="brand-logo" src="/images/acestus-logo.png" alt="" width="800" height="731"><span>William<br>Weeks-Balconi</span></a>
 <nav aria-label="Main"><a href="/blog/" {{ if eq .Section "blog" }}aria-current="page"{{ end }}>Blog</a><a href="/docs/" {{ if eq .Section "docs" }}aria-current="page"{{ end }}>Docs</a><a href="/articles/" {{ if eq .Section "articles" }}aria-current="page"{{ end }}>Articles</a><a href="/videos/" {{ if eq .Section "videos" }}aria-current="page"{{ end }}>Videos</a><a href="/portfolio/" {{ if eq .Section "portfolio" }}aria-current="page"{{ end }}>Portfolio</a><a href="/services/fabric/">Services</a><a class="contact-link" href="mailto:william.azure@acestus.com">Let’s talk <span aria-hidden="true">↗</span></a></nav></header>

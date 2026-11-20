@@ -1,0 +1,21 @@
+{{ define "main" }}
+<section class="videos-page">
+  <header class="videos-heading">
+    <p class="videos-eyebrow">PRACTICAL CLOUD SYSTEMS</p>
+    <h1>Videos</h1>
+    <p>Walkthroughs, experiments, and demos.</p>
+  </header>
+  <div class="videos-tabs" aria-label="Video collection"><span aria-current="page">Videos</span></div>
+  <div class="videos-grid">
+    {{ range .RegularPages.ByWeight }}
+    <article class="video-card">
+      <a class="video-card-image" href="{{ .RelPermalink }}" aria-label="Watch {{ .Title }}">
+        {{ with .Params.thumbnail }}<img src="{{ . }}" alt="" width="1280" height="720" loading="lazy">{{ else }}<span class="video-card-placeholder" aria-hidden="true">▶</span>{{ end }}
+        {{ with .Params.duration }}<span class="video-duration">{{ . }}</span>{{ end }}
+      </a>
+      <div class="video-card-info"><span class="video-avatar" aria-hidden="true">W</span><div><h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2><p>{{ .Description }}</p></div></div>
+    </article>
+    {{ end }}
+  </div>
+</section>
+{{ end }}
