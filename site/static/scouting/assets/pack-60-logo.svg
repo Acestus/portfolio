@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title">
+  <title id="title">Pack 60 Cub Scouts badge</title>
+  <circle cx="120" cy="120" r="115" fill="#173d31"/>
+  <circle cx="120" cy="120" r="106" fill="#f6d27a"/>
+  <circle cx="120" cy="120" r="100" fill="#245b42"/>
+  <circle cx="120" cy="120" r="75" fill="#f9f5e7"/>
+  <path d="M45 146 77 111l16 18 27-39 27 39 15-17 33 34v21H45z" fill="#b9d1b1"/>
+  <path d="M45 158 78 132l23 20 24-28 28 28 17-13 25 19v11H45z" fill="#377451"/>
+  <g fill="#173d31">
+    <ellipse cx="98" cy="91" rx="9" ry="12" transform="rotate(-26 98 91)"/>
+    <ellipse cx="115" cy="82" rx="9" ry="12" transform="rotate(-8 115 82)"/>
+    <ellipse cx="133" cy="82" rx="9" ry="12" transform="rotate(8 133 82)"/>
+    <ellipse cx="149" cy="91" rx="9" ry="12" transform="rotate(26 149 91)"/>
+    <path d="M100 113c3-8 10-15 20-15s17 7 20 15c4 11-3 15-11 12-6-2-12-2-18 0-8 3-15-1-11-12z"/>
+  </g>
+  <path d="M42 151h156v36H42z" fill="#eebc4c"/>
+  <text x="120" y="178" text-anchor="middle" fill="#173d31" font-family="Arial, sans-serif" font-size="29" font-weight="900" letter-spacing="3">PACK 60</text>
+  <text x="120" y="205" text-anchor="middle" fill="#fff8df" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2.3">CUB SCOUTS</text>
+  <circle cx="54" cy="76" r="3" fill="#f6d27a"/><circle cx="186" cy="76" r="3" fill="#f6d27a"/>
+</svg>
