@@ -1,6 +1,7 @@
 +++
 title = "Video playback sample"
 description = "A four-minute silent clip for testing playback and seeking."
+weight = 100
 [params]
 av1 = "/media/videos/playback-sample-av1.mp4"
 h264 = "/media/videos/playback-sample-h264.mp4"

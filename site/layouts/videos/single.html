@@ -3,7 +3,7 @@
   <p><a href="{{ .CurrentSection.RelPermalink }}">All videos</a></p>
   <h1>{{ .Title }}</h1>
   {{ .Content }}
-  <video controls playsinline preload="none" width="960" height="540" style="max-width: 100%; height: auto;" aria-label="{{ .Title }}">
+  <video controls playsinline preload="none"{{ with .Params.thumbnail }} poster="{{ . }}"{{ end }} width="960" height="540" style="max-width: 100%; height: auto;" aria-label="{{ .Title }}">
     {{ with .Params.av1 }}<source src="{{ . }}" type='video/mp4; codecs="av01.0.04M.08"'>{{ end }}
     <source src="{{ .Params.h264 }}" type="video/mp4">
     <a href="{{ .Params.h264 }}">Download the video</a>
