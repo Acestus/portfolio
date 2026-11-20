@@ -1,0 +1,14 @@
+{
+  "development": {
+    "resourceGroup": "rg-videos-dev",
+    "storageAccount": "stvideosdevscus001"
+  },
+  "staging": {
+    "resourceGroup": "rg-videos-stg",
+    "storageAccount": "stvideosstgscus001"
+  },
+  "production": {
+    "resourceGroup": "rg-videos-prd",
+    "storageAccount": "stvideosprdscus001"
+  }
+}
