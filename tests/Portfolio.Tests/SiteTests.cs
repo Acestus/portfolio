@@ -104,14 +104,16 @@ public class BrowserTests
         }
     }
     [Fact]
-    public async Task ResumeNavigationWorksOnMobileWithoutHorizontalOverflow()
+    public async Task ResumePageWorksOnMobileWithoutNavigationLinksOrHorizontalOverflow()
     {
         var target = Environment.GetEnvironmentVariable("PORTFOLIO_TEST_URL") ?? throw new InvalidOperationException("PORTFOLIO_TEST_URL is required");
         using var playwright = await Playwright.CreateAsync();
         await using var browser = await playwright.Chromium.LaunchAsync(new() { Headless = true });
         var page = await browser.NewPageAsync(new() { ViewportSize = new() { Width = 390, Height = 844 } });
-        await page.GotoAsync(target);
-        await page.GetByRole(AriaRole.Navigation).GetByRole(AriaRole.Link, new() { Name = "Resume", Exact = true }).ClickAsync();
+        Assert.Equal(200, (await page.GotoAsync(target))?.Status);
+        await Assertions.Expect(page.GetByRole(AriaRole.Navigation).GetByRole(AriaRole.Link, new() { Name = "Resume", Exact = true })).ToHaveCountAsync(0);
+        await Assertions.Expect(page.Locator("footer").GetByRole(AriaRole.Link, new() { Name = "Scouting plan", Exact = true })).ToHaveCountAsync(0);
+        Assert.Equal(200, (await page.GotoAsync(new Uri(new Uri(target), "/resume/").AbsoluteUri))?.Status);
         await Assertions.Expect(page.GetByRole(AriaRole.Button, new() { Name = "Print resume" })).ToBeVisibleAsync();
         Assert.True(await page.EvaluateAsync<bool>("document.documentElement.scrollWidth <= window.innerWidth"));
         await page.ScreenshotAsync(new() { Path = Path.Combine(Environment.GetEnvironmentVariable("PORTFOLIO_EVIDENCE") ?? Path.GetTempPath(), "resume-mobile.png"), FullPage = true });
