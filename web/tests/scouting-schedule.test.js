@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { packToday, partitionDates } from "../../site/static/scouting/assets/app.js";
+import { denActivities, events, packToday, partitionDates } from "../../site/static/scouting/assets/app.js";
 
 describe("Pack 60 schedule", () => {
   test("uses the pack's Chicago calendar date across midnight", () => {
@@ -14,5 +14,14 @@ describe("Pack 60 schedule", () => {
     expect(during.upcoming.map(item => item.date)).toEqual(["2027-01-01", "2027-02-05"]);
     expect(during.past.map(item => item.date)).toEqual(["2026-11-16"]);
     expect(partitionDates(events, "2027-01-04").past.map(item => item.date)).toEqual(["2027-01-01", "2026-11-16"]);
+  });
+
+  test("each den meeting has one suggestion for each of the three ranks", () => {
+    const meetings = events.filter(item => item.title === "Den meeting");
+    expect(Object.keys(denActivities).sort()).toEqual(meetings.map(item => item.date).sort());
+    for (const meeting of meetings) {
+      expect(denActivities[meeting.date]).toHaveLength(3);
+      expect(denActivities[meeting.date].every(idea => idea.trim().length > 0)).toBe(true);
+    }
   });
 });
