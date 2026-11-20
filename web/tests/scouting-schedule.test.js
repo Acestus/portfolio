@@ -16,12 +16,12 @@ describe("Pack 60 schedule", () => {
     expect(partitionDates(events, "2027-01-04").past.map(item => item.date)).toEqual(["2027-01-01", "2026-11-16"]);
   });
 
-  test("each den meeting has one suggestion for each of the three ranks", () => {
+  test("each den meeting has one suggestion for each of the four ranks", () => {
     const meetings = events.filter(item => item.title === "Den meeting");
     expect(Object.keys(denActivities).sort()).toEqual(meetings.map(item => item.date).sort());
     for (const meeting of meetings) {
-      expect(denActivities[meeting.date]).toHaveLength(3);
-      expect(denActivities[meeting.date].every(idea => idea.trim().length > 0)).toBe(true);
+      expect(denActivities[meeting.date].ideas).toHaveLength(4);
+      expect(denActivities[meeting.date].ideas.every(idea => idea.trim().length > 0)).toBe(true);
     }
   });
 });

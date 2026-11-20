@@ -1,20 +1,130 @@
 const longDate = new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric" });
 
-// Activity ideas for leaders to adapt; confirm meeting plans with the den.
+// Shared themes are suggestions, not a record of completed requirements.
 export const denActivities = {
-  "2026-11-16": ["Make a picture of a way to help someone and share it with a buddy.", "Play a teamwork relay, then make a thank-you card for a community helper.", "Plan a small service project and assign each Scout a role."],
-  "2026-11-30": ["Look for colors and shapes on a short buddy nature walk.", "Make a nature journal and sketch three observations without collecting them.", "Practice reading a trail map and discuss how to leave the area as you found it."],
-  "2026-12-07": ["Make a cardboard car and race it down a gentle ramp.", "Build a marble track from tubes and experiment with its slope.", "Sketch a Pinewood Derby car design and test how ramp changes affect a toy car."],
-  "2027-01-25": ["Practice taking turns in a simple relay.", "Try a team obstacle course and cheer for each other.", "Design a cooperative game and explain its rules to the den."],
-  "2027-02-01": ["Sort pictures of things animals need in winter.", "Look for animal tracks and draw what you find.", "Use a field guide to identify local wildlife and discuss respectful observation."],
-  "2027-02-08": ["Practice asking an adult for help in an emergency.", "Make a simple first-aid kit with an adult.", "Practice responding to pretend minor injuries with a leader."],
-  "2027-02-22": ["Build a small shelter with blocks or blankets.", "Pack and explain a basic day-hike kit.", "Plan a short hike and discuss weather and outdoor safety."],
-  "2027-03-22": ["Sort recyclables with a buddy.", "Make a poster about caring for a park.", "Plan a small cleanup and discuss how to leave a place better than you found it."],
-  "2027-03-29": ["Explore shapes and patterns with building blocks.", "Build a paper bridge and test what it can hold.", "Design a bridge, test it, and improve it after observing the result."],
-  "2027-04-05": ["Draw a plant and identify what it needs to grow.", "Plant seeds in a reusable container and make a care plan.", "Observe a local habitat and discuss ways to protect it."],
-  "2027-04-12": ["Practice introducing yourself and listening to a friend.", "Make a thank-you card for a community helper.", "Prepare questions for a community helper and discuss ways to serve."],
-  "2027-04-19": ["Learn a short song or cheer with a buddy.", "Practice a short skit as a team.", "Write and rehearse a skit for a pack gathering."],
-  "2027-05-03": ["Draw a favorite memory from the year.", "Share a skill learned this year with a partner.", "Reflect on a challenge overcome and help plan an end-of-year celebration."]
+  "2026-11-16": {
+    "theme": "nature",
+    "ideas": [
+      "Sort pictures into natural and human-made items.",
+      "Sort examples into renewable and nonrenewable resources.",
+      "Sort examples into renewable and nonrenewable resources.",
+      "Find everyday items made from natural resources."
+    ]
+  },
+  "2026-11-30": {
+    "theme": "nature",
+    "ideas": [
+      "Sort clean sample items by material and discuss recycling.",
+      "Play a reduce, reuse, recycle sorting game.",
+      "Play the same sorting game and discuss the three Rs.",
+      "Discuss ways to conserve resources at home and in the community."
+    ]
+  },
+  "2026-12-07": {
+    "theme": "race",
+    "ideas": [
+      "With an adult partner, plan and decorate a Derby car; adults cut and assemble it.",
+      "With an adult partner, plan and decorate a Derby car.",
+      "With an adult, plan a Derby car and identify a way to increase its speed.",
+      "With an adult, plan a Derby car and identify a way to increase its speed."
+    ]
+  },
+  "2027-01-25": {
+    "theme": "bike",
+    "ideas": [
+      "With an adult partner, learn safety gear and riding rules.",
+      "With an adult partner, check air, brakes, and chain, then review safety gear.",
+      "Fit a helmet and practice bicycle hand signals.",
+      "Fit a helmet, practice signals, and check the brakes."
+    ]
+  },
+  "2027-02-01": {
+    "theme": "nature",
+    "ideas": [
+      "Learn where local recyclables go with a guest or an age-appropriate demonstration.",
+      "Trace what happens to local garbage with a simple skit.",
+      "Trace what happens to local recyclables using a diagram or guest speaker.",
+      "Explore how everyday choices affect natural resources."
+    ]
+  },
+  "2027-02-08": {
+    "theme": "race",
+    "ideas": [
+      "With an adult partner, learn the race rules and practice good sportsmanship.",
+      "With an adult partner, learn the race rules and practice good sportsmanship.",
+      "Review race rules, discuss speed, and practice good sportsmanship.",
+      "Review race rules, discuss speed, and practice good sportsmanship."
+    ]
+  },
+  "2027-02-22": {
+    "theme": "bike",
+    "ideas": [
+      "Practice bicycle safety rules with an adult partner in a closed area.",
+      "Practice hand signals with an adult partner in a closed area.",
+      "Practice signals and safe stopping in a closed area.",
+      "Practice signals and stopping; demonstrate how to operate brakes."
+    ]
+  },
+  "2027-03-22": {
+    "theme": "nature",
+    "ideas": [
+      "Join a planned conservation project with an adult partner.",
+      "Join the same conservation project with an adult partner.",
+      "Join the same conservation project and discuss its purpose.",
+      "Join the same conservation project and help explain its purpose."
+    ]
+  },
+  "2027-03-29": {
+    "theme": "race",
+    "ideas": [
+      "With an adult partner, sand or decorate a Derby car; adults handle cutting and assembly.",
+      "With an adult partner, assemble and decorate a Derby car.",
+      "With an adult, build a Derby car and discuss ways to improve its speed.",
+      "With an adult, build a Derby car and discuss ways to improve its speed."
+    ]
+  },
+  "2027-04-05": {
+    "theme": "nature",
+    "ideas": [
+      "Sort natural and human-made items and talk about recycling.",
+      "Compare renewable and nonrenewable resources and the three Rs.",
+      "Compare renewable and nonrenewable resources and the three Rs.",
+      "Identify local natural resources and ways to conserve them."
+    ]
+  },
+  "2027-04-12": {
+    "theme": "bike",
+    "ideas": [
+      "With an adult partner, review riding gear and safety rules.",
+      "With an adult partner, review bike checks and hand signals.",
+      "Review helmet fit and signals before riding.",
+      "Show helmet fit and signals; practice checking tires and brakes."
+    ]
+  },
+  "2027-04-19": {
+    "theme": "race",
+    "ideas": [
+      "Role-play good sportsmanship with an adult partner before a Derby.",
+      "Role-play good sportsmanship with an adult partner before a Derby.",
+      "Discuss ways to be a good sport and how a car could go faster.",
+      "Discuss ways to be a good sport and how a car could go faster."
+    ]
+  },
+  "2027-05-03": {
+    "theme": "bike",
+    "ideas": [
+      "With an adult partner or family, ride with safety gear and follow the rules.",
+      "With an adult partner or family, ride or begin learning to ride.",
+      "With the den or family, take the ride described in your rank requirements.",
+      "With the den or family, use the buddy system on a 30-minute ride."
+    ]
+  }
+};
+
+const electiveThemes = {
+  nature: { title: "Champions for Nature", links: ["champions-for-nature-lion", "champions-for-nature-tiger", "champions-for-nature-wolf", "champions-for-nature-bear"], names: ["Champions for Nature Lion", "Champions for Nature Tiger", "Champions for Nature Wolf", "Champions for Nature Bear"] },
+  race: { title: "Race Time", links: ["race-time-lion", "race-time-tiger", "race-time-wolf", "race-time-bear"], names: ["Race Time Lion", "Race Time Tiger", "Race Time Wolf", "Race Time Bear"] },
+  bike: { title: "Bike skills", links: ["on-a-roll", "rolling-tigers", "pedal-with-the-pack", "bears-on-bikes"], names: ["On a Roll", "Rolling Tigers", "Pedal With the Pack", "Bears on Bikes"] }
 };
 
 export const events = [
@@ -51,7 +161,7 @@ function renderEvents() {
   for (const [id, items] of [["upcomingEvents", groups.upcoming], ["pastEvents", groups.past]]) {
     const list = byId(id);
     list.replaceChildren();
-    if (!items.length) { list.textContent = id === "upcomingEvents" ? "No more selected dates; check the calendar above." : "No past selected dates yet."; continue; }
+    if (!items.length) { list.textContent = id === "upcomingEvents" ? "No more selected dates; check the private calendar." : "No past selected dates yet."; continue; }
     for (const item of items) {
       const card = document.createElement("article");
       card.className = "program-item";
@@ -59,7 +169,9 @@ function renderEvents() {
       card.innerHTML = `<div class="program-date">${date}</div><div><h3>${item.title}</h3><p>${item.details}</p></div>`;
       if (denActivities[item.date]) {
         const activities = document.createElement("div");
-        activities.innerHTML = `<h4>Suggested den activities</h4><ul>${["Lions", "Tigers", "Bears"].map((rank, index) => `<li><strong>${rank}:</strong> ${denActivities[item.date][index]}</li>`).join("")}</ul>`;
+        const plan = denActivities[item.date];
+        const theme = electiveThemes[plan.theme];
+        activities.innerHTML = `<h4>Shared elective: ${theme.title}</h4><ul>${["Lions", "Tigers", "Wolves", "Bears"].map((rank, index) => `<li><strong>${rank}:</strong> <a href="https://www.scouting.org/cub-scout-adventures/${theme.links[index]}/">${theme.names[index]}</a> — ${plan.ideas[index]}</li>`).join("")}</ul>`;
         card.lastElementChild.append(activities);
       }
       if (item.url) {
