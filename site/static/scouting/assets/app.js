@@ -21,12 +21,12 @@ export const denActivities = {
     ]
   },
   "2026-12-07": {
-    "theme": "race",
+    "theme": "science",
     "ideas": [
-      "With an adult partner, plan and decorate a Derby car; adults cut and assemble it.",
-      "With an adult partner, plan and decorate a Derby car.",
-      "With an adult, plan a Derby car and identify a way to increase its speed.",
-      "With an adult, plan a Derby car and identify a way to increase its speed."
+      "With an adult partner, fold a paper airplane and compare its flight with a crumpled paper ball to explore force.",
+      "Draw a paper airplane design, then build it with an adult partner.",
+      "Make and fly a paper airplane, recording its flights.",
+      "Predict and test whether household objects sink or float."
     ]
   },
   "2027-01-25": {
@@ -48,12 +48,12 @@ export const denActivities = {
     ]
   },
   "2027-02-08": {
-    "theme": "race",
+    "theme": "science",
     "ideas": [
-      "With an adult partner, learn the race rules and practice good sportsmanship.",
-      "With an adult partner, learn the race rules and practice good sportsmanship.",
-      "Review race rules, discuss speed, and practice good sportsmanship.",
-      "Review race rules, discuss speed, and practice good sportsmanship."
+      "With an adult partner, roll balls of different sizes and observe how they move.",
+      "With an adult partner, test the project and discuss a way to improve it.",
+      "Build and fly a second paper airplane design and compare its flights with the first.",
+      "Investigate static electricity using a balloon and small pieces of foil."
     ]
   },
   "2027-02-22": {
@@ -75,12 +75,12 @@ export const denActivities = {
     ]
   },
   "2027-03-29": {
-    "theme": "race",
+    "theme": "science",
     "ideas": [
-      "With an adult partner, sand or decorate a Derby car; adults handle cutting and assembly.",
-      "With an adult partner, assemble and decorate a Derby car.",
-      "With an adult, build a Derby car and discuss ways to improve its speed.",
-      "With an adult, build a Derby car and discuss ways to improve its speed."
+      "With an adult partner, use household materials to make a useful object such as a planter.",
+      "Use the original drawing to build a project, then improve it and draw the final version.",
+      "Fold and test paper airplane designs and compare their flights.",
+      "Build a small foil boat and test how many pennies it can hold in water."
     ]
   },
   "2027-04-05": {
@@ -102,12 +102,12 @@ export const denActivities = {
     ]
   },
   "2027-04-19": {
-    "theme": "race",
+    "theme": "science",
     "ideas": [
-      "Role-play good sportsmanship with an adult partner before a Derby.",
-      "Role-play good sportsmanship with an adult partner before a Derby.",
-      "Discuss ways to be a good sport and how a car could go faster.",
-      "Discuss ways to be a good sport and how a car could go faster."
+      "With an adult partner, make a paper-plate marble maze and observe the marble’s motion.",
+      "Show your project, explain your improvement, and compare your first and final drawings.",
+      "Share paper airplane test results and explain how the designs performed.",
+      "Investigate color changes with a guided color-mixing experiment."
     ]
   },
   "2027-05-03": {
@@ -123,7 +123,7 @@ export const denActivities = {
 
 const electiveThemes = {
   nature: { title: "Champions for Nature", links: ["champions-for-nature-lion", "champions-for-nature-tiger", "champions-for-nature-wolf", "champions-for-nature-bear"], names: ["Champions for Nature Lion", "Champions for Nature Tiger", "Champions for Nature Wolf", "Champions for Nature Bear"] },
-  race: { title: "Race Time", links: ["race-time-lion", "race-time-tiger", "race-time-wolf", "race-time-bear"], names: ["Race Time Lion", "Race Time Tiger", "Race Time Wolf", "Race Time Bear"] },
+  science: { title: "Design and discovery", links: ["gizmos-and-gadgets", "designed-by-tiger", "air-of-the-wolf", "super-science"], names: ["Gizmos and Gadgets", "Designed by Tiger", "Air of the Wolf", "Super Science"] },
   bike: { title: "Bike skills", links: ["on-a-roll", "rolling-tigers", "pedal-with-the-pack", "bears-on-bikes"], names: ["On a Roll", "Rolling Tigers", "Pedal With the Pack", "Bears on Bikes"] }
 };
 
