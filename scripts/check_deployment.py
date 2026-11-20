@@ -23,7 +23,7 @@ def fetch(url):
 
 
 def check(base, candidate):
-    for path in ('release.json', 'resume/index.html', 'portfolio/index.html', 'articles/index.html',
+    for path in ('release.json', 'resume/index.html', 'portfolio/index.html', 'articles/index.html', 'blog/index.html',
                  'downloads/william-weeks-balconi-resume.pdf'):
         status, body = fetch(base + '/' + path)
         if status != 200 or body != (candidate / path).read_bytes():

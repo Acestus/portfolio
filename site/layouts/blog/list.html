@@ -1,0 +1,36 @@
+{{ define "main" }}
+<div class="blog-page">
+  <header class="blog-masthead">
+    <p class="blog-kicker">ACESTUS / FIELD NOTES</p>
+    <h1>Cloud, code &amp;<br>the work between.</h1>
+    <p>Practical notes on Azure, infrastructure, automation, and AI.</p>
+    <div class="blog-masthead-links"><a href="#latest">Browse the latest <span aria-hidden="true">↓</span></a><a href="/articles/index.xml">RSS feed <span aria-hidden="true">↗</span></a></div>
+    <span class="blog-masthead-mark" aria-hidden="true">W<span>.</span></span>
+  </header>
+
+  <div class="blog-columns" id="latest">
+    <section class="blog-feed" aria-labelledby="blog-feed-title">
+      <div class="blog-feed-heading"><div><p class="blog-kicker">THE JOURNAL</p><h2 id="blog-feed-title">Latest writing</h2></div><span>NOTES FROM THE FIELD</span></div>
+      {{ $articles := site.GetPage "articles" }}
+      {{ range $articles.RegularPages.ByDate.Reverse }}
+      <article class="blog-post">
+        <div class="blog-post-meta"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time><span aria-hidden="true">/</span><span>WILLIAM WEEKS-BALCONI</span></div>
+        <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+        <p>{{ .Summary | plainify | truncate 260 }}</p>
+        <div class="blog-post-footer"><a href="{{ .RelPermalink }}">Read article <span aria-hidden="true">↗</span></a>{{ with .Params.tags }}<span class="blog-post-tags">{{ delimit (first 3 .) " · " }}</span>{{ end }}</div>
+      </article>
+      {{ end }}
+    </section>
+
+    <aside class="blog-sidebar" aria-label="About the author and certifications">
+      <section class="blog-side-card blog-certifications"><p class="blog-kicker">MICROSOFT CERTIFIED</p><h2>Azure credentials.</h2><p>Built on hands-on cloud experience.</p><div class="blog-cert-grid">
+        <a class="blog-cert" href="https://learn.microsoft.com/api/credentials/share/en-us/acestus/AD75B5B71FB35AD0?sharingId=33E54DF6364DE552" aria-label="Verify AZ-104 Azure Administrator certification on Microsoft Learn"><div class="blog-cert-icon" aria-hidden="true"><span>AZ</span></div><strong>AZ-104</strong><span>Azure Administrator</span><span class="blog-cert-verify">Verify credential ↗</span></a>
+        <a class="blog-cert" href="https://learn.microsoft.com/api/credentials/share/en-us/acestus/F65C1425305F996C?sharingId=33E54DF6364DE552" aria-label="Verify AZ-305 Azure Solutions Architect certification on Microsoft Learn"><div class="blog-cert-icon blog-cert-icon-architect" aria-hidden="true"><span>AZ</span></div><strong>AZ-305</strong><span>Azure Solutions Architect</span><span class="blog-cert-verify">Verify credential ↗</span></a>
+      </div><a class="blog-side-link" href="/resume/">View my resume <span aria-hidden="true">↗</span></a></section>
+      <section class="blog-side-card blog-about"><p class="blog-kicker">ABOUT THE AUTHOR</p><div class="blog-author-mark" aria-hidden="true">W<span>.</span></div><h2>Hi, I'm William.</h2><p>I build cloud infrastructure and share what I learn along the way—from Azure architecture to the details of getting useful work done.</p><a class="blog-side-link" href="/resume/">More about me <span aria-hidden="true">↗</span></a></section>
+      <section class="blog-side-card blog-follow"><p class="blog-kicker">KEEP IN TOUCH</p><h2>Notes in your inbox.</h2><p>Get new articles on cloud engineering and practical automation.</p><form class="subscribe blog-subscribe" data-topic="cloud"><label for="blog-email">Email address</label><input id="blog-email" name="email" type="email" placeholder="you@example.com" required autocomplete="email"><button type="submit">Subscribe <span aria-hidden="true">↗</span></button><p role="status"></p></form><script src="/subscribe.js" defer></script></section>
+      <section class="blog-side-card blog-links"><p class="blog-kicker">EXPLORE MORE</p><h2>Elsewhere on Acestus.</h2><a href="/portfolio/">The portfolio <span aria-hidden="true">↗</span></a><a href="/docs/">Technical guides <span aria-hidden="true">↗</span></a><a href="/articles/">All articles <span aria-hidden="true">↗</span></a></section>
+    </aside>
+  </div>
+</div>
+{{ end }}

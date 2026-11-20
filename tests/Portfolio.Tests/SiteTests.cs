@@ -81,6 +81,29 @@ public class IntegrationTests
 public class BrowserTests
 {
     [Fact]
+    public async Task BlogListsArticlesAndCertificationsOnDesktopAndMobile()
+    {
+        var target = Environment.GetEnvironmentVariable("PORTFOLIO_TEST_URL") ?? throw new InvalidOperationException("PORTFOLIO_TEST_URL is required");
+        using var playwright = await Playwright.CreateAsync();
+        await using var browser = await playwright.Chromium.LaunchAsync(new() { Headless = true });
+        foreach (var width in new[] { 1280, 390 })
+        {
+            var page = await browser.NewPageAsync(new() { ViewportSize = new() { Width = width, Height = 844 } });
+            Assert.Equal(200, (await page.GotoAsync(new Uri(new Uri(target), "/blog/").AbsoluteUri))?.Status);
+            await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Name = "Latest writing" })).ToBeVisibleAsync();
+            await Assertions.Expect(page.Locator(".blog-certifications")).ToContainTextAsync("AZ-104");
+            await Assertions.Expect(page.Locator(".blog-certifications")).ToContainTextAsync("AZ-305");
+            var firstPost = page.Locator(".blog-post h3 a").First;
+            var articleUrl = await firstPost.GetAttributeAsync("href");
+            Assert.StartsWith("/articles/", articleUrl);
+            await firstPost.ClickAsync();
+            Assert.EndsWith(articleUrl, new Uri(page.Url).AbsolutePath);
+            await page.GotoAsync(new Uri(new Uri(target), "/blog/").AbsoluteUri);
+            Assert.True(await page.EvaluateAsync<bool>("document.documentElement.scrollWidth <= window.innerWidth"));
+            await page.CloseAsync();
+        }
+    }
+    [Fact]
     public async Task ResumeNavigationWorksOnMobileWithoutHorizontalOverflow()
     {
         var target = Environment.GetEnvironmentVariable("PORTFOLIO_TEST_URL") ?? throw new InvalidOperationException("PORTFOLIO_TEST_URL is required");
