@@ -278,6 +278,17 @@ footer {
   min-height: 160px;
 }
 
+details > summary {
+  cursor: pointer;
+  color: var(--green);
+  font-weight: 800;
+  padding: 12px 0;
+}
+
+.archive { margin-top: 16px; }
+.archive .timeline { margin-top: 8px; }
+.panel a { color: var(--green); }
+
 footer {
   display: flex;
   justify-content: space-between;
