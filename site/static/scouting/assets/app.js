@@ -30,17 +30,59 @@ const program = [
 const dateFormat = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", weekday: "short" });
 const longDate = new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric" });
 
+const events = [
+  { date: "2026-11-16", title: "Den meeting", details: "6:00 PM · Shady Shores Baptist Church" },
+  { date: "2026-11-30", title: "Den meeting", details: "6:00 PM · Shady Shores Baptist Church" },
+  { date: "2026-12-07", title: "Den meeting", details: "6:00 PM · Shady Shores Baptist Church" },
+  { date: "2026-12-14", title: "Holiday party and pack meeting", details: "6:00 PM · Shady Shores Baptist Church" },
+  { date: "2027-01-01", end: "2027-01-03", title: "Cub-O 2027", details: "Sid Richardson Scout Ranch · Orienteering, map reading and strategy, with a Saturday evening Winter Festival featuring hot cocoa, s'mores and a movie. Please try to register as a pack. Bring completed BSA medical forms A and B to your unit leader and a printed team form to check-in." },
+  { date: "2027-01-04", title: "Pinewood Derby car cutting", details: "6:00–7:00 PM" },
+  { date: "2027-02-05", title: "Pinewood Derby car check-in", details: "6:00–7:00 PM · All cars must pass inspection." },
+  { date: "2027-02-26", end: "2027-02-28", title: "Top Shot 2027", details: "Sid Richardson Scout Ranch · Registration is open. BB guns, archery and wrist rockets. Cub Scout ranges are open 9:00 AM–3:00 PM; camp for the weekend or attend for the day. A completed medical form is required for all participants. Early bird pricing ended October 31, 2026." }
+];
+
+// Compare calendar days in the pack's time zone; multi-day events stay upcoming through their last day.
+export function packToday(now = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-US", { timeZone: "America/Chicago", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(now);
+  const get = (type) => parts.find((part) => part.type === type).value;
+  return `${get("year")}-${get("month")}-${get("day")}`;
+}
+
+export function partitionDates(items, today) {
+  const sorted = [...items].sort((a, b) => a.date.localeCompare(b.date));
+  return { upcoming: sorted.filter((item) => (item.end || item.date) >= today), past: sorted.filter((item) => (item.end || item.date) < today).reverse() };
+}
+
 const byId = (id) => document.getElementById(id);
 
 function localDate(date) {
   return new Date(`${date}T12:00:00`);
 }
 
+function renderEvents() {
+  const groups = partitionDates(events, packToday());
+  for (const [id, items] of [["upcomingEvents", groups.upcoming], ["pastEvents", groups.past]]) {
+    const list = byId(id);
+    list.replaceChildren();
+    if (!items.length) { list.textContent = id === "upcomingEvents" ? "No upcoming dates listed yet." : "No past dates yet."; continue; }
+    for (const item of items) {
+      const card = document.createElement("article");
+      card.className = "program-item";
+      const date = item.end ? `${longDate.format(localDate(item.date))} – ${longDate.format(localDate(item.end))}` : longDate.format(localDate(item.date));
+      card.innerHTML = `<div class="program-date">${date}</div><div><h3>${item.title}</h3><p>${item.details}</p></div>`;
+      list.append(card);
+    }
+  }
+}
+
 function renderProgram(filter = "all") {
-  const list = byId("programList");
-  list.innerHTML = "";
-  program
-    .filter((item) => filter === "all" || item.date.startsWith(filter) || item.type.includes(filter))
+  const filtered = program.filter((item) => filter === "all" || item.date.startsWith(filter) || item.type.includes(filter));
+  const groups = partitionDates(filtered, packToday());
+  for (const [id, items] of [["programList", groups.upcoming], ["programArchive", groups.past]]) {
+    const list = byId(id);
+    list.replaceChildren();
+    if (!items.length) list.textContent = "No activity plans for this selection.";
+    items
     .forEach((item) => {
       const card = document.createElement("article");
       card.className = `program-item ${item.type}`;
@@ -56,19 +98,20 @@ function renderProgram(filter = "all") {
         </div>`;
       list.append(card);
     });
+  }
 }
 
 function renderPackCards() {
   const cards = byId("packCards");
   cards.innerHTML = "";
-  program
+  partitionDates(program, packToday()).upcoming
     .filter((item) => item.type.includes("pack"))
-    .forEach((item, index) => {
+    .forEach((item) => {
       const card = document.createElement("article");
       card.className = "pack-card";
       card.innerHTML = `
-        <p class="eyebrow">Pack Meeting ${index + 1}</p>
-        <h3>${item.focus.replace(/^Pack Meeting #\\d: /, "")}</h3>
+        <p class="eyebrow">Earlier pack plan</p>
+        <h3>${item.focus}</h3>
         <p>${longDate.format(localDate(item.date))}</p>
         <div class="meta"><span class="pill">${item.activity}</span></div>`;
       cards.append(card);
@@ -76,4 +119,16 @@ function renderPackCards() {
 }
 
 
-document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('[data-filter]').forEach(item=>item.classList.remove('active'));button.classList.add('active');renderProgram(button.dataset.filter);}));document.getElementById('printButton').addEventListener('click',()=>window.print());renderProgram();renderPackCards();
+if (typeof document !== "undefined") {
+  document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('[data-filter]').forEach(item=>item.classList.remove('active'));button.classList.add('active');renderProgram(button.dataset.filter);}));
+  byId('printButton').addEventListener('click',()=>window.print());
+  renderEvents(); renderProgram(); renderPackCards();
+  let renderedDay = packToday();
+  function refreshDate() {
+    if (packToday() === renderedDay) return;
+    renderedDay = packToday();
+    renderEvents(); renderProgram(document.querySelector('[data-filter].active').dataset.filter); renderPackCards();
+  }
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshDate(); });
+  setInterval(refreshDate, 60000);
+}

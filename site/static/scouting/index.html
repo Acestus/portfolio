@@ -34,15 +34,16 @@
       </div>
       <nav class="topbar" aria-label="Page sections">
         <a href="https://home.bluegreen.love/household/scouting-calendar/">Private calendar · Sign in</a>
-        <a href="#program">Program</a>
-        <a href="#pack">Pack Nights</a>
+        <a href="#schedule">Schedule</a>
+        <a href="#fees">Supply fee</a>
+        <a href="#program">Activity plan</a>
         <button id="printButton" type="button">Print</button>
       </nav>
       <section class="intro">
         <p class="eyebrow">Pack 60 · 2026-2027</p>
         <h1>Scouting Plan</h1>
         <p>
-          Public den activity plan for 2026–2027. Confirm dates using the private calendar.
+          Pack updates and upcoming dates for 2026–2027. Confirm details in Band and the private calendar.
         </p>
       </section>
     </header>
@@ -52,11 +53,37 @@
 
 
 
+      <section class="panel" id="schedule">
+        <div class="section-heading"><div><p class="eyebrow">What's next</p><h2>Upcoming schedule</h2></div></div>
+        <p>Den meetings are at 6:00 PM at Shady Shores Baptist Church, 401 W. Shady Shores Rd, 76208.</p>
+        <p>Registration is open for Cub-O and Top Shot. Please respond to the Band headcount post if you plan to attend either event.</p>
+        <div id="upcomingEvents" class="timeline"></div>
+        <details class="archive"><summary>Past dates</summary><div id="pastEvents" class="timeline"></div></details>
+      </section>
+
+      <section class="panel" id="fees">
+        <p class="eyebrow">Pack update</p><h2>Annual supply fee</h2>
+        <p>The annual supply fee is <strong>$75 per scout</strong> and helps cover materials and activities. Please reply to the Band post with the payment method that works best for you.</p>
+        <p>To arrange a payment plan, contact Krystin at <a href="tel:+12146639374">214-663-9374</a>. Thank you for your help!</p>
+      </section>
+
+      <section class="panel" id="derby">
+        <p class="eyebrow">Pinewood Derby</p><h2>Car rules and inspection</h2>
+        <ul>
+          <li>Cars must meet the size limits and weigh no more than 5 oz.</li>
+          <li>Only official BSA Cub Scout Pinewood Derby kits may be used.</li>
+          <li>Wheel bearings, washers, bushings, and starting devices are prohibited; cars must be freewheeling.</li>
+          <li>All cars must pass inspection at check-in on February 5.</li>
+        </ul>
+        <p>Consult the official Pinewood Derby guidelines for the complete rules.</p>
+      </section>
+
       <section class="panel" id="program">
+        <details><summary>Earlier activity plan (unconfirmed)</summary>
         <div class="section-heading">
           <div>
             <p class="eyebrow">Program Layer</p>
-            <h2>Den Meeting Activity Plan</h2>
+            <h2>Earlier den activity plan</h2>
           </div>
           <div class="filters" role="group" aria-label="Month filters">
             <button class="active" type="button" data-filter="all">All</button>
@@ -65,17 +92,23 @@
             <button type="button" data-filter="pack">Pack</button>
           </div>
         </div>
+        <p>This earlier activity plan is unconfirmed and may differ from the schedule above. Confirm dates and activities with the pack.</p>
         <div id="programList" class="timeline"></div>
+        <details class="archive"><summary>Past activity plans</summary><div id="programArchive" class="timeline"></div></details>
+        </details>
       </section>
 
       <section class="panel" id="pack">
+        <details><summary>Earlier pack meeting plans (unconfirmed)</summary>
         <div class="section-heading">
           <div>
             <p class="eyebrow">Milestones</p>
-            <h2>Pack Meeting Highlights</h2>
+            <h2>Earlier pack meeting plans</h2>
           </div>
         </div>
+        <p>These earlier plans are unconfirmed. The schedule above is the latest notice.</p>
         <div id="packCards" class="pack-grid"></div>
+        </details>
       </section>
     </main>
 
