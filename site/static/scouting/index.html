@@ -36,14 +36,13 @@
         <a href="https://home.bluegreen.love/household/scouting-calendar/">Private calendar · Sign in</a>
         <a href="#schedule">Schedule</a>
         <a href="#fees">Supply fee</a>
-        <a href="#program">Activity plan</a>
         <button id="printButton" type="button">Print</button>
       </nav>
       <section class="intro">
         <p class="eyebrow">Pack 60 · 2026-2027</p>
         <h1>Scouting Plan</h1>
         <p>
-          Pack updates and upcoming dates for 2026–2027. Confirm details in Band and the private calendar.
+          Pack updates for 2026–2027. The calendar below is the source of truth for dates and times.
         </p>
       </section>
     </header>
@@ -55,9 +54,10 @@
 
       <section class="panel" id="schedule">
         <div class="section-heading"><div><p class="eyebrow">What's next</p><h2>Upcoming schedule</h2></div></div>
-        <p>Den meetings are at 6:00 PM at Shady Shores Baptist Church, 401 W. Shady Shores Rd, 76208.</p>
+        <p>Den meetings are generally at 6:00 PM at Shady Shores Baptist Church, 401 W. Shady Shores Rd, 76208. Check the calendar for each event.</p>
         <p><a href="https://calendar.google.com/calendar/u/0/newembed?src=b29a89abe86e618c6b8206642bda6f831431852a330e46a3e7bbff99b8d38377%40group.calendar.google.com&amp;ctz=America%2FChicago">View the Pack 60 calendar</a> · <a href="https://www.facebook.com/groups/1688795388101236/">Follow Pack 60 on Facebook</a></p>
-        <p>Registration is open for Cub-O and Top Shot. Please respond to the Band headcount post if you plan to attend either event.</p>
+        <div class="calendar-frame"><iframe title="Pack 60 calendar" src="https://calendar.google.com/calendar/embed?src=b29a89abe86e618c6b8206642bda6f831431852a330e46a3e7bbff99b8d38377%40group.calendar.google.com&amp;ctz=America%2FChicago" loading="lazy"></iframe></div>
+        <p>Selected dates below were checked against the calendar on November 20, 2026. The calendar above has the complete, current schedule.</p>
         <div id="upcomingEvents" class="timeline"></div>
         <details class="archive"><summary>Past dates</summary><div id="pastEvents" class="timeline"></div></details>
       </section>
@@ -79,43 +79,11 @@
         <p>Consult the official Pinewood Derby guidelines for the complete rules.</p>
       </section>
 
-      <section class="panel" id="program">
-        <details><summary>Earlier activity plan (unconfirmed)</summary>
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">Program Layer</p>
-            <h2>Earlier den activity plan</h2>
-          </div>
-          <div class="filters" role="group" aria-label="Month filters">
-            <button class="active" type="button" data-filter="all">All</button>
-            <button type="button" data-filter="2026">2026</button>
-            <button type="button" data-filter="2027">2027</button>
-            <button type="button" data-filter="pack">Pack</button>
-          </div>
-        </div>
-        <p>This earlier activity plan is unconfirmed and may differ from the schedule above. Confirm dates and activities with the pack.</p>
-        <div id="programList" class="timeline"></div>
-        <details class="archive"><summary>Past activity plans</summary><div id="programArchive" class="timeline"></div></details>
-        </details>
-      </section>
-
-      <section class="panel" id="pack">
-        <details><summary>Earlier pack meeting plans (unconfirmed)</summary>
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">Milestones</p>
-            <h2>Earlier pack meeting plans</h2>
-          </div>
-        </div>
-        <p>These earlier plans are unconfirmed. The schedule above is the latest notice.</p>
-        <div id="packCards" class="pack-grid"></div>
-        </details>
-      </section>
     </main>
 
     <footer>
       <span>Pack 60 scouting plan</span>
-      <span>Live calendar and private details require reader access.</span>
+      <span>Check the calendar for current details.</span>
     </footer>
 
     <script src="/scouting/assets/app.js" type="module"></script>
