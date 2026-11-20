@@ -45,13 +45,17 @@ def evidence_stage(stage, operation):
     return gates[stage, operation]
 
 
-def check_evidence(run, receipt, producer, repository, stage, checksum):
+def check_evidence(run, receipt, producer, repository, stage, checksum, *, current_run=''):
     same_repository(run, repository)
-    require(run['head_branch'] == 'main' and run['conclusion'] == 'success', 'Evidence did not pass on main')
-    workflows = {'development': ['Publish-Development'], 'staging': ['Promote-Staging'],
-                 'production': ['Promote-Production', 'Restore-Production']}[stage]
-    require(run['path'] in [f'.github/workflows/{name}.yaml' for name in workflows], 'Unexpected evidence workflow')
-    require(run['event'] == ('push' if stage == 'development' else 'workflow_dispatch'), 'Unexpected evidence event')
+    current = (str(run['id']) == current_run == str(producer['id'])
+               and run['conclusion'] is None and run['event'] == 'push'
+               and run['path'] == '.github/workflows/Publish-Development.yaml'
+               and stage in ('development', 'staging'))
+    require(run['head_branch'] == 'main' and (run['conclusion'] == 'success' or current), 'Evidence did not pass on main')
+    workflows = {'development': ['Publish-Development'], 'staging': ['Publish-Development', 'Promote-Staging'],
+                 'production': ['Publish-Development', 'Promote-Production', 'Restore-Production']}[stage]
+    require(current or run['path'] in [f'.github/workflows/{name}.yaml' for name in workflows], 'Unexpected evidence workflow')
+    require(run['event'] == ('push' if run['path'] == '.github/workflows/Publish-Development.yaml' else 'workflow_dispatch'), 'Unexpected evidence event')
     expected = {
         'repository': repository, 'stage': stage, 'archiveSha256': checksum,
         'sourceRun': str(producer['id']), 'sourceAttempt': str(producer['run_attempt']),
@@ -70,7 +74,7 @@ def check_gate(producer, checksum):
     if expected_stage:
         check_evidence(json.loads(Path('evidence-run.json').read_text()),
                        json.loads(Path('evidence/receipt.json').read_text()), producer, repository,
-                       expected_stage, checksum)
+                       expected_stage, checksum, current_run=os.environ.get('GITHUB_RUN_ID', ''))
 
 
 def write_receipt():
