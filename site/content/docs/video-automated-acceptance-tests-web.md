@@ -71,3 +71,7 @@ Adapted from [Valentina Jemuović’s acceptance test architecture in Optivem Jo
 - State the question the example answers and identify the synthetic or disposable environment.
 - Show the important configuration and one expected result before the walkthrough ends.
 - Call out the operational limit that the green check does not cover.
+
+## Demo video
+
+[Watch the automated acceptance tests walkthrough](/videos/automated-acceptance-tests-web/).
