@@ -25,7 +25,8 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 ## Diagram
 
 ```mermaid
-flowchart LR
+flowchart TD
+  accTitle: Platform engineering demo: a self-service deployment path
   D[Developer request] --> T[Approved template]
   T --> V[Policy and input validation]
   V -->|valid| P[Deployment proposal]
@@ -33,6 +34,11 @@ flowchart LR
   P --> A[Review and authorization]
   A --> R[Release and evidence]
   R --> S[Support path]
+
+  classDef primary fill:#F5F3FF,stroke:#6D28D9,color:#172B4D,stroke-width:2px
+  classDef secondary fill:#ECFCCB,stroke:#4D7C0F,color:#172B4D,stroke-width:2px
+  class D,T,P,R,S primary
+  class V,E,A secondary
 ```
 
 ## Recording checklist

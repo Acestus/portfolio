@@ -25,7 +25,8 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 ## Diagram
 
 ```mermaid
-flowchart LR
+flowchart TD
+  accTitle: Fabric deployment gotchas: schedules, connections, and settings
   D[Source definition] --> P[Promote item]
   P --> C[Check connections]
   P --> S[Check schedule]
@@ -33,6 +34,11 @@ flowchart LR
   C --> V[Operational verification]
   S --> V
   E --> V
+
+  classDef primary fill:#EDE9FE,stroke:#7C3AED,color:#172B4D,stroke-width:2px
+  classDef secondary fill:#ECFCCB,stroke:#4D7C0F,color:#172B4D,stroke-width:2px
+  class D,P primary
+  class C,S,E,V secondary
 ```
 
 ## Recording checklist

@@ -25,7 +25,8 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 ## Diagram
 
 ```mermaid
-flowchart LR
+flowchart TD
+  accTitle: Azure cost recommendations: investigate before deleting
   R[Recommendation] --> U[Usage evidence]
   R --> O[Owner and purpose]
   R --> D[Dependencies]
@@ -35,6 +36,11 @@ flowchart LR
   X -->|No| I[Investigate more]
   X -->|Yes| C[Controlled change]
   C --> V[Verify outcome]
+
+  classDef primary fill:#FEE2E2,stroke:#B91C1C,color:#172B4D,stroke-width:2px
+  classDef secondary fill:#DCFCE7,stroke:#15803D,color:#172B4D,stroke-width:2px
+  class R,U,O,D primary
+  class X,I,C,V secondary
 ```
 
 ## Recording checklist

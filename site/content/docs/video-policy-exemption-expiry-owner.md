@@ -25,7 +25,8 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 ## Diagram
 
 ```mermaid
-flowchart LR
+flowchart TD
+  accTitle: Azure Policy exemptions with an expiry and owner
   F[Policy finding] --> R[Risk and rationale]
   R --> O[Named owner]
   O --> X[Expiry and review date]
@@ -33,6 +34,11 @@ flowchart LR
   E --> V[Review evidence]
   V -->|resolved| C[Close exemption]
   V -->|still needed| A[Reapprove]
+
+  classDef primary fill:#FFF1F2,stroke:#BE123C,color:#172B4D,stroke-width:2px
+  classDef secondary fill:#D1FAE5,stroke:#047857,color:#172B4D,stroke-width:2px
+  class F,R,O,X,E primary
+  class V,C,A secondary
 ```
 
 ## Recording checklist

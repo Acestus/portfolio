@@ -25,13 +25,19 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 ## Diagram
 
 ```mermaid
-flowchart LR
+flowchart TD
+  accTitle: Azure Policy that fixes missing tags
   R[Resource] --> P[Policy evaluation]
   P -->|missing tag| N[Noncompliant]
   N --> M[Remediation task]
   M --> I[Managed identity]
   I --> R
   R --> V[Re-evaluate]
+
+  classDef primary fill:#FEF2F2,stroke:#DC2626,color:#172B4D,stroke-width:2px
+  classDef secondary fill:#D1FAE5,stroke:#047857,color:#172B4D,stroke-width:2px
+  class R,P,N primary
+  class M,I,V secondary
 ```
 
 ## Recording checklist

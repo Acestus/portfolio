@@ -25,12 +25,18 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 ## Diagram
 
 ```mermaid
-flowchart LR
+flowchart TD
+  accTitle: Scheduling Fabric pipelines with workload identity
   S[Schedule] --> W[Workload identity]
   W --> T[Short-lived token]
   T --> A[Fabric API]
   A --> P[Pipeline run]
   P --> M[Status and alert]
+
+  classDef primary fill:#E0E7FF,stroke:#4F46E5,color:#172B4D,stroke-width:2px
+  classDef secondary fill:#FEF3C7,stroke:#B45309,color:#172B4D,stroke-width:2px
+  class S,A,P primary
+  class W,T,M secondary
 ```
 
 ## Recording checklist

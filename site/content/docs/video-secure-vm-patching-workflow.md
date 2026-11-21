@@ -25,7 +25,8 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 ## Diagram
 
 ```mermaid
-flowchart LR
+flowchart TD
+  accTitle: A secure, repeatable VM patching workflow
   I[Reviewed inventory] --> S[Scope validation]
   P[Patch policy] --> A[Assignment]
   S --> A
@@ -33,6 +34,11 @@ flowchart LR
   W --> G[Guest installation]
   G --> V[Result verification]
   V --> E[Exceptions and follow-up]
+
+  classDef primary fill:#F1F5F9,stroke:#475569,color:#172B4D,stroke-width:2px
+  classDef secondary fill:#FEF9C3,stroke:#A16207,color:#172B4D,stroke-width:2px
+  class I,P,A,W,G primary
+  class S,V,E secondary
 ```
 
 ## Recording checklist
