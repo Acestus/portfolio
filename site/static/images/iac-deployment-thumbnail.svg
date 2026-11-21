@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" role="img" aria-labelledby="title">
+  <title id="title">IaC Deployment with Bicep and GitHub Actions</title>
+  <defs>
+    <linearGradient id="background" x2="1" y2="1"><stop stop-color="#071423"/><stop offset="1" stop-color="#1c354c"/></linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0H0V48" fill="none" stroke="#a9c8e6" stroke-opacity=".12"/></pattern>
+  </defs>
+  <rect width="1280" height="720" fill="url(#background)"/>
+  <rect width="1280" height="720" fill="url(#grid)"/>
+  <g font-family="Arial, Helvetica, sans-serif" font-weight="700">
+    <text x="76" y="112" fill="#87cffa" font-size="23" letter-spacing="4">ACESTUS / INFRASTRUCTURE DELIVERY</text>
+    <text x="72" y="260" fill="#fff" font-size="76" letter-spacing="-3">IaC</text>
+    <rect x="68" y="291" width="520" height="112" rx="12" fill="#b92739"/>
+    <text x="91" y="371" fill="#fff" font-size="70" letter-spacing="-2">DEPLOYMENT</text>
+    <text x="77" y="487" fill="#d3e5f5" font-size="29">Bicep · OIDC · GitHub Actions</text>
+    <rect x="650" y="152" width="542" height="414" rx="24" fill="#12263a" stroke="#507898" stroke-width="2"/>
+    <text x="694" y="215" fill="#8dcfff" font-size="20" letter-spacing="3">TRUNK DELIVERY FLOW</text>
+    <rect x="694" y="250" width="130" height="90" rx="12" fill="#1b3850" stroke="#5d829b" stroke-width="2"/>
+    <text x="726" y="305" fill="#fff" font-size="26">BICEP</text>
+    <path d="M834 295h28m0 0-11-11m11 11-11 11" fill="none" stroke="#d5dfeb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="878" y="250" width="130" height="90" rx="12" fill="#1b3850" stroke="#5d829b" stroke-width="2"/>
+    <text x="909" y="305" fill="#fff" font-size="24">PR CHECK</text>
+    <path d="M1018 295h28m0 0-11-11m11 11-11 11" fill="none" stroke="#d5dfeb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="1062" y="250" width="100" height="90" rx="12" fill="#1b3850" stroke="#5d829b" stroke-width="2"/>
+    <text x="1082" y="305" fill="#fff" font-size="25">AZURE</text>
+    <path d="M719 381H1124" stroke="#3e5c74" stroke-width="2"/>
+    <circle cx="746" cy="463" r="25" fill="#21624f"/>
+    <path d="m735 463 8 8 15-18" fill="none" stroke="#84e0bd" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="789" y="473" fill="#f5f9fd" font-size="27">Federated identity verified</text>
+  </g>
+</svg>
