@@ -241,3 +241,8 @@ The same pattern works for service requests, approvals, backlog items, and opera
 | Agent grounding | Stable files with explicit sections | Implicit memory and stale summaries |
 | Human review | Standard PR or commit review | Scrollback inspection |
 | System sync | CI/CD parses structured lines and fields | Manual copy-paste or custom session store |
+
+
+## Demo video
+
+[Watch the Agent CLI vs. MCP walkthrough](/videos/agentic-cli-vs-mcp/).
