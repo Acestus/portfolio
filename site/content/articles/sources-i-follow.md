@@ -66,3 +66,15 @@ It is intentionally broader than a list of newsletters. Some of these sources pu
 This list changes over time. I do not necessarily agree with every position expressed by every source here, and inclusion is not an endorsement of every product, company, or opinion. The common thread is that these sources have helped me learn, think more clearly, or do better work.
 
 For a machine-readable stream of selected updates and digests from some of these sources, subscribe to my [RSS feed](https://home.bluegreen.love/rss).
+
+## Topics covered by the reading list
+
+```mermaid
+mindmap
+  root((📚 Sources I follow))
+    ☁ Azure and platforms
+    🛠 Software and architecture
+    🤖 AI and research
+    👥 Careers and leadership
+    🔐 Security and operations
+```

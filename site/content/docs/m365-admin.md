@@ -201,3 +201,17 @@ The SPA references agents such as Confluence search, project planning, and Teams
 
 
 > The safest Build 2026 posture is a narrow pilot: read-only agents first, user-delegated identity, citations required, no external-facing input, and no autonomous writes without explicit human confirmation.
+
+## How access changes over an employee lifecycle
+
+```mermaid
+flowchart TD
+  accTitle: How access changes over an employee lifecycle
+  n0["👋 Joiner access"] --> n1
+  n1["🔄 Mover entitlement review"] --> n2
+  n2["🚪 Leaver access removal"]
+  classDef process fill:#E0E7FF,stroke:#4338CA,color:#172B4D,stroke-width:2px
+  classDef result fill:#ECFCCB,stroke:#4D7C0F,color:#172B4D,stroke-width:2px
+  class n0,n1 process
+  class n2 result
+```

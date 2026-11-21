@@ -27,10 +27,10 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 ```mermaid
 flowchart TD
   accTitle: A Fabric medallion pipeline from raw data to a useful report
-  X[Generated source] --> B[Bronze raw]
-  B --> S[Silver validated]
-  S --> G[Gold aggregate]
-  G --> R[Report]
+  X[Generated source] --> B@{ icon: "fabric:lakehouse", form: "rounded", label: "Bronze · Raw records", pos: "t", h: 32 }
+  B --> S@{ icon: "fabric:lakehouse", form: "rounded", label: "Silver · Validated data", pos: "t", h: 32 }
+  S --> G@{ icon: "fabric:lakehouse", form: "rounded", label: "Gold · Aggregated data", pos: "t", h: 32 }
+  G --> R@{ icon: "fabric:power-bi", form: "rounded", label: "Report", pos: "t", h: 32 }
   R --> Q[Expected result check]
 
   classDef endpoint fill:#E8F0FE,stroke:#1A73C7,color:#172B4D,stroke-width:2px

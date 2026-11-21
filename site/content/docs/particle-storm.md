@@ -58,3 +58,17 @@ Click/tap anywhere on the canvas to reposition the fourth gravity well as an att
 ```text
 wasm-pack build rust/particles --target web --out-dir ../../resources/public/wasm/particles
 ```
+
+## One frame of the particle simulation
+
+```mermaid
+flowchart TD
+  accTitle: One frame of the particle simulation
+  n0["🌀 Particle state"] --> n1
+  n1["⚙ Rust and WASM update"] --> n2
+  n2["🎨 Draw frame"]
+  classDef process fill:#EDE9FE,stroke:#6D28D9,color:#172B4D,stroke-width:2px
+  classDef result fill:#FEF3C7,stroke:#B45309,color:#172B4D,stroke-width:2px
+  class n0,n1 process
+  class n2 result
+```

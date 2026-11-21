@@ -241,3 +241,19 @@ The same pattern works for service requests, approvals, backlog items, and opera
 | Agent grounding | Stable files with explicit sections | Implicit memory and stale summaries |
 | Human review | Standard PR or commit review | Scrollback inspection |
 | System sync | CI/CD parses structured lines and fields | Manual copy-paste or custom session store |
+
+## Where the operator controls an agentic action
+
+```mermaid
+flowchart TD
+  accTitle: Where the operator controls an agentic action
+  n0["💬 State intent"] --> n1
+  n1["🧩 Select a skill"] --> n2
+  n2["🔌 Find an MCP tool"] --> n3
+  n3["📋 Propose action"] --> n4
+  n4["👤 Operator decides"]
+  classDef process fill:#DBEAFE,stroke:#2563EB,color:#172B4D,stroke-width:2px
+  classDef result fill:#FFEDD5,stroke:#C2410C,color:#172B4D,stroke-width:2px
+  class n0,n1,n2,n3 process
+  class n4 result
+```

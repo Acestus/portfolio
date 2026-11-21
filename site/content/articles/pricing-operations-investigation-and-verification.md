@@ -89,3 +89,19 @@ For the engineering practices behind these examples, see [repeatable delivery](h
 ## Read my resume
 
 For my full experience, technical skills, and education, [view my resume](https://acestus.com/resume/) or [download my resume as a PDF](https://acestus.com/downloads/william-weeks-balconi-resume.pdf).
+
+## From a pricing discrepancy to a verified correction
+
+```mermaid
+flowchart TD
+  accTitle: From a pricing discrepancy to a verified correction
+  n0["🎫 Capture the report"] --> n1
+  n1["🔍 Query the evidence"] --> n2
+  n2["🛠 Correct the cause"] --> n3
+  n3["✓ Verify pricing"] --> n4
+  n4["🔁 Watch for recurrence"]
+  classDef process fill:#E0E7FF,stroke:#4338CA,color:#172B4D,stroke-width:2px
+  classDef result fill:#ECFCCB,stroke:#4D7C0F,color:#172B4D,stroke-width:2px
+  class n0,n1,n2,n3 process
+  class n4 result
+```

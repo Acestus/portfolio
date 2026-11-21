@@ -129,3 +129,18 @@ The factory earns trust when a request produces a reviewable change, supported e
 - [Azure VM Patch Management as Code](/articles/azure-vm-patch-management-as-code/)
 - [Microsoft Fabric CI/CD](/articles/microsoft-fabric-cicd/)
 - [Azure Functions Python CI/CD](/articles/azure-functions-python-cicd/)
+
+## From repository context to verified work
+
+```mermaid
+flowchart TD
+  accTitle: From repository context to verified work
+  n0["🗺 Repository map"] --> n1
+  n1["🧩 Narrow skill"] --> n2
+  n2["⚙ Typed .NET CLI"] --> n3
+  n3["✓ Verified result"]
+  classDef process fill:#EDE9FE,stroke:#6D28D9,color:#172B4D,stroke-width:2px
+  classDef result fill:#FEF3C7,stroke:#B45309,color:#172B4D,stroke-width:2px
+  class n0,n1,n2 process
+  class n3 result
+```

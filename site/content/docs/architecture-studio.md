@@ -248,3 +248,18 @@ The SPA makes that pattern tangible. ClojureScript data renders the interactive 
 | ADR | Markdown | Pull request plus architecture review | Decision text changes with the system |
 | Fabric topology | Git-synced workspace artifacts and IaC | Environment promotion | Artifacts, parameters, and docs share names and lifecycle |
 | Confluence page | Rendered Markdown via API | Publish job output | Stakeholder docs are regenerated from reviewed content |
+
+## How an architecture decision stays current
+
+```mermaid
+flowchart TD
+  accTitle: How an architecture decision stays current
+  n0["📝 Record the decision in an ADR"] --> n1
+  n1["🗺 Update the architecture diagram"] --> n2
+  n2["👥 Review the change"] --> n3
+  n3["📚 Publish and maintain"]
+  classDef process fill:#CCFBF1,stroke:#0F766E,color:#172B4D,stroke-width:2px
+  classDef result fill:#FFE4E6,stroke:#BE123C,color:#172B4D,stroke-width:2px
+  class n0,n1,n2 process
+  class n3 result
+```

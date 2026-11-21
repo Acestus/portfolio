@@ -38,3 +38,15 @@ In contrast, a lot of modern movies treat the iPhone as a substitute for charact
   
 
 That’s what makes Star Trek’s world feel richer, and what’s missing when movies just shout into an iPhone.
+
+## How Star Trek technology expresses a character’s role
+
+```mermaid
+mindmap
+  root((🖖 Technology and character))
+    💬 Troi connects with people
+    📡 Picard and Riker command
+    🛡 Worf reads tactical information
+    🖥 Data works with systems
+    👁 Geordi gains another way to see
+```

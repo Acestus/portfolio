@@ -958,3 +958,14 @@ No application code, infrastructure, review protection, credential configuration
 [Hugo documentation](https://gohugo.io/documentation/) — static site generation.
 
 Tags: agentic-development, atdd, github-actions, dotnet, bicep, infrastructure
+
+## Boundaries in the engineering delivery model
+
+```mermaid
+mindmap
+  root((🏛 Shared delivery model))
+    📦 Independent repositories
+    ⚙ Shared CI
+    🔐 Federated identity
+    🧪 Independently governed acceptance
+```

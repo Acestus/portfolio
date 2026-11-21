@@ -92,3 +92,14 @@ The metaphor works because platform teams really do spend large amounts of time 
 
 
 Technically, the SPA mirrors that discipline. Threats are data, not hard-coded render branches. Scoring is derived from events, not from UI state. Victory is computed by checking whether every invader is no longer alive. That same mindset—make controls declarative, measure outcomes, keep state obvious—is exactly what makes cloud governance scalable.
+
+## What happens when a shot hits an invader
+
+```mermaid
+stateDiagram-v2
+  accTitle: What happens when a shot hits an invader
+  state "⚠ Active threat" as Active
+  state "✓ Cleared threat" as Cleared
+  [*] --> Active: Spawn invader
+  Active --> Cleared: Bullet hits and score increases
+```

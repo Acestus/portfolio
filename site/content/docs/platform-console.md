@@ -237,3 +237,19 @@ Handoff documentation is what turns an automation event into an operating model.
 - [CAF resource naming guidance](https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming)
 
 - [Microsoft Entra Privileged Identity Management](https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-configure)
+
+## Workspace provisioning from request to handoff
+
+```mermaid
+flowchart TD
+  accTitle: Workspace provisioning from request to handoff
+  n0["📝 Request workspace"] --> n1
+  n1["🧩 Choose approved configuration"] --> n2
+  n2["🔐 Review privileged access"] --> n3
+  n3["🚀 Provision through GitOps"] --> n4
+  n4["📚 Hand off to the owner"]
+  classDef process fill:#DBEAFE,stroke:#2563EB,color:#172B4D,stroke-width:2px
+  classDef result fill:#FFEDD5,stroke:#C2410C,color:#172B4D,stroke-width:2px
+  class n0,n1,n2,n3 process
+  class n4 result
+```

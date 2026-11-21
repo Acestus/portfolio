@@ -92,3 +92,18 @@ Like the other arcade demos, Breakout rides on a shared engine that owns canvas 
 
 
 The canvas choice also keeps latency low. Labels are drawn directly inside each brick, HUD text comes from a single helper, and the win or game-over overlays are just additional draw calls. No component hierarchy is needed because the scene is fully recomputed every frame from the current state atom.
+
+## How a frame updates the game
+
+```mermaid
+flowchart TD
+  accTitle: How a frame updates the game
+  n0["🎮 Read paddle input"] --> n1
+  n1["⚙ Update ball movement"] --> n2
+  n2["🧱 Resolve collisions"] --> n3
+  n3["🎨 Draw the next frame"]
+  classDef process fill:#CCFBF1,stroke:#0F766E,color:#172B4D,stroke-width:2px
+  classDef result fill:#FFE4E6,stroke:#BE123C,color:#172B4D,stroke-width:2px
+  class n0,n1,n2 process
+  class n3 result
+```

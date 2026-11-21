@@ -86,3 +86,18 @@ Click or tap any cell to toggle it alive/dead. Draw patterns and watch them evol
 ```text
 wasm-pack build rust/life --target web --out-dir ../../resources/public/wasm/life
 ```
+
+## One simulation tick in the Game of Life
+
+```mermaid
+flowchart TD
+  accTitle: One simulation tick in the Game of Life
+  n0["🧮 Count live neighbors"] --> n1
+  n1["⚙ Apply birth and survival rules"] --> n2
+  n2["🧬 Update the grid"] --> n3
+  n3["🎨 Render the next frame"]
+  classDef process fill:#E0E7FF,stroke:#4338CA,color:#172B4D,stroke-width:2px
+  classDef result fill:#ECFCCB,stroke:#4D7C0F,color:#172B4D,stroke-width:2px
+  class n0,n1,n2 process
+  class n3 result
+```

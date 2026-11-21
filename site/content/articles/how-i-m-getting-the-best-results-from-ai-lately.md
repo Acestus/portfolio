@@ -15,3 +15,20 @@ The most success I'm having with AI lately is using Claude Opus as a thinking pa
 5. And then: Do it.
 
 That workflow works because it treats AI like a partner for better thinking, not a shortcut for skipping it.
+
+## From initial intent to an informed decision
+
+```mermaid
+flowchart TD
+  accTitle: From initial intent to an informed decision
+  n0["💬 State intent"] --> n1
+  n1["❔ Interview for clarity"] --> n2
+  n2["📚 Ground in prior documentation"] --> n3
+  n3["🔍 Identify gaps"] --> n4
+  n4["💡 Choose suggestions"] --> n5
+  n5["▶ Act"]
+  classDef process fill:#E0E7FF,stroke:#4338CA,color:#172B4D,stroke-width:2px
+  classDef result fill:#ECFCCB,stroke:#4D7C0F,color:#172B4D,stroke-width:2px
+  class n0,n1,n2,n3,n4 process
+  class n5 result
+```

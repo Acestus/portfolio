@@ -284,3 +284,24 @@ silver_events.write.format("delta").mode("overwrite").saveAsTable("platform_tran
 
 
 That is the key Build 2026 story: Fabric is not just a new place to run old database jobs. It is a governed data operating model where OneLake is the storage substrate, Spark handles transformation, Data Pipelines choreograph work, and Direct Lake semantic models serve analytics from the same Delta files.
+
+## Fabric medallion data flow
+
+```mermaid
+flowchart TD
+  accTitle: Fabric medallion data flow
+  n0@{ icon: "azure:sql-database", form: "rounded", label: "Source · Operational SQL", pos: "t", h: 32 } -->|extract| n1
+  n1@{ icon: "fabric:lakehouse", form: "rounded", label: "Bronze · Raw Lakehouse", pos: "t", h: 32 } -->|validate| n2
+  n2@{ icon: "fabric:lakehouse", form: "rounded", label: "Silver · Validated Lakehouse", pos: "t", h: 32 } -->|curate| n3
+  n3@{ icon: "fabric:lakehouse", form: "rounded", label: "Gold · Curated Lakehouse", pos: "t", h: 32 } -->|serve| n4
+  n4@{ icon: "fabric:power-bi", form: "rounded", label: "Power BI · Reports", pos: "t", h: 32 }
+  style n0 fill:#E8F0FE,stroke:#1A73C7,color:#172B4D,stroke-width:2px
+  style n1 fill:#F5DEB3,stroke:#CD7F32,color:#172B4D,stroke-width:2px
+  style n2 fill:#E8E8E8,stroke:#808080,color:#172B4D,stroke-width:2px
+  style n3 fill:#FFF8DC,stroke:#DAA520,color:#172B4D,stroke-width:2px
+  style n4 fill:#E8F0FE,stroke:#1A73C7,color:#172B4D,stroke-width:2px
+  linkStyle 0 stroke:#CD7F32,stroke-width:2px
+  linkStyle 1 stroke:#808080,stroke-width:2px
+  linkStyle 2 stroke:#DAA520,stroke-width:2px
+  linkStyle 3 stroke:#1A73C7,stroke-width:2px
+```

@@ -41,3 +41,14 @@ Oxide names Rust and TypeScript in the role. My professional experience is stron
 The part of the role that most motivates me is its focus on helping every team work more effectively. I have spent my career close to the systems people depend on and the operational tasks they need to complete. At Oxide, I could apply that perspective to internal tools, data flows, and automation that make colleagues' work clearer, safer, and more dependable.
 
 [Read the Operations Software Engineer role at Oxide](https://oxide.computer/careers/operations-software-engineer).
+
+## What makes internal operations dependable
+
+```mermaid
+mindmap
+  root((🛠 Internal operations))
+    ⚙ Automation
+    📊 Data and evidence
+    🔐 Security and reliability
+    📚 Documentation
+```

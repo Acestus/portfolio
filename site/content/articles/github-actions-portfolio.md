@@ -138,3 +138,18 @@ That rule turns a collection of YAML files into a release process. GitHub Action
 - [GitHub Actions workflow directory](https://github.com/Acestus/portfolio/tree/main/.github/workflows)
 - [Azure Static Web Apps deployment environments](https://learn.microsoft.com/azure/static-web-apps/deploy-preview)
 - [GitHub Actions OIDC with Azure](https://learn.microsoft.com/azure/developer/github/connect-from-azure)
+
+## How release evidence moves with the artifact
+
+```mermaid
+flowchart TD
+  accTitle: How release evidence moves with the artifact
+  n0["📦 Retain qualified artifact"] --> n1
+  n1["🚀 Development"] --> n2
+  n2["🧪 Staging"] --> n3
+  n3["🌐 Production"]
+  classDef process fill:#EDE9FE,stroke:#6D28D9,color:#172B4D,stroke-width:2px
+  classDef result fill:#FEF3C7,stroke:#B45309,color:#172B4D,stroke-width:2px
+  class n0,n1,n2 process
+  class n3 result
+```

@@ -38,3 +38,18 @@ Eleven dispatch situations. Eleven named skills. No open-ended improvisation.
 **Calibrated Autonomy**
 
 Every ticket carries an agentic score (1–5) set at intake — a pre-classification of how much human involvement the work requires. Score-1 tickets run to completion without human checkpoints. Score-5 tickets are context-only: the AI reads, summarizes, and steps back. A constraint:technician label caps autonomy regardless of score.
+
+## How approved work reaches ticket systems
+
+```mermaid
+flowchart TD
+  accTitle: How approved work reaches ticket systems
+  n0["🧩 Select a narrow skill"] --> n1
+  n1["📝 Record proposed work in Markdown"] --> n2
+  n2["👤 Human reviews the file"] --> n3
+  n3["🔁 CI syncs approved changes"]
+  classDef process fill:#EDE9FE,stroke:#6D28D9,color:#172B4D,stroke-width:2px
+  classDef result fill:#FEF3C7,stroke:#B45309,color:#172B4D,stroke-width:2px
+  class n0,n1,n2 process
+  class n3 result
+```

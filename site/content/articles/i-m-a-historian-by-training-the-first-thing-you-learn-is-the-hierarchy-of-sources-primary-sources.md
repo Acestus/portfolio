@@ -47,3 +47,12 @@ If I care about a topic, I find the primary sources. If I don't care enough to f
 The practitioner has a microphone now. The primary source is one search away.  
   
 So who's still reading the newspaper?
+
+## How to distinguish sources by their relationship to the evidence
+
+```mermaid
+mindmap
+  root((🔍 What is the source’s relationship to the event?))
+    📜 Primary source firsthand evidence
+    📚 Secondary source interpretation and analysis
+```

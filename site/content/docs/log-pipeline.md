@@ -244,3 +244,18 @@ That mix matters because the goal is not to build another bespoke logging platfo
 
 
 The end result is a pipeline that is real-time without being fragile: event-driven ingestion, managed stream routing, hot KQL analytics, lifecycle-aware retention, and durable alert handling that can be explained from the SPA all the way to production architecture.
+
+## How Azure events become queryable operational evidence
+
+```mermaid
+flowchart TD
+  accTitle: How Azure events become queryable operational evidence
+  n0@{ icon: "azure:event-hub", form: "rounded", label: "Azure Event Hubs", pos: "t", h: 32 } --> n1
+  n1@{ icon: "fabric:eventstream", form: "rounded", label: "Fabric Eventstream", pos: "t", h: 32 } --> n2
+  n2@{ icon: "fabric:eventhouse", form: "rounded", label: "Fabric Eventhouse", pos: "t", h: 32 } --> n3
+  n3["🔍 KQL query"]
+  classDef process fill:#CCFBF1,stroke:#0F766E,color:#172B4D,stroke-width:2px
+  classDef result fill:#FFE4E6,stroke:#BE123C,color:#172B4D,stroke-width:2px
+  class n0,n1,n2 process
+  class n3 result
+```

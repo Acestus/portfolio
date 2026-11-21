@@ -24,3 +24,13 @@ For daughters, let them know they’re beautiful. Not just in appearance, but in
 **3\. Speaking about Jesus:**
 
 Finally, the speaker made a point I want to work on: “If Jesus matters to you, don’t be afraid to talk about Him.” Our faith isn’t just something private—it’s meant to be a conversation, something we share. If you love something, or Someone, it’s natural to speak about them. Faith deserves that same openness.
+
+## Three ways to speak with love
+
+```mermaid
+mindmap
+  root((💬 Words that show love))
+    👦 Tell sons you are proud of them
+    👧 Affirm daughters for who they are
+    ✝ Speak openly about Jesus
+```
