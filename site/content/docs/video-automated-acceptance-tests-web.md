@@ -40,6 +40,32 @@ flowchart TD
   class C,D,R secondary
 ```
 
+## Acceptance test architecture
+
+The acceptance test expresses expected behavior through a domain-specific language (DSL). The DSL delegates browser interactions to a system driver such as Playwright. If a scenario needs an external dependency, a separate driver can configure or inspect its stub.
+
+```mermaid
+flowchart TD
+  accTitle: Acceptance test architecture with a DSL and separate drivers for the system and external systems
+  T(Acceptance Test) --- D(DSL)
+  D --- S(System Drivers)
+  D --- X(External System Drivers)
+  S --- A(System)
+  X --- E(External Systems)
+
+  classDef test fill:#FFE08A,stroke:#92400E,color:#172B4D,stroke-width:2px
+  classDef language fill:#B5EAF5,stroke:#0E7490,color:#172B4D,stroke-width:2px
+  classDef driver fill:#E5E7EB,stroke:#475569,color:#172B4D,stroke-width:2px
+  classDef system fill:#DCD6FA,stroke:#6D28D9,color:#172B4D,stroke-width:2px
+  class T test
+  class D language
+  class S,X driver
+  class A,E system
+  style E stroke-dasharray:5 4
+```
+
+Adapted from [Valentina Jemuović’s acceptance test architecture in Optivem Journal](https://journal.optivem.com/p/spec-driven-development-make-specs).
+
 ## Recording checklist
 
 - State the question the example answers and identify the synthetic or disposable environment.
