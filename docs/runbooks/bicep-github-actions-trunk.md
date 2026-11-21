@@ -5,6 +5,7 @@ The main release workflow builds once and deploys the same site to development, 
 Run one line at a time in fish. The commands infer the pull request from the current Git branch.
 
 ~~~fish
+curl -fsSL https://acestus.com/docs/bicep-github-actions-trunk/ | python3 -c 'import sys; body = sys.stdin.read(); sys.exit(not body or "(eval):5: parse error near" in body)'; and echo 'PASS: guide is available and the eval parse error is absent'; or echo 'FAIL: guide is unavailable, empty, or contains the eval parse error'
 gh pr view --web
 gh pr merge --auto --squash
 gh pr checks --watch
