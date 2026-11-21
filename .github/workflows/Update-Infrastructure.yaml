@@ -36,9 +36,9 @@ jobs:
       group: swa-portfolio-delivery
       cancel-in-progress: false
     env:
-      SWA_NAME: ${{ vars.SWA_NAME || 'swa-portfolio-dev-scus-001' }}
-      RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP || 'rg-portfolio-dev' }}
-      SWA_RESOURCE_GROUP: ${{ vars.SWA_RESOURCE_GROUP || 'rg-portfolio-dev' }}
+      SWA_NAME: ${{ inputs.stage == 'staging' && 'swa-portfolio-stg-scus-001' || inputs.stage == 'production' && 'swa-portfolio-prd-scus-001' || 'swa-portfolio-dev-scus-001' }}
+      RESOURCE_GROUP: ${{ inputs.stage == 'staging' && 'rg-portfolio-stg' || inputs.stage == 'production' && 'rg-portfolio-prd' || 'rg-portfolio-dev' }}
+      SWA_RESOURCE_GROUP: ${{ inputs.stage == 'staging' && 'rg-portfolio-stg' || inputs.stage == 'production' && 'rg-portfolio-prd' || 'rg-portfolio-dev' }}
       DELIVERY_STAGE: ${{ inputs.stage }}
       DELIVERY_OPERATION: infrastructure
       PR_NUMBER: ${{ inputs.pr_number }}
@@ -69,9 +69,10 @@ jobs:
         tenant-id: ${{ vars.AZURE_TENANT_ID }}
         subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
         audience: api://AzureADTokenExchange
-    - name: Apply reviewed infrastructure to the existing resource group
+    - name: Apply reviewed infrastructure to the stage-specific resource group and SWA
       run: |-
         parameters=()
         if [[ -n "$IAC_PARAMETERS_FILE" ]]; then parameters=(--parameters "@iac/$IAC_PARAMETERS_FILE"); fi
         az deployment group create --name "swa-$GITHUB_RUN_ID" --resource-group "$RESOURCE_GROUP" \
-          --template-file "iac/$IAC_TEMPLATE" "${parameters[@]}" --query properties.provisioningState --output tsv
+          --template-file "iac/$IAC_TEMPLATE" "${parameters[@]}" --parameters "swaName=$SWA_NAME" \
+          --query properties.provisioningState --output tsv

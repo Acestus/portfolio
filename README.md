@@ -16,6 +16,6 @@ dotnet test tests/Portfolio.Tests/Portfolio.Tests.csproj
 
 The build renders the resume PDF with Chromium. Browser tests additionally require a running generated-site server and `PORTFOLIO_TEST_URL`; see the qualification workflow for the complete automated sequence.
 
-The nine delivery workflows build once, retain a checked release archive, and promote those same bytes through named environments on one existing Azure Static Web App. See [delivery configuration](docs/swa-cicd.md), [architecture](repo-architecture.md), and [migration details](docs/hugo-bun-migration.md).
+The delivery workflows build once, retain a checked release archive, and deploy those same bytes to separate development, staging, and production Azure Static Web Apps. See [delivery configuration](docs/swa-cicd.md), [architecture](repo-architecture.md), and [migration details](docs/hugo-bun-migration.md).
 
 Sample data storage targets and identity-based upload instructions are documented in [sample data storage](docs/sample-data-storage.md).

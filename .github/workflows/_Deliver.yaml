@@ -82,8 +82,7 @@ jobs:
           evidence_attempt=$(jq -er .run_attempt evidence-run.json)
           gh run download "$evidence_run" --name "receipt-$evidence_stage-attempt-$evidence_attempt" --dir evidence
         fi
-        slot="$DELIVERY_STAGE"
-        if [[ "$DELIVERY_STAGE" == production ]]; then slot=''; fi
+        slot=''
         if [[ "$DELIVERY_STAGE" == pull-request ]]; then slot="pr-$PR_NUMBER"; fi
         echo "slot=$slot" >> "$GITHUB_OUTPUT"
     - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
@@ -103,6 +102,9 @@ jobs:
       run: |-
         mkdir candidate
         tar -xf retained/site.tar -C candidate
+    - name: Remove test playback sample from production candidate
+      if: inputs.stage == 'production' && inputs.operation != 'test'
+      run: python3 scripts/prune_video_sample.py candidate
     - name: Read the previously tested endpoint for standalone tests
       id: tested
       if: inputs.operation == 'test'
@@ -133,9 +135,9 @@ jobs:
       group: swa-portfolio-delivery
       cancel-in-progress: false
     env:
-      SWA_NAME: ${{ vars.SWA_NAME || 'swa-portfolio-dev-scus-001' }}
-      RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP || 'rg-portfolio-dev' }}
-      SWA_RESOURCE_GROUP: ${{ vars.SWA_RESOURCE_GROUP || 'rg-portfolio-dev' }}
+      SWA_NAME: ${{ inputs.stage == 'staging' && 'swa-portfolio-stg-scus-001' || inputs.stage == 'production' && 'swa-portfolio-prd-scus-001' || 'swa-portfolio-dev-scus-001' }}
+      RESOURCE_GROUP: ${{ inputs.stage == 'staging' && 'rg-portfolio-stg' || inputs.stage == 'production' && 'rg-portfolio-prd' || 'rg-portfolio-dev' }}
+      SWA_RESOURCE_GROUP: ${{ inputs.stage == 'staging' && 'rg-portfolio-stg' || inputs.stage == 'production' && 'rg-portfolio-prd' || 'rg-portfolio-dev' }}
       DELIVERY_STAGE: ${{ inputs.stage }}
       DELIVERY_OPERATION: ${{ inputs.operation }}
       PR_NUMBER: ${{ inputs.pr_number }}

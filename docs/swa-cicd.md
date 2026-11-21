@@ -17,13 +17,21 @@ Build once, test the result, and automatically promote the same retained bytes t
 
 `90 Reusable Hugo/Bun commit stage` (`_Qualify.yaml`) and `91 Reusable verified delivery` (`_Deliver.yaml`) are reusable implementation workflows. The numeric display-name prefixes order the Actions sidebar; triggers and dependencies control execution. Workflow filenames remain stable for callers and provenance checks. Application delivery is serialized through `swa-portfolio-delivery`, including cleanup, checks, and infrastructure. GitHub concurrency does not guarantee FIFO ordering.
 
-## One SWA
+## Separate SWAs by stage
 
-Repository variables `SWA_NAME` and `SWA_RESOURCE_GROUP` default to `swa-portfolio-dev-scus-001` and `rg-portfolio-dev`. Keep these shared across environments. Development and staging use SWA named environments `development` and `staging`; PRs use `pr-N`; production uses the default environment. Preview availability is subject to the existing SWA plan and quota. This pipeline does not provision extra SWAs.
+Each deployment stage targets its own Static Web App and resource group:
 
-Configure GitHub environments `dev`, `stg`, `prd`, and `pull-request`. Automatic promotion requires no required-reviewer or other manual approval rules on `stg` and `prd`; environment restrictions may still block deployments. Each needs Azure OIDC variables `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, and `AZURE_SUBSCRIPTION_ID`, with an Azure federated credential matching its GitHub environment. The identity needs access to the existing SWA; the infrastructure workflow also needs rights to deploy its selected resource group.
+| Stage | SWA | Resource group |
+| --- | --- | --- |
+| Development | `swa-portfolio-dev-scus-001` | `rg-portfolio-dev` |
+| Staging | `swa-portfolio-stg-scus-001` | `rg-portfolio-stg` |
+| Production | `swa-portfolio-prd-scus-001` | `rg-portfolio-prd` |
 
-Infrastructure additionally requires `IAC_TEMPLATE` and optionally `IAC_PARAMETERS_FILE`, relative to `Acestus/infra`, plus `RESOURCE_GROUP` (default `rg-portfolio-dev`). Set `IAC_READ_TOKEN` if the default GitHub token cannot read that private repository. No template path is assumed: verify that the reviewed template targets the intended existing resources before selecting it. `iac_commit` must be its full 40-character commit SHA. The input does not select a mutable branch.
+Each stage deploys to that SWA's production environment. Pull requests use `pr-N` preview environments on the development SWA. The custom domain remains on the development SWA. Preview availability is subject to the SWA plan and quota.
+
+Configure GitHub environments `dev`, `stg`, `prd`, and `pull-request`. Automatic promotion requires no required-reviewer or other manual approval rules on `stg` and `prd`; environment restrictions may still block deployments. Each needs Azure OIDC variables `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, and `AZURE_SUBSCRIPTION_ID`, with an Azure federated credential matching its GitHub environment. The identity needs access to that stage's SWA; the infrastructure workflow also needs rights to deploy its selected resource group. SWA names and resource groups are fixed by stage in the delivery workflow so a shared GitHub variable cannot redirect multiple stages to one SWA.
+
+Infrastructure additionally requires `IAC_TEMPLATE` and optionally `IAC_PARAMETERS_FILE`, relative to `Acestus/infra`. The selected template must accept a `swaName` parameter; the workflow supplies the stage-specific name above and deploys into its matching resource group. Set `IAC_READ_TOKEN` if the default GitHub token cannot read that private repository. No template path is assumed: verify that the reviewed template targets the intended resources before selecting it. `iac_commit` must be its full 40-character commit SHA. The input does not select a mutable branch.
 
 ## Publish and promote
 

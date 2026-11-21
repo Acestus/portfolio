@@ -1,25 +1,27 @@
-.videos-body { background: #0f0f0f; color: #f1f1f1; }
-.videos-body .header, .videos-body .footer { background: #0f0f0f; color: #f1f1f1; }
-.videos-body .header a, .videos-body .footer a, .videos-body .page a { color: #f1f1f1; }
-.videos-body .page { color: #f1f1f1; }
-.videos-body .page video { display: block; border-radius: 12px; background: #000; }
+.videos-body { color-scheme: light; background: #f7f6f0; color: #1d332e; }
+.videos-body .header, .videos-body .footer { background: #f7f6f0; color: #1d332e; }
+.videos-body .header a, .videos-body .footer a, .videos-body .page a { color: #1d332e; }
+.videos-body .page { color: #1d332e; }
+.videos-body .page video { display: block; border-radius: 12px; background: #1d332e; }
+.videos-body .video-formats { margin-top: .75rem; color: #606d65; font-size: .9rem; }
+.videos-body .video-formats a { font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 .videos-page { max-width: 1440px; margin: 0 auto; padding: 3.5rem 4% 6rem; }
 .videos-heading { margin-bottom: 2rem; }
-.videos-heading h1 { margin: .35rem 0; font-size: clamp(2.3rem, 5vw, 3.75rem); letter-spacing: -.04em; color: #fff; }
-.videos-heading p { margin: 0; color: #aaa; }
-.videos-heading .videos-eyebrow { color: #aaa; font-size: .7rem; font-weight: 700; letter-spacing: .15em; }
-.videos-tabs { border-bottom: 1px solid #383838; margin-bottom: 2rem; color: #fff; font-weight: 700; }
-.videos-tabs span { display: inline-block; padding: 0 0 .8rem; border-bottom: 2px solid #f1f1f1; }
+.videos-heading h1 { margin: .35rem 0; font-size: clamp(2.3rem, 5vw, 3.75rem); letter-spacing: -.04em; color: #1d332e; }
+.videos-heading p { margin: 0; color: #606d65; }
+.videos-heading .videos-eyebrow { color: #606d65; font-size: .7rem; font-weight: 700; letter-spacing: .15em; }
+.videos-tabs { border-bottom: 1px solid #dcded3; margin-bottom: 2rem; color: #1d332e; font-weight: 700; }
+.videos-tabs span { display: inline-block; padding: 0 0 .8rem; border-bottom: 2px solid #173a32; }
 .videos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 310px), 1fr)); gap: 2.5rem 1rem; }
-.video-card-image { display: block; position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 12px; background: #252525; }
+.video-card-image { display: block; position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 12px; background: #e6e8df; }
 .video-card-image img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .2s ease; }
 .video-card-image:hover img { transform: scale(1.025); }
-.video-card-image:focus-visible, .video-card-info a:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
-.video-card-placeholder { display: grid; place-items: center; height: 100%; color: #ddd; font-size: 3rem; background: linear-gradient(135deg, #353535, #181818); }
-.video-duration { position: absolute; bottom: .5rem; right: .5rem; background: rgba(0,0,0,.85); color: #fff; padding: .15rem .3rem; border-radius: 3px; font-size: .75rem; font-weight: 700; }
+.video-card-image:focus-visible, .video-card-info a:focus-visible { outline: 3px solid #528766; outline-offset: 4px; }
+.video-card-placeholder { display: grid; place-items: center; height: 100%; color: #173a32; font-size: 3rem; background: linear-gradient(135deg, #f7f6f0, #dcded3); }
+.video-duration { position: absolute; bottom: .5rem; right: .5rem; background: rgba(29,51,46,.9); color: #fff; padding: .15rem .3rem; border-radius: 3px; font-size: .75rem; font-weight: 700; }
 .video-card-info { display: flex; gap: .75rem; margin-top: .8rem; }
 .video-avatar { display: grid; flex: 0 0 36px; width: 36px; height: 36px; place-items: center; border-radius: 50%; background: #285848; color: #fff; font-weight: 700; }
 .video-card-info h2 { margin: 0; font-size: 1rem; line-height: 1.35; letter-spacing: 0; }
-.video-card-info h2 a { color: #f1f1f1; text-decoration: none; }
-.video-card-info p { margin: .35rem 0 0; color: #aaa; font-size: .875rem; line-height: 1.4; }
+.video-card-info h2 a { color: #1d332e; text-decoration: none; }
+.video-card-info p { margin: .35rem 0 0; color: #606d65; font-size: .875rem; line-height: 1.4; }
 @media (prefers-reduced-motion: reduce) { .video-card-image img { transition: none; } }
