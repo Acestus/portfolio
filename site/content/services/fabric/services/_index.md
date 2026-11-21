@@ -5,7 +5,7 @@ description: "What the Fabric CI/CD Readiness Review covers."
 
 ## Fabric CI/CD Readiness Review
 
-**$50 — Fixed scope**
+**$200 — Fixed scope**
 
 This is a single focused engagement. I look at how your team deploys Fabric artifacts today, find the gaps that cause drift and broken schedules, and give you a prioritized fix list.
 
@@ -23,6 +23,6 @@ This is a single focused engagement. I look at how your team deploys Fabric arti
 
 ## Price
 
-**$50 flat.** No retainer. No upsell. No ongoing commitment required.
+**$200 flat.** No retainer. No upsell. No ongoing commitment required.
 
-[Email to Book — $50](mailto:jump@hey.com?subject=Fabric%20CI%2FCD%20Readiness%20Review)
+[Email to Book — $200](mailto:jump@hey.com?subject=Fabric%20CI%2FCD%20Readiness%20Review)

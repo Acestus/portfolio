@@ -3,7 +3,9 @@ title = "Particle Storm: 3,000 Particles with Rust and WebAssembly"
 description = "A closer look at the interactive particle simulation."
 weight = 1
 [params]
-h264 = "https://stvideosprdscus001.z21.web.core.windows.net/videos/particle-storm.mp4"
+av1 = "https://stvideosprdscus001.z21.web.core.windows.net/videos/particle-storm-av1.webm"
+h264 = "https://stvideosprdscus001.z21.web.core.windows.net/videos/particle-storm-h264.mp4"
+av1Only = true
 thumbnail = "/images/particle-storm-thumbnail.jpg"
 duration = "1:04"
 +++

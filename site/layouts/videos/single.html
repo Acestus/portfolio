@@ -4,9 +4,14 @@
   <h1>{{ .Title }}</h1>
   {{ .Content }}
   <video controls playsinline preload="none"{{ with .Params.thumbnail }} poster="{{ . }}"{{ end }} width="960" height="540" style="max-width: 100%; height: auto;" aria-label="{{ .Title }}">
-    {{ with .Params.av1 }}<source src="{{ . }}" type='video/mp4; codecs="av01.0.04M.08"'>{{ end }}
+    {{ if .Params.av1Only }}
+    {{ with .Params.av1 }}<source src="{{ . }}" type='video/webm; codecs="av01.0.08M.08, opus"'>{{ end }}
+    {{ else }}
+    {{ with .Params.av1 }}<source src="{{ . }}" type='video/webm; codecs="av01.0.08M.08, opus"'>{{ end }}
     <source src="{{ .Params.h264 }}" type="video/mp4">
     <a href="{{ .Params.h264 }}">Download the video</a>
+    {{ end }}
   </video>
+  <p class="video-formats">{{ if .Params.av1Only }}AV1-only player test (no fallback). {{ else }}Try a format directly: {{ end }}{{ with .Params.av1 }}<a href="{{ . }}">AV1 / WebM</a>{{ end }}{{ if and .Params.av1 .Params.h264 }} · {{ end }}{{ with .Params.h264 }}<a href="{{ . }}">H.264 / MP4</a>{{ end }}</p>
 </article>
 {{ end }}
