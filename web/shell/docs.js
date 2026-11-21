@@ -1,4 +1,30 @@
+import { mount } from "pele";
+
 (() => {
+  for (const code of document.querySelectorAll(".docs-prose code.language-mermaid")) {
+    const source = code.textContent ?? "";
+    const original = code.closest(".highlight") ?? code.closest("pre");
+    if (!original) continue;
+    const figure = document.createElement("figure");
+    figure.className = "docs-diagram";
+    const canvas = document.createElement("div");
+    canvas.className = "docs-diagram-canvas pele";
+    canvas.setAttribute("role", "img");
+    canvas.setAttribute("aria-label", "Diagram");
+    const details = document.createElement("details");
+    const summary = document.createElement("summary");
+    summary.textContent = "View Mermaid source";
+    const pre = document.createElement("pre");
+    pre.textContent = source;
+    details.append(summary, pre);
+    figure.append(canvas, details);
+    original.replaceWith(figure);
+    try {
+      mount(canvas, source, { zoom: false });
+    } catch {
+      figure.replaceWith(original);
+    }
+  }
   const toggle = document.querySelector(".docs-menu-toggle");
   const navigation = document.getElementById("docs-navigation");
   toggle?.addEventListener("click", () => {

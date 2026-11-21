@@ -1,4 +1,5 @@
 {{ $library := .Site.GetPage "/docs" }}
+{{ $groups := $library.RegularPages.GroupByParam "space" }}
 <div class="docs-workspace">
   <aside class="docs-sidebar">
     <a class="docs-space-brand" href="/docs/"><span class="docs-space-icon" aria-hidden="true">▤</span><span>Knowledge base<small>acestus.com</small></span></a>
@@ -6,7 +7,7 @@
     <nav id="docs-navigation" aria-label="Documentation navigation">
       <a class="docs-overview" href="/docs/" {{ if .IsSection }}aria-current="page"{{ end }}>Overview</a>
       {{ $current := . }}
-      {{ range $library.RegularPages.GroupByParam "space" }}
+      {{ range $groups }}
       <details class="docs-nav-group" open><summary>{{ .Key }}</summary><ul>
         {{ range .Pages.ByTitle }}<li><a href="{{ .RelPermalink }}" {{ if eq .RelPermalink $current.RelPermalink }}aria-current="page"{{ end }}>{{ .Title }}</a></li>{{ end }}
       </ul></details>
@@ -28,14 +29,14 @@
     <article class="docs-article docs-home">
       <p class="docs-kicker">TECHNICAL DOCUMENTATION</p><h1>Documentation</h1>
       <p class="docs-lead">Architecture notes, operational guides, and working examples. Find an answer or explore the system behind the work.</p>
-      <div class="docs-library-meta"><span class="docs-badge">Public knowledge base</span><span>{{ len $library.RegularPages }} guides</span><span>3 topic spaces</span></div>
+      <div class="docs-library-meta"><span class="docs-badge">Public knowledge base</span><span>{{ len $library.RegularPages }} guides</span><span>{{ len $groups }} topic spaces</span></div>
       <section id="topics"><h2>Explore by topic</h2><div class="docs-topic-grid">
-        {{ range $library.RegularPages.GroupByParam "space" }}
-        <article class="docs-topic-card"><span class="docs-topic-icon" aria-hidden="true">{{ if eq .Key "Architecture & delivery" }}◇{{ else if eq .Key "Cloud & operations" }}☁{{ else }}⌘{{ end }}</span><h3>{{ .Key }}</h3><p>{{ len .Pages }} guides</p><ul>{{ range first 3 .Pages.ByTitle }}<li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>{{ end }}</ul><a class="docs-topic-more" href="#{{ .Key | urlize }}">View all guides →</a></article>
+        {{ range $groups }}
+        <article class="docs-topic-card"><span class="docs-topic-icon" aria-hidden="true">{{ if eq .Key "Video production" }}▶{{ else if eq .Key "Architecture & delivery" }}◇{{ else if eq .Key "Cloud & operations" }}☁{{ else }}⌘{{ end }}</span><h3>{{ .Key }}</h3><p>{{ len .Pages }} guides</p><ul>{{ range first 3 .Pages.ByTitle }}<li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>{{ end }}</ul><a class="docs-topic-more" href="#{{ .Key | urlize }}">View all guides →</a></article>
         {{ end }}
       </div></section>
       <section id="library" class="docs-directory"><h2>All documentation</h2><p class="docs-section-intro">A browsable reference library, organized around the work.</p>
-        {{ range $library.RegularPages.GroupByParam "space" }}<section class="docs-directory-group" id="{{ .Key | urlize }}"><h3>{{ .Key }}</h3><div class="docs-guide-grid">{{ range .Pages.ByTitle }}<a class="docs-guide" href="{{ .RelPermalink }}"><span aria-hidden="true">▤</span><div><h4>{{ .Title }}</h4><p>{{ .Description }}</p></div><b aria-hidden="true">↗</b></a>{{ end }}</div></section>{{ end }}
+        {{ range $groups }}<section class="docs-directory-group" id="{{ .Key | urlize }}"><h3>{{ .Key }}</h3><div class="docs-guide-grid">{{ range .Pages.ByTitle }}<a class="docs-guide" href="{{ .RelPermalink }}"><span aria-hidden="true">▤</span><div><h4>{{ .Title }}</h4><p>{{ .Description }}</p></div><b aria-hidden="true">↗</b></a>{{ end }}</div></section>{{ end }}
       </section>
     </article>
     {{ else }}
