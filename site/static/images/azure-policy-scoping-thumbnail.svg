@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" role="img" aria-labelledby="title">
+  <title id="title">Azure Policy Scoping: Scope, Owner, and Expiry</title>
+  <defs>
+    <linearGradient id="background" x2="1" y2="1"><stop stop-color="#071423"/><stop offset="1" stop-color="#1c354c"/></linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0H0V48" fill="none" stroke="#a9c8e6" stroke-opacity=".12"/></pattern>
+  </defs>
+  <rect width="1280" height="720" fill="url(#background)"/>
+  <rect width="1280" height="720" fill="url(#grid)"/>
+  <g font-family="Arial, Helvetica, sans-serif" font-weight="700">
+    <text x="76" y="112" fill="#87cffa" font-size="23" letter-spacing="4">ACESTUS / CLOUD GOVERNANCE</text>
+    <text x="72" y="288" fill="#fff" font-size="88" letter-spacing="-3">AZURE POLICY</text>
+    <rect x="68" y="318" width="445" height="122" rx="12" fill="#b92739"/>
+    <text x="91" y="409" fill="#fff" font-size="81" letter-spacing="-2">SCOPING</text>
+    <text x="77" y="522" fill="#d3e5f5" font-size="32">Temporary exemptions</text>
+    <rect x="760" y="152" width="432" height="414" rx="24" fill="#12263a" stroke="#507898" stroke-width="2"/>
+    <text x="805" y="217" fill="#8dcfff" font-size="20" letter-spacing="3">EXEMPTION RECORD</text>
+    <path d="M806 247H1146M806 342H1146M806 438H1146" stroke="#3e5c74" stroke-width="2"/>
+    <path d="M821 296l9 9 18-20m-27 107 9 9 18-20m-27 107 9 9 18-20" fill="none" stroke="#74ddae" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <g fill="#f5f9fd" font-size="31">
+      <text x="876" y="309">Scope</text>
+      <text x="876" y="405">Owner</text>
+      <text x="876" y="501">Expiry</text>
+    </g>
+  </g>
+</svg>
