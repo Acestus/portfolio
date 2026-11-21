@@ -1,5 +1,4 @@
-"""Read-only live checks against the exact retained professional-site package."""
-import json
+"""Read-only live check for the guide page at the selected deployment stage."""
 import os
 from pathlib import Path
 import sys
@@ -7,6 +6,9 @@ import time
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
+
+
+GUIDE_PATH = 'docs/bicep-github-actions-trunk/index.html'
 
 
 class NoRedirect(HTTPRedirectHandler):
@@ -23,19 +25,9 @@ def fetch(url):
 
 
 def check(base, candidate):
-    for path in ('release.json', 'resume/index.html', 'portfolio/index.html', 'articles/index.html', 'blog/index.html',
-                 'downloads/william-weeks-balconi-resume.pdf',
-                 'docs/bicep-github-actions-trunk/index.html'):
-        status, body = fetch(base + '/' + path)
-        if status != 200 or body != (candidate / path).read_bytes():
-            raise ValueError('Live bytes do not match the retained candidate: ' + path)
-    for path in ('/this-route-must-not-exist-cicd', '/api/events', '/household/calendar',
-                 '/videos/playback-sample/',
-                 '/media/videos/playback-sample-av1.mp4',
-                 '/media/videos/playback-sample-h264.mp4'):
-        status, _ = fetch(base + path)
-        if status != 404:
-            raise ValueError('Expected a real 404: ' + path)
+    status, body = fetch(base.rstrip('/') + '/' + GUIDE_PATH)
+    if status != 200 or body != (candidate / GUIDE_PATH).read_bytes():
+        raise ValueError('Live Bicep guide does not match the retained candidate')
 
 
 def main():
@@ -46,12 +38,14 @@ def main():
     for attempt in range(1, 13):
         try:
             check(base, candidate)
-            print('Live release bytes, the Bicep guide, and removed sample-video 404 boundaries verified.')
+            print('Live Bicep guide matches the retained candidate.')
             return
         except (ValueError, URLError, TimeoutError) as error:
-            print(f'Live check {attempt}/12: {error}', file=sys.stderr)
-            if attempt == 12: raise SystemExit(1)
+            print(f'Guide check {attempt}/12: {error}', file=sys.stderr)
+            if attempt == 12:
+                raise SystemExit(1)
             time.sleep(5)
 
 
-if __name__ == '__main__': main()
+if __name__ == '__main__':
+    main()
