@@ -1,6 +1,6 @@
 # GitHub Actions authentication to Azure without stored passwords
 
-From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
+From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Skip setup if the repo already exists. Each demo command enters its repo before running. If you used a custom destination, run the commands in that repo’s README from its root.
 
 ~~~fish
 cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- github-actions-azure-oidc-demo
@@ -16,7 +16,7 @@ Use ripgrep, Azure CLI, and .NET 11. The example workflow is inactive until you 
 Show the workflow permission and token audience.
 
 ~~~fish
-rg -n 'id-token: write|azure/login@|AzureADTokenExchange' identity-workflow.example.yml
+cd /tmp/acestus-video-demos/github-actions-azure-oidc-demo; and rg -n 'id-token: write|azure/login@|AzureADTokenExchange' identity-workflow.example.yml
 ~~~
 
 ## 2. Compare federated subjects
@@ -24,7 +24,7 @@ rg -n 'id-token: write|azure/login@|AzureADTokenExchange' identity-workflow.exam
 Show which sample subject matches the configured environment.
 
 ~~~fish
-dotnet run --file Demo.cs -- compare-federated-subjects
+cd /tmp/acestus-video-demos/github-actions-azure-oidc-demo; and dotnet run --file Demo.cs -- compare-federated-subjects
 ~~~
 
 ## 3. Identify the active principal
@@ -32,5 +32,5 @@ dotnet run --file Demo.cs -- compare-federated-subjects
 Run after approving a login in your demo environment. Show only the principal type.
 
 ~~~fish
-az account show --query user.type --output tsv
+cd /tmp/acestus-video-demos/github-actions-azure-oidc-demo; and az account show --query user.type --output tsv
 ~~~

@@ -1,6 +1,6 @@
 # Azure Policy that fixes missing tags
 
-From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
+From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Skip setup if the repo already exists. Each demo command enters its repo before running. If you used a custom destination, run the commands in that repo’s README from its root.
 
 ~~~fish
 cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- azure-policy-remediate-tags-demo
@@ -16,7 +16,7 @@ Local model of a modify policy and remediation task. .NET 11 only. Run one line 
 Start with a sample resource whose tags omit the required owner.
 
 ~~~fish
-dotnet run --file Demo.cs -- find-the-missing-tag
+cd /tmp/acestus-video-demos/azure-policy-remediate-tags-demo; and dotnet run --file Demo.cs -- find-the-missing-tag
 ~~~
 
 ## 2. Preview remediation
@@ -24,7 +24,7 @@ dotnet run --file Demo.cs -- find-the-missing-tag
 Apply the sample change to a copy to show exactly what the task would write.
 
 ~~~fish
-dotnet run --file Demo.cs -- preview-remediation
+cd /tmp/acestus-video-demos/azure-policy-remediate-tags-demo; and dotnet run --file Demo.cs -- preview-remediation
 ~~~
 
 ## 3. Recheck compliance
@@ -32,5 +32,5 @@ dotnet run --file Demo.cs -- preview-remediation
 Show that presence and correctness are separate checks.
 
 ~~~fish
-dotnet run --file Demo.cs -- recheck-compliance
+cd /tmp/acestus-video-demos/azure-policy-remediate-tags-demo; and dotnet run --file Demo.cs -- recheck-compliance
 ~~~
