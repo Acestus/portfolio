@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" role="img" aria-labelledby="title">
+  <title id="title">Secure VM Patching Workflow</title>
+  <defs>
+    <linearGradient id="background" x2="1" y2="1"><stop stop-color="#071423"/><stop offset="1" stop-color="#1c354c"/></linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0H0V48" fill="none" stroke="#a9c8e6" stroke-opacity=".12"/></pattern>
+  </defs>
+  <rect width="1280" height="720" fill="url(#background)"/>
+  <rect width="1280" height="720" fill="url(#grid)"/>
+  <g font-family="Arial, Helvetica, sans-serif" font-weight="700">
+    <text x="76" y="112" fill="#87cffa" font-size="23" letter-spacing="4">ACESTUS / CLOUD OPERATIONS</text>
+    <text x="72" y="278" fill="#fff" font-size="88" letter-spacing="-3">SECURE VM</text>
+    <rect x="68" y="310" width="510" height="122" rx="12" fill="#b92739"/>
+    <text x="91" y="401" fill="#fff" font-size="76" letter-spacing="-2">PATCHING</text>
+    <text x="77" y="520" fill="#d3e5f5" font-size="32">Scope · Schedule · Verify</text>
+    <rect x="760" y="152" width="432" height="414" rx="24" fill="#12263a" stroke="#507898" stroke-width="2"/>
+    <text x="804" y="217" fill="#8dcfff" font-size="20" letter-spacing="3">MAINTENANCE CYCLE</text>
+    <path d="M806 247H1146M806 342H1146M806 438H1146" stroke="#3e5c74" stroke-width="2"/>
+    <g fill="#f5f9fd" font-size="29">
+      <text x="876" y="309">Reviewed scope</text>
+      <text x="876" y="405">Patch window</text>
+      <text x="876" y="501">Guest verified</text>
+    </g>
+    <g fill="none" stroke="#74ddae" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M821 290l9 9 18-20"/>
+      <path d="M821 386l9 9 18-20"/>
+      <path d="M821 482l9 9 18-20"/>
+    </g>
+  </g>
+</svg>
