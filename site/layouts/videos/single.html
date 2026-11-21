@@ -8,6 +8,5 @@
     {{ with .Params.h264 }}<source src="{{ . }}" type="video/mp4">{{ end }}
     {{ with .Params.h264 }}<a href="{{ . }}">Download the video</a>{{ end }}
   </video>
-  <p class="video-formats">Try a format directly: {{ with .Params.av1 }}<a href="{{ . }}">AV1 / WebM</a>{{ end }}{{ if and .Params.av1 .Params.h264 }} · {{ end }}{{ with .Params.h264 }}<a href="{{ . }}">H.264 / MP4</a>{{ end }}</p>
 </article>
 {{ end }}

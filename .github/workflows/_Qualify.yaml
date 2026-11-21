@@ -31,6 +31,8 @@ jobs:
       with:
         hugo-version: 0.164.0
         extended: true
+    - name: Install pinned browser dependencies
+      run: bun install
     - name: Test release policy and native browser modules
       run: |-
         python3 scripts/test_candidate_verification.py

@@ -7,6 +7,7 @@ Hugo renders the site; Bun builds the browser JavaScript. Portfolio is the canon
 Use .NET 11 (global.json), Hugo extended 0.164.0 and Bun 1.3.14. Restore the locked .NET projects and install their matching Playwright Chromium before building.
 
 ```sh
+bun install
 dotnet restore tools/Portfolio.Build/Portfolio.Build.csproj --locked-mode
 dotnet restore tests/Portfolio.Tests/Portfolio.Tests.csproj --locked-mode
 bun test web/tests
