@@ -1,5 +1,3 @@
-(eval):5: parse error near `end'
-(eval):5: parse error near `end'
 ---
 title: "Bicep and GitHub Actions with Trunk-Based Delivery"
 description: "How short-lived pull requests, federated identity, and a verified main-branch release fit together."
