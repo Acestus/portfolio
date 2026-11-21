@@ -1,9 +1,9 @@
 # Azure Policy exemptions with an expiry and owner
 
-From the portfolio root, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
+From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
 
 ~~~fish
-dotnet run --file scripts/SeedDemo.cs -- policy-exemption-expiry-owner-demo
+cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- policy-exemption-expiry-owner-demo
 ~~~
 
 
