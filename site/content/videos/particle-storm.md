@@ -5,7 +5,6 @@ weight = 1
 [params]
 av1 = "https://stvideosprdscus001.z21.web.core.windows.net/videos/particle-storm-av1.webm"
 h264 = "https://stvideosprdscus001.z21.web.core.windows.net/videos/particle-storm-h264.mp4"
-av1Only = true
 thumbnail = "/images/particle-storm-thumbnail.jpg"
 duration = "1:04"
 +++
