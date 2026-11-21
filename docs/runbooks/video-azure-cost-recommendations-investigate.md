@@ -1,26 +1,36 @@
-# Azure cost recommendations: investigate before deleting — video runbook
+# Azure cost recommendations: investigate before deleting
 
-Use this runbook to prepare the demonstration and verify its published guide. The three key points below are drawn from the portfolio documentation.
-
-## Three key points
-
-1. Use fictional cost and utilization values with a clear time window.
-2. Check ownership, dependencies, and resilience before proposing a change.
-3. Verify the result against a baseline; a recommendation alone is not approval to delete.
-
-## Check before merge
-
-Run one line at a time in fish. The first three curl checks test one documented point each. Every line uses a literal URL and works without shell variables from previous commands.
+From the portfolio root, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
 
 ~~~fish
-curl -fsSL https://acestus.com/docs/video-azure-cost-recommendations-investigate/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="synthetic usage"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 1 is present and the eval error is absent'; or echo 'FAIL: point 1 is missing, the page is unavailable, or the eval error is present'
-curl -fsSL https://acestus.com/docs/video-azure-cost-recommendations-investigate/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="dependencies"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 2 is present and the eval error is absent'; or echo 'FAIL: point 2 is missing, the page is unavailable, or the eval error is present'
-curl -fsSL https://acestus.com/docs/video-azure-cost-recommendations-investigate/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="baseline"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 3 is present and the eval error is absent'; or echo 'FAIL: point 3 is missing, the page is unavailable, or the eval error is present'
-gh pr view --web
-gh pr merge --auto --squash
-gh pr checks --watch
-gh run watch (gh run list --repo Acestus/portfolio --branch main --workflow '02 Publish-Development' --limit 1 --json databaseId --jq '.[0].databaseId') --repo Acestus/portfolio --exit-status
-gh run view (gh run list --repo Acestus/portfolio --branch main --workflow '02 Publish-Development' --limit 1 --json databaseId --jq '.[0].databaseId') --repo Acestus/portfolio --web
+dotnet run --file scripts/SeedDemo.cs -- azure-cost-recommendations-investigate-demo
 ~~~
 
-Each curl check requires a non-empty guide response, its topic-specific point, and no eval parse-error text. The main release builds once and deploys the retained site through Development, Staging, and Production; each stage checks the guide against its retained candidate. The post-deployment workflow repeats the check against the selected Development release.
+
+[Read the portfolio guide](https://acestus.com/docs/video-azure-cost-recommendations-investigate/).
+
+Local recommendation review using fictional costs and resources. .NET 11 only. Run one line at a time in fish.
+
+## 1. Read the signal
+
+Compute average CPU from the narrow sample window.
+
+~~~fish
+dotnet run --file Demo.cs -- read-the-signal
+~~~
+
+## 2. Look for dependencies
+
+Reveal a backup job that changes the decision despite low mean CPU.
+
+~~~fish
+dotnet run --file Demo.cs -- look-for-dependencies
+~~~
+
+## 3. Compare against a baseline
+
+Estimate the observed change from two equal sample cost windows.
+
+~~~fish
+dotnet run --file Demo.cs -- compare-against-a-baseline
+~~~

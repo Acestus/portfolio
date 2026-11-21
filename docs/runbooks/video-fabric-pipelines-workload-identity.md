@@ -1,26 +1,36 @@
-# Scheduling Fabric pipelines with workload identity — video runbook
+# Scheduling Fabric pipelines with workload identity
 
-Use this runbook to prepare the demonstration and verify its published guide. The three key points below are drawn from the portfolio documentation.
-
-## Three key points
-
-1. Keep schedule, identity, API request, and pipeline outcome as separate responsibilities.
-2. Use approved workload identity to obtain a short-lived token.
-3. Inspect the API response, pipeline run status, retries, and ownership.
-
-## Check before merge
-
-Run one line at a time in fish. The first three curl checks test one documented point each. Every line uses a literal URL and works without shell variables from previous commands.
+From the portfolio root, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
 
 ~~~fish
-curl -fsSL https://acestus.com/docs/video-fabric-pipelines-workload-identity/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="workload identity"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 1 is present and the eval error is absent'; or echo 'FAIL: point 1 is missing, the page is unavailable, or the eval error is present'
-curl -fsSL https://acestus.com/docs/video-fabric-pipelines-workload-identity/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="short-lived token"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 2 is present and the eval error is absent'; or echo 'FAIL: point 2 is missing, the page is unavailable, or the eval error is present'
-curl -fsSL https://acestus.com/docs/video-fabric-pipelines-workload-identity/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="run status"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 3 is present and the eval error is absent'; or echo 'FAIL: point 3 is missing, the page is unavailable, or the eval error is present'
-gh pr view --web
-gh pr merge --auto --squash
-gh pr checks --watch
-gh run watch (gh run list --repo Acestus/portfolio --branch main --workflow '02 Publish-Development' --limit 1 --json databaseId --jq '.[0].databaseId') --repo Acestus/portfolio --exit-status
-gh run view (gh run list --repo Acestus/portfolio --branch main --workflow '02 Publish-Development' --limit 1 --json databaseId --jq '.[0].databaseId') --repo Acestus/portfolio --web
+dotnet run --file scripts/SeedDemo.cs -- fabric-pipelines-workload-identity-demo
 ~~~
 
-Each curl check requires a non-empty guide response, its topic-specific point, and no eval parse-error text. The main release builds once and deploys the retained site through Development, Staging, and Production; each stage checks the guide against its retained candidate. The post-deployment workflow repeats the check against the selected Development release.
+
+[Read the portfolio guide](https://acestus.com/docs/video-fabric-pipelines-workload-identity/).
+
+Local trigger and monitoring exercise. .NET 11 only. Run one line at a time in fish.
+
+## 1. Show the scheduled input
+
+Walk through a daily schedule and the bounded input it passes.
+
+~~~fish
+dotnet run --file Demo.cs -- show-the-scheduled-input
+~~~
+
+## 2. Explain token expiry
+
+Compare the same illustrative token metadata before and after expiry.
+
+~~~fish
+dotnet run --file Demo.cs -- explain-token-expiry
+~~~
+
+## 3. Follow the run receipt
+
+Use a sample run ID to link an accepted request to a later status.
+
+~~~fish
+dotnet run --file Demo.cs -- follow-the-run-receipt
+~~~

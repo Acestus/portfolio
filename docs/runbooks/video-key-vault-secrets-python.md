@@ -1,26 +1,36 @@
-# Azure Key Vault secrets in a Python application — video runbook
+# Azure Key Vault secrets in a Python application
 
-Use this runbook to prepare the demonstration and verify its published guide. The three key points below are drawn from the portfolio documentation.
-
-## Three key points
-
-1. Use a dummy secret and grant the demo identity only the required permission.
-2. Distinguish local developer credentials from deployed managed identity.
-3. Verify allowed and denied access without printing the secret.
-
-## Check before merge
-
-Run one line at a time in fish. The first three curl checks test one documented point each. Every line uses a literal URL and works without shell variables from previous commands.
+From the portfolio root, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
 
 ~~~fish
-curl -fsSL https://acestus.com/docs/video-key-vault-secrets-python/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="non-sensitive value"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 1 is present and the eval error is absent'; or echo 'FAIL: point 1 is missing, the page is unavailable, or the eval error is present'
-curl -fsSL https://acestus.com/docs/video-key-vault-secrets-python/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="managed identity"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 2 is present and the eval error is absent'; or echo 'FAIL: point 2 is missing, the page is unavailable, or the eval error is present'
-curl -fsSL https://acestus.com/docs/video-key-vault-secrets-python/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="denied access"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 3 is present and the eval error is absent'; or echo 'FAIL: point 3 is missing, the page is unavailable, or the eval error is present'
-gh pr view --web
-gh pr merge --auto --squash
-gh pr checks --watch
-gh run watch (gh run list --repo Acestus/portfolio --branch main --workflow '02 Publish-Development' --limit 1 --json databaseId --jq '.[0].databaseId') --repo Acestus/portfolio --exit-status
-gh run view (gh run list --repo Acestus/portfolio --branch main --workflow '02 Publish-Development' --limit 1 --json databaseId --jq '.[0].databaseId') --repo Acestus/portfolio --web
+dotnet run --file scripts/SeedDemo.cs -- key-vault-secrets-python-demo
 ~~~
 
-Each curl check requires a non-empty guide response, its topic-specific point, and no eval parse-error text. The main release builds once and deploys the retained site through Development, Staging, and Production; each stage checks the guide against its retained candidate. The post-deployment workflow repeats the check against the selected Development release.
+
+[Read the portfolio guide](https://acestus.com/docs/video-key-vault-secrets-python/).
+
+Use .NET 11 and a mock vault with a dummy value. The linked article describes the Python SDK. This recording exercise shows the same access boundary in C#. Run one line at a time in fish.
+
+## 1. Show the role boundary
+
+Compare a demo identity with secret read permission against an anonymous identity.
+
+~~~fish
+dotnet run --file Demo.cs -- show-the-role-boundary
+~~~
+
+## 2. Verify allowed read
+
+Compare the dummy result without printing it.
+
+~~~fish
+dotnet run --file Demo.cs -- verify-allowed-read
+~~~
+
+## 3. Verify denied read
+
+Show the unauthorized identity receives no value.
+
+~~~fish
+dotnet run --file Demo.cs -- verify-denied-read
+~~~

@@ -1,26 +1,36 @@
-# Terraform or Bicep: choosing the right tool for an Azure project — video runbook
+# Terraform or Bicep: choosing the right tool for an Azure project
 
-Use this runbook to prepare the demonstration and verify its published guide. The three key points below are drawn from the portfolio documentation.
-
-## Three key points
-
-1. Compare tools against the same resource set and team requirements.
-2. Evaluate state ownership, modules, validation, drift, and ongoing operations.
-3. Make a context-specific recommendation and identify a proof of concept.
-
-## Check before merge
-
-Run one line at a time in fish. The first three curl checks test one documented point each. Every line uses a literal URL and works without shell variables from previous commands.
+From the portfolio root, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
 
 ~~~fish
-curl -fsSL https://acestus.com/docs/video-terraform-or-bicep/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="same requirements"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 1 is present and the eval error is absent'; or echo 'FAIL: point 1 is missing, the page is unavailable, or the eval error is present'
-curl -fsSL https://acestus.com/docs/video-terraform-or-bicep/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="state ownership"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 2 is present and the eval error is absent'; or echo 'FAIL: point 2 is missing, the page is unavailable, or the eval error is present'
-curl -fsSL https://acestus.com/docs/video-terraform-or-bicep/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="proof of concept"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 3 is present and the eval error is absent'; or echo 'FAIL: point 3 is missing, the page is unavailable, or the eval error is present'
-gh pr view --web
-gh pr merge --auto --squash
-gh pr checks --watch
-gh run watch (gh run list --repo Acestus/portfolio --branch main --workflow '02 Publish-Development' --limit 1 --json databaseId --jq '.[0].databaseId') --repo Acestus/portfolio --exit-status
-gh run view (gh run list --repo Acestus/portfolio --branch main --workflow '02 Publish-Development' --limit 1 --json databaseId --jq '.[0].databaseId') --repo Acestus/portfolio --web
+dotnet run --file scripts/SeedDemo.cs -- terraform-or-bicep-demo
 ~~~
 
-Each curl check requires a non-empty guide response, its topic-specific point, and no eval parse-error text. The main release builds once and deploys the retained site through Development, Staging, and Production; each stage checks the guide against its retained candidate. The post-deployment workflow repeats the check against the selected Development release.
+
+[Read the portfolio guide](https://acestus.com/docs/video-terraform-or-bicep/).
+
+Use Azure CLI with Bicep installed, Terraform, and .NET 11. Both templates describe a private Azure storage account. The local commands compile or validate the definitions. Run one line at a time in fish.
+
+## 1. Compile the Bicep side
+
+Build the sample storage template to show what gets submitted to Azure.
+
+~~~fish
+az bicep build --file main.bicep --stdout
+~~~
+
+## 2. Validate an equivalent Terraform definition
+
+Install the declared provider and validate the storage definition. A live plan requires Azure access and demo resource values.
+
+~~~fish
+terraform init -backend=false; and terraform validate
+~~~
+
+## 3. Decide which workflow fits
+
+Use the same sample Azure project to compare scope, state ownership, and review tools.
+
+~~~fish
+dotnet run --file Demo.cs -- compare-workflows
+~~~

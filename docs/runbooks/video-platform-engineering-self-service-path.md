@@ -1,26 +1,36 @@
-# Platform engineering demo: a self-service deployment path — video runbook
+# Platform engineering demo: a self-service deployment path
 
-Use this runbook to prepare the demonstration and verify its published guide. The three key points below are drawn from the portfolio documentation.
-
-## Three key points
-
-1. Make developer-owned inputs distinct from platform-owned defaults.
-2. Show validation and a deployment proposal with useful failure messages.
-3. Trace authorization, release evidence, and the support path.
-
-## Check before merge
-
-Run one line at a time in fish. The first three curl checks test one documented point each. Every line uses a literal URL and works without shell variables from previous commands.
+From the portfolio root, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
 
 ~~~fish
-curl -fsSL https://acestus.com/docs/video-platform-engineering-self-service-path/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="service owner should choose"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 1 is present and the eval error is absent'; or echo 'FAIL: point 1 is missing, the page is unavailable, or the eval error is present'
-curl -fsSL https://acestus.com/docs/video-platform-engineering-self-service-path/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="approved defaults"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 2 is present and the eval error is absent'; or echo 'FAIL: point 2 is missing, the page is unavailable, or the eval error is present'
-curl -fsSL https://acestus.com/docs/video-platform-engineering-self-service-path/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="support path"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 3 is present and the eval error is absent'; or echo 'FAIL: point 3 is missing, the page is unavailable, or the eval error is present'
-gh pr view --web
-gh pr merge --auto --squash
-gh pr checks --watch
-gh run watch (gh run list --repo Acestus/portfolio --branch main --workflow '02 Publish-Development' --limit 1 --json databaseId --jq '.[0].databaseId') --repo Acestus/portfolio --exit-status
-gh run view (gh run list --repo Acestus/portfolio --branch main --workflow '02 Publish-Development' --limit 1 --json databaseId --jq '.[0].databaseId') --repo Acestus/portfolio --web
+dotnet run --file scripts/SeedDemo.cs -- platform-engineering-self-service-path-demo
 ~~~
 
-Each curl check requires a non-empty guide response, its topic-specific point, and no eval parse-error text. The main release builds once and deploys the retained site through Development, Staging, and Production; each stage checks the guide against its retained candidate. The post-deployment workflow repeats the check against the selected Development release.
+
+[Read the portfolio guide](https://acestus.com/docs/video-platform-engineering-self-service-path/).
+
+Use .NET 11 to model a request, validation, and reviewable plan. Run one line at a time in fish.
+
+## 1. Submit the request
+
+Show the only fields the service owner needs to choose.
+
+~~~fish
+dotnet run --file Demo.cs -- submit-the-request
+~~~
+
+## 2. Show a useful validation error
+
+Reject a size outside the allowlist.
+
+~~~fish
+dotnet run --file Demo.cs -- show-a-useful-validation-error
+~~~
+
+## 3. Generate the plan
+
+Add platform defaults to a valid request and point out the review owner.
+
+~~~fish
+dotnet run --file Demo.cs -- generate-the-plan
+~~~
