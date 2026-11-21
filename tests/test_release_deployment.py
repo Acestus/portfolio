@@ -14,33 +14,25 @@ class LiveChecks(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
-        self.responses = []
-        for path in ('release.json', 'resume/index.html', 'portfolio/index.html', 'articles/index.html', 'blog/index.html', 'downloads/william-weeks-balconi-resume.pdf', 'docs/bicep-github-actions-trunk/index.html'):
-            target = self.root / path
-            target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_bytes(path.encode())
-            self.responses.append((200, path.encode()))
-        self.responses += [(404, b'')] * 6
+        self.guide = self.root / live.GUIDE_PATH
+        self.guide.parent.mkdir(parents=True)
+        self.guide.write_bytes(b'expected guide bytes')
 
-    def check(self):
-        with patch.object(live, 'fetch', side_effect=self.responses):
-            live.check('https://example.test', self.root)
+    def test_only_the_guide_is_requested_and_matches(self):
+        with patch.object(live, 'fetch', return_value=(200, b'expected guide bytes')) as fetch:
+            live.check('https://example.test/', self.root)
+        fetch.assert_called_once_with('https://example.test/' + live.GUIDE_PATH)
 
-    def test_expected_release_is_valid(self): self.check()
+    def test_stale_guide_bytes_are_rejected(self):
+        with patch.object(live, 'fetch', return_value=(200, b'stale')):
+            with self.assertRaisesRegex(ValueError, 'guide'):
+                live.check('https://example.test', self.root)
 
-    def test_stale_bytes_rejected(self):
-        for index in range(7):
-            previous = self.responses[index]
-            self.responses[index] = (200, b'stale')
-            with self.assertRaises(ValueError): self.check()
-            self.responses[index] = previous
-
-    def test_unknown_and_private_paths_are_not_homepage_fallbacks(self):
-        for index in range(7, 13):
-            previous = self.responses[index]
-            self.responses[index] = (200, b'homepage')
-            with self.assertRaises(ValueError): self.check()
-            self.responses[index] = previous
+    def test_missing_guide_is_rejected(self):
+        with patch.object(live, 'fetch', return_value=(404, b'')):
+            with self.assertRaisesRegex(ValueError, 'guide'):
+                live.check('https://example.test', self.root)
 
 
-if __name__ == '__main__': unittest.main()
+if __name__ == '__main__':
+    unittest.main()
