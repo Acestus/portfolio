@@ -1,5 +1,5 @@
 {{ $library := .Site.GetPage "/docs" }}
-{{ $groups := $groups }}
+{{ $groups := $library.RegularPages.GroupByParam "space" }}
 <div class="docs-workspace">
   <aside class="docs-sidebar">
     <a class="docs-space-brand" href="/docs/"><span class="docs-space-icon" aria-hidden="true">▤</span><span>Knowledge base<small>acestus.com</small></span></a>
