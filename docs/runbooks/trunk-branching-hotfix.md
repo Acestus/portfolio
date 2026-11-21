@@ -1,6 +1,6 @@
 # Trunk branching hotfix demo
 
-Run one line at a time in fish from the portfolio root. The setup command creates a brand-new local Git repository at `/tmp/hotfix-demo` and requires Git and the .NET 11 SDK. The first `dotnet test` restores the xUnit packages. Each filter selects the acceptance case for that checkpoint. The local worktrees simulate the three environments. The production marker moves only after the corresponding test passes in staging.
+Run one line at a time in fish. Run setup from anywhere in the portfolio checkout. Skip setup if you already have `/tmp/hotfix-demo`. The setup command creates a brand-new local Git repository at `/tmp/hotfix-demo` and requires Git and the .NET 11 SDK. The first `dotnet test` restores the xUnit packages. Each filter selects the acceptance case for that checkpoint. The local worktrees simulate the three environments. The production marker moves only after the corresponding test passes in staging.
 
 [Read Trunk-Based Development vs. Git Flow](https://acestus.com/articles/trunk-based-development-vs-git-flow/).
 
@@ -9,7 +9,7 @@ Run one line at a time in fish from the portfolio root. The setup command create
 Dev starts with features 3 and 4 and a count of 8. Staging and production start at release-0 with a count of 6. Restore only the application files on a short-lived branch. Commit the first fix, then move the local production marker forward to the new release. The original commits and release-0 remain in history.
 
 ~~~fish
-dotnet run --file scripts/SeedDemo.cs -- hotfix-demo /tmp
+cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- hotfix-demo /tmp
 git -C /tmp/hotfix-demo log main -10 --oneline --decorate
 dotnet test /tmp/hotfix-demo/.stages/dev/HotfixDemo.csproj --filter FullyQualifiedName=Acceptance.BeforeHotfixDevelopment --logger 'console;verbosity=normal'
 dotnet test /tmp/hotfix-demo/.stages/stg/HotfixDemo.csproj --filter FullyQualifiedName=Acceptance.Baseline --logger 'console;verbosity=normal'
