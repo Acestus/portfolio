@@ -46,3 +46,7 @@ flowchart TD
 - State the question the example answers and identify the synthetic or disposable environment.
 - Show the important configuration and one expected result before the walkthrough ends.
 - Call out the operational limit that the green check does not cover.
+
+## Demo video
+
+[Watch the secure VM patching workflow](/videos/virtual-machine-patching/).
