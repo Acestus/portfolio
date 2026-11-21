@@ -1,26 +1,36 @@
-# A practical Microsoft Fabric CI/CD readiness review — video runbook
+# A practical Microsoft Fabric CI/CD readiness review
 
-Use this runbook to prepare the demonstration and verify its published guide. The three key points below are drawn from the portfolio documentation.
-
-## Three key points
-
-1. Check workspace inventory and source-control coverage before reviewing the deployment.
-2. Trace a definition change through validation and deployment.
-3. Review schedules, connections, secrets, and workspace access separately.
-
-## Check before merge
-
-Run one line at a time in fish. The first three curl checks test one documented point each. Every line uses a literal URL and works without shell variables from previous commands.
+From the portfolio root, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
 
 ~~~fish
-curl -fsSL https://acestus.com/docs/video-fabric-cicd-readiness-review/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="source-control coverage"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 1 is present and the eval error is absent'; or echo 'FAIL: point 1 is missing, the page is unavailable, or the eval error is present'
-curl -fsSL https://acestus.com/docs/video-fabric-cicd-readiness-review/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="validation and deployment"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 2 is present and the eval error is absent'; or echo 'FAIL: point 2 is missing, the page is unavailable, or the eval error is present'
-curl -fsSL https://acestus.com/docs/video-fabric-cicd-readiness-review/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="schedules, connections, and secrets"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 3 is present and the eval error is absent'; or echo 'FAIL: point 3 is missing, the page is unavailable, or the eval error is present'
-gh pr view --web
-gh pr merge --auto --squash
-gh pr checks --watch
-gh run watch (gh run list --repo Acestus/portfolio --branch main --workflow '02 Publish-Development' --limit 1 --json databaseId --jq '.[0].databaseId') --repo Acestus/portfolio --exit-status
-gh run view (gh run list --repo Acestus/portfolio --branch main --workflow '02 Publish-Development' --limit 1 --json databaseId --jq '.[0].databaseId') --repo Acestus/portfolio --web
+python3 scripts/seed_video_demo.py fabric-cicd-readiness-review-demo
 ~~~
 
-Each curl check requires a non-empty guide response, its topic-specific point, and no eval parse-error text. The main release builds once and deploys the retained site through Development, Staging, and Production; each stage checks the guide against its retained candidate. The post-deployment workflow repeats the check against the selected Development release.
+
+[Read the portfolio guide](https://acestus.com/docs/video-fabric-cicd-readiness-review/).
+
+Local Fabric review worksheet. Python 3 only. Run one line at a time in fish.
+
+## 1. Inventory Git coverage
+
+Compare the workspace inventory with the definitions in Git.
+
+~~~fish
+python3 inventory_git_coverage.py
+~~~
+
+## 2. Check a deployment receipt
+
+Compare the reviewed commit with the commit listed on the sample receipt.
+
+~~~fish
+python3 check_a_deployment_receipt.py
+~~~
+
+## 3. Assign operational follow-up
+
+Record the missing schedule, connection, and secret checks with owners.
+
+~~~fish
+python3 assign_operational_follow_up.py
+~~~

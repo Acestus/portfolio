@@ -1,26 +1,36 @@
-# From Azure logs to a Fabric operations question — video runbook
+# From Azure logs to a Fabric operations question
 
-Use this runbook to prepare the demonstration and verify its published guide. The three key points below are drawn from the portfolio documentation.
-
-## Three key points
-
-1. Use synthetic events to state one focused operations question.
-2. Show ingestion, schema normalization, and a query with an expected answer.
-3. Explain retention, refresh cadence, services, and cost drivers.
-
-## Check before merge
-
-Run one line at a time in fish. The first three curl checks test one documented point each. Every line uses a literal URL and works without shell variables from previous commands.
+From the portfolio root, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
 
 ~~~fish
-curl -fsSL https://acestus.com/docs/video-azure-logs-to-fabric-question/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="synthetic operational event"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 1 is present and the eval error is absent'; or echo 'FAIL: point 1 is missing, the page is unavailable, or the eval error is present'
-curl -fsSL https://acestus.com/docs/video-azure-logs-to-fabric-question/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="schema normalization"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 2 is present and the eval error is absent'; or echo 'FAIL: point 2 is missing, the page is unavailable, or the eval error is present'
-curl -fsSL https://acestus.com/docs/video-azure-logs-to-fabric-question/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="cost drivers"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 3 is present and the eval error is absent'; or echo 'FAIL: point 3 is missing, the page is unavailable, or the eval error is present'
-gh pr view --web
-gh pr merge --auto --squash
-gh pr checks --watch
-gh run watch (gh run list --repo Acestus/portfolio --branch main --workflow '02 Publish-Development' --limit 1 --json databaseId --jq '.[0].databaseId') --repo Acestus/portfolio --exit-status
-gh run view (gh run list --repo Acestus/portfolio --branch main --workflow '02 Publish-Development' --limit 1 --json databaseId --jq '.[0].databaseId') --repo Acestus/portfolio --web
+python3 scripts/seed_video_demo.py azure-logs-to-fabric-question-demo
 ~~~
 
-Each curl check requires a non-empty guide response, its topic-specific point, and no eval parse-error text. The main release builds once and deploys the retained site through Development, Staging, and Production; each stage checks the guide against its retained candidate. The post-deployment workflow repeats the check against the selected Development release.
+
+[Read the portfolio guide](https://acestus.com/docs/video-azure-logs-to-fabric-question/).
+
+Use Python 3 and SQLite to model a Fabric query with synthetic telemetry. Run one line at a time in fish.
+
+## 1. Generate sample events
+
+Show two failed order runs and a healthy inventory run.
+
+~~~fish
+python3 generate_sample_events.py
+~~~
+
+## 2. Query failed runs
+
+Group failures by pipeline.
+
+~~~fish
+python3 query_failed_runs.py
+~~~
+
+## 3. Measure freshness
+
+Use sample event and refresh times to explain the dashboard lag and retention cost.
+
+~~~fish
+python3 measure_freshness.py
+~~~

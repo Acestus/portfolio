@@ -1,26 +1,36 @@
-# Infrastructure as code with Bicep and GitHub Actions — video runbook
+# Infrastructure as code with Bicep and GitHub Actions
 
-Use this runbook to prepare the demonstration and verify its published guide. The three key points below are drawn from the portfolio documentation.
-
-## Three key points
-
-1. Run Bicep lint, build, and what-if validation in the pull request.
-2. Use GitHub OIDC after merge instead of a stored Azure password.
-3. Verify the deployed resource and release; explain what acceptance does not prove.
-
-## Check before merge
-
-Run one line at a time in fish. The first three curl checks test one documented point each. Every line uses a literal URL and works without shell variables from previous commands.
+From the portfolio root, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
 
 ~~~fish
-curl -fsSL https://acestus.com/docs/video-bicep-github-actions-workflow/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="what-if preview"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 1 is present and the eval error is absent'; or echo 'FAIL: point 1 is missing, the page is unavailable, or the eval error is present'
-curl -fsSL https://acestus.com/docs/video-bicep-github-actions-workflow/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="oidc"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 2 is present and the eval error is absent'; or echo 'FAIL: point 2 is missing, the page is unavailable, or the eval error is present'
-curl -fsSL https://acestus.com/docs/video-bicep-github-actions-workflow/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="acceptance check"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 3 is present and the eval error is absent'; or echo 'FAIL: point 3 is missing, the page is unavailable, or the eval error is present'
-gh pr view --web
-gh pr merge --auto --squash
-gh pr checks --watch
-gh run watch (gh run list --repo Acestus/portfolio --branch main --workflow '02 Publish-Development' --limit 1 --json databaseId --jq '.[0].databaseId') --repo Acestus/portfolio --exit-status
-gh run view (gh run list --repo Acestus/portfolio --branch main --workflow '02 Publish-Development' --limit 1 --json databaseId --jq '.[0].databaseId') --repo Acestus/portfolio --web
+python3 scripts/seed_video_demo.py bicep-github-actions-workflow-demo
 ~~~
 
-Each curl check requires a non-empty guide response, its topic-specific point, and no eval parse-error text. The main release builds once and deploys the retained site through Development, Staging, and Production; each stage checks the guide against its retained candidate. The post-deployment workflow repeats the check against the selected Development release.
+
+[Read the portfolio guide](https://acestus.com/docs/video-bicep-github-actions-workflow/).
+
+Use Azure CLI with its Bicep CLI installed, Python 3, and ripgrep. Publish this demo repo to GitHub and push a change to run its validation workflow. The identity example shows how deployment authentication would be wired. Run one line at a time in fish.
+
+## 1. Compile the Bicep template
+
+Show the compiled resource types from the existing portfolio template.
+
+~~~fish
+az bicep build --file main.bicep --stdout | python3 -m json.tool
+~~~
+
+## 2. Inspect the federated deploy job
+
+Show the token permission, protected environment, and Azure login in the example workflow.
+
+~~~fish
+rg -n 'id-token: write|azure/login@|AzureADTokenExchange' identity-workflow.example.yml
+~~~
+
+## 3. Inspect push and PR validation
+
+Review the source commit and conclusion of the demo workflow run.
+
+~~~fish
+gh run list --workflow validate.yml --limit 5 --json headSha,conclusion,url
+~~~

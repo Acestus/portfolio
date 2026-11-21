@@ -1,26 +1,36 @@
-# A secure, repeatable VM patching workflow — video runbook
+# A secure, repeatable VM patching workflow
 
-Use this runbook to prepare the demonstration and verify its published guide. The three key points below are drawn from the portfolio documentation.
-
-## Three key points
-
-1. Define target inventory, patch policy, and maintenance window explicitly.
-2. Preview scope and give temporary exceptions an owner and expiry.
-3. Verify guest patch status; an assignment is not proof of installation.
-
-## Check before merge
-
-Run one line at a time in fish. The first three curl checks test one documented point each. Every line uses a literal URL and works without shell variables from previous commands.
+From the portfolio root, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
 
 ~~~fish
-curl -fsSL https://acestus.com/docs/video-secure-vm-patching-workflow/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="maintenance window"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 1 is present and the eval error is absent'; or echo 'FAIL: point 1 is missing, the page is unavailable, or the eval error is present'
-curl -fsSL https://acestus.com/docs/video-secure-vm-patching-workflow/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="expiry"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 2 is present and the eval error is absent'; or echo 'FAIL: point 2 is missing, the page is unavailable, or the eval error is present'
-curl -fsSL https://acestus.com/docs/video-secure-vm-patching-workflow/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="guest patch status"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 3 is present and the eval error is absent'; or echo 'FAIL: point 3 is missing, the page is unavailable, or the eval error is present'
-gh pr view --web
-gh pr merge --auto --squash
-gh pr checks --watch
-gh run watch (gh run list --repo Acestus/portfolio --branch main --workflow '02 Publish-Development' --limit 1 --json databaseId --jq '.[0].databaseId') --repo Acestus/portfolio --exit-status
-gh run view (gh run list --repo Acestus/portfolio --branch main --workflow '02 Publish-Development' --limit 1 --json databaseId --jq '.[0].databaseId') --repo Acestus/portfolio --web
+python3 scripts/seed_video_demo.py secure-vm-patching-workflow-demo
 ~~~
 
-Each curl check requires a non-empty guide response, its topic-specific point, and no eval parse-error text. The main release builds once and deploys the retained site through Development, Staging, and Production; each stage checks the guide against its retained candidate. The post-deployment workflow repeats the check against the selected Development release.
+
+[Read the portfolio guide](https://acestus.com/docs/video-secure-vm-patching-workflow/).
+
+Local maintenance review using a fictional fleet. Python 3 only. Run one line at a time in fish.
+
+## 1. Review patch scope
+
+Show the machines selected for a maintenance window.
+
+~~~fish
+python3 review_patch_scope.py
+~~~
+
+## 2. Apply a named exception
+
+Show which VM is deferred and display its owner and expiry.
+
+~~~fish
+python3 apply_a_named_exception.py
+~~~
+
+## 3. Verify guest results
+
+Treat failed and unreported guests as follow-up work.
+
+~~~fish
+python3 verify_guest_results.py
+~~~

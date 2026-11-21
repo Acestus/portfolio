@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Demo guide search</title>
+<label>Search guides <input id="search" type="search"></label>
+<p id="results" role="status" hidden></p>
+<script>
+  const search = document.querySelector("#search");
+  const results = document.querySelector("#results");
+  search.addEventListener("input", () => {
+    results.textContent = search.value.trim().toLowerCase() === "fabric" ? "Fabric CI/CD" : "No guides found";
+    results.hidden = false;
+  });
+</script>
+</html>

@@ -1,26 +1,36 @@
-# A Fabric medallion pipeline from raw data to a useful report — video runbook
+# A Fabric medallion pipeline from raw data to a useful report
 
-Use this runbook to prepare the demonstration and verify its published guide. The three key points below are drawn from the portfolio documentation.
-
-## Three key points
-
-1. Load generated source data into Bronze with its ingestion timestamp.
-2. Validate and normalize Silver records before aggregating Gold.
-3. Check row counts and an expected report result.
-
-## Check before merge
-
-Run one line at a time in fish. The first three curl checks test one documented point each. Every line uses a literal URL and works without shell variables from previous commands.
+From the portfolio root, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
 
 ~~~fish
-curl -fsSL https://acestus.com/docs/video-fabric-medallion-pipeline/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="bronze"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 1 is present and the eval error is absent'; or echo 'FAIL: point 1 is missing, the page is unavailable, or the eval error is present'
-curl -fsSL https://acestus.com/docs/video-fabric-medallion-pipeline/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="silver"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 2 is present and the eval error is absent'; or echo 'FAIL: point 2 is missing, the page is unavailable, or the eval error is present'
-curl -fsSL https://acestus.com/docs/video-fabric-medallion-pipeline/ | python3 -c 'import html,re,sys; body=re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(sys.stdin.read()))).lower(); check="gold"; sys.exit(not body.strip() or "(eval):5: parse error near" in body or check not in body)'; and echo 'PASS: point 3 is present and the eval error is absent'; or echo 'FAIL: point 3 is missing, the page is unavailable, or the eval error is present'
-gh pr view --web
-gh pr merge --auto --squash
-gh pr checks --watch
-gh run watch (gh run list --repo Acestus/portfolio --branch main --workflow '02 Publish-Development' --limit 1 --json databaseId --jq '.[0].databaseId') --repo Acestus/portfolio --exit-status
-gh run view (gh run list --repo Acestus/portfolio --branch main --workflow '02 Publish-Development' --limit 1 --json databaseId --jq '.[0].databaseId') --repo Acestus/portfolio --web
+python3 scripts/seed_video_demo.py fabric-medallion-pipeline-demo
 ~~~
 
-Each curl check requires a non-empty guide response, its topic-specific point, and no eval parse-error text. The main release builds once and deploys the retained site through Development, Staging, and Production; each stage checks the guide against its retained candidate. The post-deployment workflow repeats the check against the selected Development release.
+
+[Read the portfolio guide](https://acestus.com/docs/video-fabric-medallion-pipeline/).
+
+Local medallion pipeline with synthetic CSV, using Python 3. Run one line at a time in fish.
+
+## 1. Land Bronze rows
+
+Show the original source fields and an ingestion stamp.
+
+~~~fish
+python3 land_bronze_rows.py
+~~~
+
+## 2. Validate Silver rows
+
+Convert valid amounts to numbers and quarantine the empty amount.
+
+~~~fish
+python3 validate_silver_rows.py
+~~~
+
+## 3. Reconcile Gold totals
+
+Compute and check the report total against the known fixture.
+
+~~~fish
+python3 reconcile_gold_totals.py
+~~~
