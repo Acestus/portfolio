@@ -6,6 +6,10 @@ date: "2026-11-21"
 draft: false
 ---
 
+## Demo video
+
+[Watch Azure Policy Scoping](/videos/azure-policy-scoping/) to see how the example records a resource scope, owner, and expiry date.
+
 ## Goal
 
 Treat an exemption as a time-bounded governance record rather than a permanent way to silence a compliance finding.
