@@ -23,16 +23,10 @@ The existing [Infrastructure as Code guide](/docs/iac-pipeline/) explains the Bi
 
 ## Verify a site change
 
-For the change that accompanies this guide, the playback sample page should disappear and this page should become available. A curl check can confirm both responses after deployment:
+The release checks confirm this guide is present and the removed sample video is no longer available. You can verify the guide with curl:
 
-~~~sh
-curl --silent --show-error --output /dev/null \
-  --write-out '%{http_code}\n' \
-  https://acestus.com/videos/playback-sample/
-
-curl --fail --silent --show-error --location \
-  https://acestus.com/docs/bicep-github-actions-trunk/ |
-  grep --fixed-strings 'ACCEPTANCE-ID: BICEP-TRUNK-2026-11'
+~~~fish
+curl -fsSL -H 'Cache-Control: no-cache' https://acestus.com/docs/bicep-github-actions-trunk/ | string match -q '*ACCEPTANCE-ID: BICEP-TRUNK-2026-11*'
 ~~~
 
 The portfolio's post-deployment job checks the exact published guide and requires real 404 responses for the removed sample page and media.
