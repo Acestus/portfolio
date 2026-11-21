@@ -24,11 +24,15 @@ def fetch(url):
 
 def check(base, candidate):
     for path in ('release.json', 'resume/index.html', 'portfolio/index.html', 'articles/index.html', 'blog/index.html',
-                 'downloads/william-weeks-balconi-resume.pdf'):
+                 'downloads/william-weeks-balconi-resume.pdf',
+                 'docs/bicep-github-actions-trunk/index.html'):
         status, body = fetch(base + '/' + path)
         if status != 200 or body != (candidate / path).read_bytes():
             raise ValueError('Live bytes do not match the retained candidate: ' + path)
-    for path in ('/this-route-must-not-exist-cicd', '/api/events', '/household/calendar'):
+    for path in ('/this-route-must-not-exist-cicd', '/api/events', '/household/calendar',
+                 '/videos/playback-sample/',
+                 '/media/videos/playback-sample-av1.mp4',
+                 '/media/videos/playback-sample-h264.mp4'):
         status, _ = fetch(base + path)
         if status != 404:
             raise ValueError('Expected a real 404: ' + path)
@@ -42,7 +46,7 @@ def main():
     for attempt in range(1, 13):
         try:
             check(base, candidate)
-            print('Live release, canonical pages, PDF bytes and 404 boundaries verified. Independent acceptance remains required.')
+            print('Live release bytes, the Bicep guide, and removed sample-video 404 boundaries verified.')
             return
         except (ValueError, URLError, TimeoutError) as error:
             print(f'Live check {attempt}/12: {error}', file=sys.stderr)
