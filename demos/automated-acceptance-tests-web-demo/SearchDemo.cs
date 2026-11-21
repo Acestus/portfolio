@@ -1,3 +1,4 @@
+#:property PublishAot=false
 #:package Microsoft.Playwright@1.64.1
 using Microsoft.Playwright;
 

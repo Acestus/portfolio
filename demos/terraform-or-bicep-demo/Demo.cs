@@ -1,3 +1,5 @@
+#:property PublishAot=false
+#:property JsonSerializerIsReflectionEnabledByDefault=true
 using System.Text.Json;
 
 if (args.Length != 1)
