@@ -25,13 +25,19 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 ## Diagram
 
 ```mermaid
-flowchart LR
+flowchart TD
+  accTitle: From Azure logs to a Fabric operations question
   A[Azure resource] --> L[Log source]
   L --> I[Ingestion]
   I --> F[Fabric transform]
   F --> Q[Operations query]
   Q --> D[Dashboard answer]
   D --> E[Freshness and cost evidence]
+
+  classDef primary fill:#CFFAFE,stroke:#0E7490,color:#172B4D,stroke-width:2px
+  classDef secondary fill:#FFEDD5,stroke:#C2410C,color:#172B4D,stroke-width:2px
+  class A,L,I,F primary
+  class Q,D,E secondary
 ```
 
 ## Recording checklist

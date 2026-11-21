@@ -25,7 +25,8 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 ## Diagram
 
 ```mermaid
-flowchart LR
+flowchart TD
+  accTitle: What infrastructure drift detection catches (and misses)
   T[Declared template] --> D[Deploy]
   D --> A[Actual resource]
   A -->|manual change| M[Modified property]
@@ -33,6 +34,11 @@ flowchart LR
   M --> C
   C --> R[Reported difference]
   R --> X[Review and reconcile]
+
+  classDef primary fill:#D1FAE5,stroke:#047857,color:#172B4D,stroke-width:2px
+  classDef secondary fill:#FCE7F3,stroke:#BE185D,color:#172B4D,stroke-width:2px
+  class T,D,A primary
+  class M,C,R,X secondary
 ```
 
 ## Recording checklist

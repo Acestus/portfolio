@@ -25,12 +25,18 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 ## Diagram
 
 ```mermaid
-flowchart LR
+flowchart TD
+  accTitle: A practical Microsoft Fabric CI/CD readiness review
   I[Workspace inventory] --> G[Git coverage]
   G --> C[CI checks]
   C --> D[Deployment]
   D --> V[Post-deploy verification]
   V --> E[Readiness evidence]
+
+  classDef primary fill:#E0E7FF,stroke:#4338CA,color:#172B4D,stroke-width:2px
+  classDef secondary fill:#FFEDD5,stroke:#C2410C,color:#172B4D,stroke-width:2px
+  class I,G,D primary
+  class C,V,E secondary
 ```
 
 ## Recording checklist

@@ -25,13 +25,19 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 ## Diagram
 
 ```mermaid
-flowchart LR
+flowchart TD
+  accTitle: Configuration management versus rebuilding the image
   C[Configuration change] --> M[Configuration management]
   M --> H[Existing host converges]
   C --> I[Build new image]
   I --> N[Replace with tested host]
   H --> V[Verify and recover]
   N --> V
+
+  classDef primary fill:#CCFBF1,stroke:#0F766E,color:#172B4D,stroke-width:2px
+  classDef secondary fill:#FFE4E6,stroke:#BE123C,color:#172B4D,stroke-width:2px
+  class C,M,H primary
+  class I,N secondary
 ```
 
 ## Recording checklist

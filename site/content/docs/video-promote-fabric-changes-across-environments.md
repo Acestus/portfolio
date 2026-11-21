@@ -25,12 +25,18 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 ## Diagram
 
 ```mermaid
-flowchart LR
+flowchart TD
+  accTitle: Promoting Fabric changes safely across environments
   P[Reviewed change] --> A[Build retained artifact]
   A --> D[Development]
   D -->|verified receipt| S[Staging]
   S -->|approval and receipt| R[Production]
   R --> V[Live verification]
+
+  classDef primary fill:#EEF2FF,stroke:#4338CA,color:#172B4D,stroke-width:2px
+  classDef secondary fill:#FEF9C3,stroke:#A16207,color:#172B4D,stroke-width:2px
+  class P,A,D,S,R primary
+  class V secondary
 ```
 
 ## Recording checklist

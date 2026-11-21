@@ -25,7 +25,8 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 ## Diagram
 
 ```mermaid
-flowchart LR
+flowchart TD
+  accTitle: A beginner's GitHub Desktop workflow for infrastructure projects
   C[Clone repository] --> B[Create branch]
   B --> E[Edit sample]
   E --> D[Review diff]
@@ -33,6 +34,11 @@ flowchart LR
   M --> P[Pull request]
   P --> V[Checks and review]
   V --> R[Merge to main]
+
+  classDef primary fill:#EFF6FF,stroke:#1D4ED8,color:#172B4D,stroke-width:2px
+  classDef secondary fill:#FEF3C7,stroke:#B45309,color:#172B4D,stroke-width:2px
+  class C,B,E,M,P,R primary
+  class D,V secondary
 ```
 
 ## Recording checklist

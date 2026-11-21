@@ -25,12 +25,26 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 ## Diagram
 
 ```mermaid
-flowchart LR
+flowchart TD
+  accTitle: A Fabric medallion pipeline from raw data to a useful report
   X[Generated source] --> B[Bronze raw]
   B --> S[Silver validated]
   S --> G[Gold aggregate]
   G --> R[Report]
   R --> Q[Expected result check]
+
+  classDef endpoint fill:#E8F0FE,stroke:#1A73C7,color:#172B4D,stroke-width:2px
+  classDef bronze fill:#F5DEB3,stroke:#CD7F32,color:#172B4D,stroke-width:2px
+  classDef silver fill:#E8E8E8,stroke:#808080,color:#172B4D,stroke-width:2px
+  classDef gold fill:#FFF8DC,stroke:#DAA520,color:#172B4D,stroke-width:2px
+  class X,R,Q endpoint
+  class B bronze
+  class S silver
+  class G gold
+  linkStyle 0 stroke:#CD7F32,stroke-width:2px
+  linkStyle 1 stroke:#808080,stroke-width:2px
+  linkStyle 2 stroke:#DAA520,stroke-width:2px
+  linkStyle 3,4 stroke:#1A73C7,stroke-width:2px
 ```
 
 ## Recording checklist

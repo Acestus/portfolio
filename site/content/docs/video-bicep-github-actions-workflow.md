@@ -25,13 +25,19 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 ## Diagram
 
 ```mermaid
-flowchart LR
+flowchart TD
+  accTitle: Infrastructure as code with Bicep and GitHub Actions
   B[Bicep change] --> P[Pull request]
   P --> V[Lint build and what-if]
   V --> M[Merge to main]
   M --> O[OIDC federation]
   O --> D[Azure deployment]
   D --> A[Acceptance check]
+
+  classDef primary fill:#DBEAFE,stroke:#2563EB,color:#172B4D,stroke-width:2px
+  classDef secondary fill:#FFEDD5,stroke:#C2410C,color:#172B4D,stroke-width:2px
+  class B,P,M,O,D primary
+  class V,A secondary
 ```
 
 ## Recording checklist

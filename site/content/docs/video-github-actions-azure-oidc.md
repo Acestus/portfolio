@@ -26,6 +26,7 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 
 ```mermaid
 sequenceDiagram
+  accTitle: GitHub Actions authentication to Azure without stored passwords
   participant G as GitHub workflow
   participant E as Entra ID
   participant A as Azure resource

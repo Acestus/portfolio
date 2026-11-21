@@ -25,7 +25,8 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 ## Diagram
 
 ```mermaid
-flowchart LR
+flowchart TD
+  accTitle: Azure Key Vault secrets in a Python application
   P[Python app] --> I[Default credential]
   I -->|local| D[Developer login]
   I -->|Azure| M[Managed identity]
@@ -33,6 +34,11 @@ flowchart LR
   M --> A
   A --> S[Secret value in memory]
   S --> P
+
+  classDef primary fill:#FEF3C7,stroke:#B45309,color:#172B4D,stroke-width:2px
+  classDef secondary fill:#DBEAFE,stroke:#1E40AF,color:#172B4D,stroke-width:2px
+  class P,I,D,M primary
+  class A,S secondary
 ```
 
 ## Recording checklist

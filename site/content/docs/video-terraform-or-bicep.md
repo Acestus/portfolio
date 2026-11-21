@@ -26,12 +26,18 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 
 ```mermaid
 flowchart TD
+  accTitle: Terraform or Bicep: choosing the right tool for an Azure project
   R[Project requirements] --> A{Azure only?}
   A -->|Yes| B[Evaluate native Bicep]
   A -->|Several providers or existing state| T[Evaluate Terraform]
   B --> C[Team skills and operations]
   T --> C
   C --> D[Small proof of concept]
+
+  classDef primary fill:#E0F2FE,stroke:#0369A1,color:#172B4D,stroke-width:2px
+  classDef secondary fill:#FFE4E6,stroke:#BE123C,color:#172B4D,stroke-width:2px
+  class R,A,C,D primary
+  class B,T secondary
 ```
 
 ## Recording checklist

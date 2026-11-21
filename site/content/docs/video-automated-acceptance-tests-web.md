@@ -25,13 +25,19 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 ## Diagram
 
 ```mermaid
-flowchart LR
+flowchart TD
+  accTitle: Automated acceptance tests for a web workflow
   U[User story] --> A[Accessible test steps]
   A --> L[Local Playwright run]
   L -->|pass| C[CI browser check]
   L -->|fail| D[Trace and fix]
   D --> L
   C --> R[Release evidence]
+
+  classDef primary fill:#EDE9FE,stroke:#6D28D9,color:#172B4D,stroke-width:2px
+  classDef secondary fill:#FEF3C7,stroke:#B45309,color:#172B4D,stroke-width:2px
+  class U,A,L primary
+  class C,D,R secondary
 ```
 
 ## Recording checklist

@@ -25,13 +25,19 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 ## Diagram
 
 ```mermaid
-flowchart LR
+flowchart TD
+  accTitle: A narrow AI assistant for cloud operations
   U[Operator request] --> B[Scope boundary]
   B --> M[Assistant proposes action]
   M --> V[Input validation]
   V --> H[Human approval]
   H --> T[Constrained tool]
   T --> A[Audit record]
+
+  classDef primary fill:#F3E8FF,stroke:#7E22CE,color:#172B4D,stroke-width:2px
+  classDef secondary fill:#FEF9C3,stroke:#A16207,color:#172B4D,stroke-width:2px
+  class U,M,T primary
+  class B,V,H,A secondary
 ```
 
 ## Recording checklist
