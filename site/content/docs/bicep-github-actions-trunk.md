@@ -8,6 +8,12 @@ draft: false
 
 The infrastructure pipeline already uses Bicep and GitHub Actions. This guide summarizes the delivery path: validate a short-lived pull request, merge to main, then deploy the retained release through the configured environments with federated identity.
 
+## Demo video
+
+[![Watch the Bicep and GitHub Actions demo](/images/cicd-with-iac-thumbnail.svg)](/videos/cicd-with-iac/)
+
+Watch the [7-minute end-to-end walkthrough](/videos/cicd-with-iac/) of the trunk pull request, automated checks, and deployment through development, staging, and production.
+
 ## Trunk workflow
 
 ~~~text
