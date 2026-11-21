@@ -1,0 +1,48 @@
+#!/bin/sh
+set -eu
+
+if [ "$#" -ne 1 ]; then
+    echo 'Usage: ./dt template-dev|template-stg|template-prd' >&2
+    exit 2
+fi
+
+root=$(git rev-parse --show-toplevel)
+case "$1" in
+    template-dev)
+        ref=main
+        if [ "$(git -C "$root" rev-parse main)" = "$(git -C "$root" rev-parse feature-4)" ]; then
+            check=BeforeHotfixDevelopment
+            expected='Hello World, count 8'
+        else
+            check=FeaturesRestored
+            expected='Hello World hotfix 2, count 10'
+        fi
+        ;;
+    template-stg)
+        ref=stg
+        check=Baseline
+        expected='Hello World, count 6'
+        ;;
+    template-prd)
+        ref=prd
+        revision=$(git -C "$root" rev-parse "$ref")
+        if [ "$revision" = "$(git -C "$root" rev-parse release-2 2>/dev/null || true)" ]; then
+            check=SecondHotfix
+            expected='Hello World hotfix 2, count 8'
+        elif [ "$revision" = "$(git -C "$root" rev-parse release-1 2>/dev/null || true)" ]; then
+            check=FirstHotfix
+            expected='Hello World hotfix 1, count 7'
+        else
+            check=Baseline
+            expected='Hello World, count 6'
+        fi
+        ;;
+    *) echo "Unknown target: $1" >&2; exit 2 ;;
+esac
+
+scratch=$(mktemp -d "${TMPDIR:-/tmp}/hotfix-check.XXXXXX")
+trap 'rm -rf -- "$scratch"' EXIT
+git -C "$root" archive --format=tar --output="$scratch/source.tar" "$ref"
+tar -xf "$scratch/source.tar" -C "$scratch"
+dotnet test "$scratch/HotfixDemo.csproj" --filter "FullyQualifiedName=Acceptance.$check"
+printf 'PASS: %s (%s) — %s\n' "$1" "$ref" "$expected"

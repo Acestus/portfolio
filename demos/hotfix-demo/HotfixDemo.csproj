@@ -2,7 +2,6 @@
   <PropertyGroup>
     <TargetFramework>net11.0</TargetFramework>
     <IsTestProject>true</IsTestProject>
-    <DefaultItemExcludes>$(DefaultItemExcludes);.stages/**</DefaultItemExcludes>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
