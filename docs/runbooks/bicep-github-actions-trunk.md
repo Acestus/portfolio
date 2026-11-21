@@ -1,65 +1,36 @@
-(eval):5: parse error near `end'
-(eval):5: parse error near `end'
 # Trunk PR and deployment runbook
 
-Open the runbook in Neovim:
+Open this file in Neovim:
 
-~~~sh
+~~~fish
 nvim docs/runbooks/bicep-github-actions-trunk.md
 ~~~
 
-This PR publishes the Bicep delivery guide and removes the playback sample. The repository's existing pull-request and main-branch workflows do the validation and deployment.
+Each command below is complete and can run by itself in fish. Successful checks print PASS.
 
-## 1. Check the current live behavior
+## Check before merge
 
-Run before merging. The sample page should exist and the new guide should not:
-
-~~~sh
-VIDEO_URL="https://acestus.com/videos/playback-sample/"
-GUIDE_URL="https://acestus.com/docs/bicep-github-actions-trunk/"
-
-test "$(curl --silent --show-error --output /dev/null \
-  --write-out '%{http_code}' "$VIDEO_URL")" = 200
-test "$(curl --silent --show-error --output /dev/null \
-  --write-out '%{http_code}' "$GUIDE_URL")" = 404
+~~~fish
+test (curl -sS -o /dev/null -w '%{http_code}' https://acestus.com/videos/playback-sample/) = 200; and echo 'PASS: sample is currently published'; or echo 'FAIL: sample status was not 200'
+test (curl -sS -o /dev/null -w '%{http_code}' https://acestus.com/docs/bicep-github-actions-trunk/) = 404; and echo 'PASS: guide is not published yet'; or echo 'FAIL: guide already returned 200'
 ~~~
 
-## 2. Auto-merge the pull request
+## Merge and watch
 
-~~~sh
-PR_NUMBER=46
-
-gh pr checks "$PR_NUMBER" --watch
-gh pr merge "$PR_NUMBER" --auto --squash
-gh pr view "$PR_NUMBER" --web
+~~~fish
+gh pr view --web
+gh pr merge --auto --squash
+gh pr checks --watch
+gh run watch (gh run list --repo Acestus/portfolio --branch main --workflow '02 Publish-Development' --limit 1 --json databaseId --jq '.[0].databaseId') --repo Acestus/portfolio --exit-status
+gh run view (gh run list --repo Acestus/portfolio --branch main --workflow '02 Publish-Development' --limit 1 --json databaseId --jq '.[0].databaseId') --repo Acestus/portfolio --web
 ~~~
 
-## 3. Watch the main-branch CI/CD run
+The main-branch run builds once, promotes the retained site through development, staging, and production, and checks the deployed release.
 
-~~~sh
-MERGE_SHA=$(gh pr view "$PR_NUMBER" --json mergeCommit --jq '.mergeCommit.oid')
-RUN_ID=$(gh run list --commit "$MERGE_SHA" \
-  --workflow "02 Publish-Development" \
-  --json databaseId --jq '.[0].databaseId')
+## Check after deployment
 
-gh run watch "$RUN_ID" --exit-status
-gh run view "$RUN_ID" --web
+~~~fish
+test (curl -sS -o /dev/null -w '%{http_code}' https://acestus.com/videos/playback-sample/) = 404; and echo 'PASS: removed sample returns 404'; or echo 'FAIL: sample did not return 404'
+test (curl -sS -o /dev/null -w '%{http_code}' https://acestus.com/docs/bicep-github-actions-trunk/) = 200; and echo 'PASS: guide returns 200'; or echo 'FAIL: guide did not return 200'
+curl -fsSL -H 'Cache-Control: no-cache' https://acestus.com/docs/bicep-github-actions-trunk/ | string match -q '*ACCEPTANCE-ID: BICEP-TRUNK-2026-11*'; and echo 'PASS: acceptance marker is published'; or echo 'FAIL: acceptance marker is missing'
 ~~~
-
-The run qualifies the site, deploys the retained release through the configured environments, and runs the live release checks.
-
-## 4. Confirm the change with curl
-
-Run after the production job succeeds. The removed sample must be 404; the new guide must be live and contain its acceptance marker:
-
-~~~sh
-test "$(curl --silent --show-error --output /dev/null \
-  --write-out '%{http_code}' "$VIDEO_URL")" = 404
-test "$(curl --silent --show-error --output /dev/null \
-  --write-out '%{http_code}' "$GUIDE_URL")" = 200
-
-curl --fail --silent --show-error --location \
-  --header 'Cache-Control: no-cache' "$GUIDE_URL" |
-  grep --fixed-strings --quiet 'ACCEPTANCE-ID: BICEP-TRUNK-2026-11'
-~~~
-
