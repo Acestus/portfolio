@@ -1,6 +1,6 @@
 # Azure cost recommendations: investigate before deleting
 
-From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
+From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Skip setup if the repo already exists. Each demo command enters its repo before running. If you used a custom destination, run the commands in that repo’s README from its root.
 
 ~~~fish
 cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- azure-cost-recommendations-investigate-demo
@@ -16,7 +16,7 @@ Local recommendation review using fictional costs and resources. .NET 11 only. R
 Compute average CPU from the narrow sample window.
 
 ~~~fish
-dotnet run --file Demo.cs -- read-the-signal
+cd /tmp/acestus-video-demos/azure-cost-recommendations-investigate-demo; and dotnet run --file Demo.cs -- read-the-signal
 ~~~
 
 ## 2. Look for dependencies
@@ -24,7 +24,7 @@ dotnet run --file Demo.cs -- read-the-signal
 Reveal a backup job that changes the decision despite low mean CPU.
 
 ~~~fish
-dotnet run --file Demo.cs -- look-for-dependencies
+cd /tmp/acestus-video-demos/azure-cost-recommendations-investigate-demo; and dotnet run --file Demo.cs -- look-for-dependencies
 ~~~
 
 ## 3. Compare against a baseline
@@ -32,5 +32,5 @@ dotnet run --file Demo.cs -- look-for-dependencies
 Estimate the observed change from two equal sample cost windows.
 
 ~~~fish
-dotnet run --file Demo.cs -- compare-against-a-baseline
+cd /tmp/acestus-video-demos/azure-cost-recommendations-investigate-demo; and dotnet run --file Demo.cs -- compare-against-a-baseline
 ~~~

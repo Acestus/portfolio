@@ -1,6 +1,6 @@
 # Promoting Fabric changes safely across environments
 
-From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
+From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Skip setup if the repo already exists. Each demo command enters its repo before running. If you used a custom destination, run the commands in that repo’s README from its root.
 
 ~~~fish
 cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- promote-fabric-changes-across-environments-demo
@@ -16,7 +16,7 @@ Local release evidence exercise. .NET 11 only. Run one line at a time in fish.
 Hash one sample definition package and point out the digest used for promotion.
 
 ~~~fish
-dotnet run --file Demo.cs -- identify-the-candidate
+cd /tmp/acestus-video-demos/promote-fabric-changes-across-environments-demo; and dotnet run --file Demo.cs -- identify-the-candidate
 ~~~
 
 ## 2. Carry the same digest
@@ -24,7 +24,7 @@ dotnet run --file Demo.cs -- identify-the-candidate
 Compare the candidate identity recorded at the three sample stages.
 
 ~~~fish
-dotnet run --file Demo.cs -- carry-the-same-digest
+cd /tmp/acestus-video-demos/promote-fabric-changes-across-environments-demo; and dotnet run --file Demo.cs -- carry-the-same-digest
 ~~~
 
 ## 3. Reject stale evidence
@@ -32,5 +32,5 @@ dotnet run --file Demo.cs -- carry-the-same-digest
 Demonstrate why a receipt from an older attempt blocks promotion.
 
 ~~~fish
-dotnet run --file Demo.cs -- reject-stale-evidence
+cd /tmp/acestus-video-demos/promote-fabric-changes-across-environments-demo; and dotnet run --file Demo.cs -- reject-stale-evidence
 ~~~

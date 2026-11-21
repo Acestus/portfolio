@@ -1,6 +1,6 @@
 # Azure Policy exemptions with an expiry and owner
 
-From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
+From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Skip setup if the repo already exists. Each demo command enters its repo before running. If you used a custom destination, run the commands in that repo’s README from its root.
 
 ~~~fish
 cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- policy-exemption-expiry-owner-demo
@@ -16,7 +16,7 @@ Use .NET 11 to review a fictional policy exception. Run one line at a time in fi
 Show the owner, reason, and compensating control.
 
 ~~~fish
-dotnet run --file Demo.cs -- record-scope-and-ownership
+cd /tmp/acestus-video-demos/policy-exemption-expiry-owner-demo; and dotnet run --file Demo.cs -- record-scope-and-ownership
 ~~~
 
 ## 2. Check expiry
@@ -24,7 +24,7 @@ dotnet run --file Demo.cs -- record-scope-and-ownership
 Use fixed dates to show a currently valid and then expired exception.
 
 ~~~fish
-dotnet run --file Demo.cs -- check-expiry
+cd /tmp/acestus-video-demos/policy-exemption-expiry-owner-demo; and dotnet run --file Demo.cs -- check-expiry
 ~~~
 
 ## 3. Decide whether to renew
@@ -32,5 +32,5 @@ dotnet run --file Demo.cs -- check-expiry
 Apply the decision rule to a resolved finding.
 
 ~~~fish
-dotnet run --file Demo.cs -- decide-whether-to-renew
+cd /tmp/acestus-video-demos/policy-exemption-expiry-owner-demo; and dotnet run --file Demo.cs -- decide-whether-to-renew
 ~~~

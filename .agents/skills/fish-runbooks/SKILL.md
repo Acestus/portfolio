@@ -12,3 +12,5 @@ For a video runbook, use the matching portfolio guide to choose three concrete s
 Use `dotnet run --file <name>.cs` for C# demo commands and `dotnet test` for .NET acceptance checkpoints. Pass application arguments after `--`.
 
 If setup lives at the repository root, resolve the root in the same fish line so Neovim can launch it from a nested directory.
+
+When a portfolio runbook launches a command in a separate demo repository, put the literal demo path and `cd` on that same line. Preserve the demo working directory for commands that read fixtures or change Git state.

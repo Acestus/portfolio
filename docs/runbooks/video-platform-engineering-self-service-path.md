@@ -1,6 +1,6 @@
 # Platform engineering demo: a self-service deployment path
 
-From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
+From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Skip setup if the repo already exists. Each demo command enters its repo before running. If you used a custom destination, run the commands in that repo’s README from its root.
 
 ~~~fish
 cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- platform-engineering-self-service-path-demo
@@ -16,7 +16,7 @@ Use .NET 11 to model a request, validation, and reviewable plan. Run one line at
 Show the only fields the service owner needs to choose.
 
 ~~~fish
-dotnet run --file Demo.cs -- submit-the-request
+cd /tmp/acestus-video-demos/platform-engineering-self-service-path-demo; and dotnet run --file Demo.cs -- submit-the-request
 ~~~
 
 ## 2. Show a useful validation error
@@ -24,7 +24,7 @@ dotnet run --file Demo.cs -- submit-the-request
 Reject a size outside the allowlist.
 
 ~~~fish
-dotnet run --file Demo.cs -- show-a-useful-validation-error
+cd /tmp/acestus-video-demos/platform-engineering-self-service-path-demo; and dotnet run --file Demo.cs -- show-a-useful-validation-error
 ~~~
 
 ## 3. Generate the plan
@@ -32,5 +32,5 @@ dotnet run --file Demo.cs -- show-a-useful-validation-error
 Add platform defaults to a valid request and point out the review owner.
 
 ~~~fish
-dotnet run --file Demo.cs -- generate-the-plan
+cd /tmp/acestus-video-demos/platform-engineering-self-service-path-demo; and dotnet run --file Demo.cs -- generate-the-plan
 ~~~

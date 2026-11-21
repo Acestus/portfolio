@@ -1,6 +1,6 @@
 # Terraform or Bicep: choosing the right tool for an Azure project
 
-From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
+From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Skip setup if the repo already exists. Each demo command enters its repo before running. If you used a custom destination, run the commands in that repo’s README from its root.
 
 ~~~fish
 cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- terraform-or-bicep-demo
@@ -16,7 +16,7 @@ Use Azure CLI with Bicep installed, Terraform, and .NET 11. Both templates descr
 Build the sample storage template to show what gets submitted to Azure.
 
 ~~~fish
-az bicep build --file main.bicep --stdout
+cd /tmp/acestus-video-demos/terraform-or-bicep-demo; and az bicep build --file main.bicep --stdout
 ~~~
 
 ## 2. Validate an equivalent Terraform definition
@@ -24,7 +24,7 @@ az bicep build --file main.bicep --stdout
 Install the declared provider and validate the storage definition. A live plan requires Azure access and demo resource values.
 
 ~~~fish
-terraform init -backend=false; and terraform validate
+cd /tmp/acestus-video-demos/terraform-or-bicep-demo; and terraform init -backend=false; and terraform validate
 ~~~
 
 ## 3. Decide which workflow fits
@@ -32,5 +32,5 @@ terraform init -backend=false; and terraform validate
 Use the same sample Azure project to compare scope, state ownership, and review tools.
 
 ~~~fish
-dotnet run --file Demo.cs -- compare-workflows
+cd /tmp/acestus-video-demos/terraform-or-bicep-demo; and dotnet run --file Demo.cs -- compare-workflows
 ~~~

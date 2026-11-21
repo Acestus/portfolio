@@ -1,6 +1,6 @@
 # From Azure logs to a Fabric operations question
 
-From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
+From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Skip setup if the repo already exists. Each demo command enters its repo before running. If you used a custom destination, run the commands in that repo’s README from its root.
 
 ~~~fish
 cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- azure-logs-to-fabric-question-demo
@@ -16,7 +16,7 @@ Use .NET 11 to model a Fabric query with synthetic telemetry. Run one line at a 
 Show two failed order runs and a healthy inventory run.
 
 ~~~fish
-dotnet run --file Demo.cs -- generate-sample-events
+cd /tmp/acestus-video-demos/azure-logs-to-fabric-question-demo; and dotnet run --file Demo.cs -- generate-sample-events
 ~~~
 
 ## 2. Query failed runs
@@ -24,7 +24,7 @@ dotnet run --file Demo.cs -- generate-sample-events
 Group the synthetic CSV failures by pipeline.
 
 ~~~fish
-dotnet run --file Demo.cs -- query-failed-runs
+cd /tmp/acestus-video-demos/azure-logs-to-fabric-question-demo; and dotnet run --file Demo.cs -- query-failed-runs
 ~~~
 
 ## 3. Measure freshness
@@ -32,5 +32,5 @@ dotnet run --file Demo.cs -- query-failed-runs
 Use sample event and refresh times to explain the dashboard lag and retention cost.
 
 ~~~fish
-dotnet run --file Demo.cs -- measure-freshness
+cd /tmp/acestus-video-demos/azure-logs-to-fabric-question-demo; and dotnet run --file Demo.cs -- measure-freshness
 ~~~

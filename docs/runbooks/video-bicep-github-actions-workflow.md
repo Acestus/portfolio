@@ -1,6 +1,6 @@
 # Infrastructure as code with Bicep and GitHub Actions
 
-From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
+From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Skip setup if the repo already exists. Each demo command enters its repo before running. If you used a custom destination, run the commands in that repo’s README from its root.
 
 ~~~fish
 cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- bicep-github-actions-workflow-demo
@@ -16,7 +16,7 @@ Use Azure CLI with its Bicep CLI installed, .NET 11, and ripgrep. Publish this d
 Show the compiled resource types from the existing portfolio template.
 
 ~~~fish
-az bicep build --file main.bicep --stdout
+cd /tmp/acestus-video-demos/bicep-github-actions-workflow-demo; and az bicep build --file main.bicep --stdout
 ~~~
 
 ## 2. Inspect the federated deploy job
@@ -24,7 +24,7 @@ az bicep build --file main.bicep --stdout
 Show the token permission, protected environment, and Azure login in the example workflow.
 
 ~~~fish
-rg -n 'id-token: write|azure/login@|AzureADTokenExchange' identity-workflow.example.yml
+cd /tmp/acestus-video-demos/bicep-github-actions-workflow-demo; and rg -n 'id-token: write|azure/login@|AzureADTokenExchange' identity-workflow.example.yml
 ~~~
 
 ## 3. Inspect push and PR validation
@@ -32,5 +32,5 @@ rg -n 'id-token: write|azure/login@|AzureADTokenExchange' identity-workflow.exam
 Review the source commit and conclusion of the demo workflow run.
 
 ~~~fish
-gh run list --workflow validate.yml --limit 5 --json headSha,conclusion,url
+cd /tmp/acestus-video-demos/bicep-github-actions-workflow-demo; and gh run list --workflow validate.yml --limit 5 --json headSha,conclusion,url
 ~~~
