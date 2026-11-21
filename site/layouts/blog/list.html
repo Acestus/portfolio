@@ -12,7 +12,7 @@
     <section class="blog-feed" aria-labelledby="blog-feed-title">
       <div class="blog-feed-heading"><div><p class="blog-kicker">THE JOURNAL</p><h2 id="blog-feed-title">Latest writing</h2></div><span>NOTES FROM THE FIELD</span></div>
       {{ $articles := site.GetPage "articles" }}
-      {{ range $articles.RegularPages.ByDate.Reverse }}
+      {{ range (where $articles.RegularPages "Params.unlisted" "ne" true).ByDate.Reverse }}
       <article class="blog-post">
         <div class="blog-post-meta"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time><span aria-hidden="true">/</span><span>WILLIAM WEEKS-BALCONI</span></div>
         <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>

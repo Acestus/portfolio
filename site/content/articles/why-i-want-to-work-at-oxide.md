@@ -2,6 +2,7 @@
 title: "Why I Want to Work at Oxide"
 date: 2026-11-21T09:00:00-06:00
 draft: false
+unlisted: true
 tags: ["engineering", "infrastructure", "oxide"]
 summary: "How my experience in cloud infrastructure, support, and history connects with the work I want to contribute to at Oxide."
 ---
