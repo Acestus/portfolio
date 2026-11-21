@@ -3,20 +3,20 @@
 From the portfolio root, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
 
 ~~~fish
-python3 scripts/seed_video_demo.py platform-engineering-self-service-path-demo
+dotnet run --file scripts/SeedDemo.cs -- platform-engineering-self-service-path-demo
 ~~~
 
 
 [Read the portfolio guide](https://acestus.com/docs/video-platform-engineering-self-service-path/).
 
-Use Python 3 to model a request, validation, and reviewable plan. Run one line at a time in fish.
+Use .NET 11 to model a request, validation, and reviewable plan. Run one line at a time in fish.
 
 ## 1. Submit the request
 
 Show the only fields the service owner needs to choose.
 
 ~~~fish
-python3 submit_the_request.py
+dotnet run --file Demo.cs -- submit-the-request
 ~~~
 
 ## 2. Show a useful validation error
@@ -24,7 +24,7 @@ python3 submit_the_request.py
 Reject a size outside the allowlist.
 
 ~~~fish
-python3 show_a_useful_validation_error.py
+dotnet run --file Demo.cs -- show-a-useful-validation-error
 ~~~
 
 ## 3. Generate the plan
@@ -32,5 +32,5 @@ python3 show_a_useful_validation_error.py
 Add platform defaults to a valid request and point out the review owner.
 
 ~~~fish
-python3 generate_the_plan.py
+dotnet run --file Demo.cs -- generate-the-plan
 ~~~

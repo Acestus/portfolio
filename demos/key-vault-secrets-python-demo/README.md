@@ -2,14 +2,14 @@
 
 [Read the portfolio guide](https://acestus.com/docs/video-key-vault-secrets-python/).
 
-Use Python 3 and a mock vault with a dummy value. Run one line at a time in fish.
+Use .NET 11 and a mock vault with a dummy value. The linked article describes the Python SDK. This recording exercise shows the same access boundary in C#. Run one line at a time in fish.
 
 ## 1. Show the role boundary
 
 Compare a demo identity with secret read permission against an anonymous identity.
 
 ~~~fish
-python3 show_the_role_boundary.py
+dotnet run --file Demo.cs -- show-the-role-boundary
 ~~~
 
 ## 2. Verify allowed read
@@ -17,7 +17,7 @@ python3 show_the_role_boundary.py
 Compare the dummy result without printing it.
 
 ~~~fish
-python3 verify_allowed_read.py
+dotnet run --file Demo.cs -- verify-allowed-read
 ~~~
 
 ## 3. Verify denied read
@@ -25,5 +25,5 @@ python3 verify_allowed_read.py
 Show the unauthorized identity receives no value.
 
 ~~~fish
-python3 verify_denied_read.py
+dotnet run --file Demo.cs -- verify-denied-read
 ~~~

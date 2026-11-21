@@ -1,0 +1,4 @@
+pipeline,status
+orders,failed
+orders,failed
+inventory,ok

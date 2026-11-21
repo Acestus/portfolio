@@ -2,14 +2,14 @@
 
 [Read the portfolio guide](https://acestus.com/docs/video-policy-exemption-expiry-owner/).
 
-Use Python 3 to review a fictional policy exception. Run one line at a time in fish.
+Use .NET 11 to review a fictional policy exception. Run one line at a time in fish.
 
 ## 1. Record scope and ownership
 
 Show the owner, reason, and compensating control.
 
 ~~~fish
-python3 record_scope_and_ownership.py
+dotnet run --file Demo.cs -- record-scope-and-ownership
 ~~~
 
 ## 2. Check expiry
@@ -17,7 +17,7 @@ python3 record_scope_and_ownership.py
 Use fixed dates to show a currently valid and then expired exception.
 
 ~~~fish
-python3 check_expiry.py
+dotnet run --file Demo.cs -- check-expiry
 ~~~
 
 ## 3. Decide whether to renew
@@ -25,5 +25,5 @@ python3 check_expiry.py
 Apply the decision rule to a resolved finding.
 
 ~~~fish
-python3 decide_whether_to_renew.py
+dotnet run --file Demo.cs -- decide-whether-to-renew
 ~~~

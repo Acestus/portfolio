@@ -3,20 +3,20 @@
 From the portfolio root, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
 
 ~~~fish
-python3 scripts/seed_video_demo.py azure-policy-remediate-tags-demo
+dotnet run --file scripts/SeedDemo.cs -- azure-policy-remediate-tags-demo
 ~~~
 
 
 [Read the portfolio guide](https://acestus.com/docs/video-azure-policy-remediate-tags/).
 
-Local model of a modify policy and remediation task. Python 3 only. Run one line at a time in fish.
+Local model of a modify policy and remediation task. .NET 11 only. Run one line at a time in fish.
 
 ## 1. Find the missing tag
 
 Start with a sample resource whose tags omit the required owner.
 
 ~~~fish
-python3 find_the_missing_tag.py
+dotnet run --file Demo.cs -- find-the-missing-tag
 ~~~
 
 ## 2. Preview remediation
@@ -24,7 +24,7 @@ python3 find_the_missing_tag.py
 Apply the sample change to a copy to show exactly what the task would write.
 
 ~~~fish
-python3 preview_remediation.py
+dotnet run --file Demo.cs -- preview-remediation
 ~~~
 
 ## 3. Recheck compliance
@@ -32,5 +32,5 @@ python3 preview_remediation.py
 Show that presence and correctness are separate checks.
 
 ~~~fish
-python3 recheck_compliance.py
+dotnet run --file Demo.cs -- recheck-compliance
 ~~~

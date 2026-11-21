@@ -3,16 +3,16 @@
 From the portfolio root, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
 
 ~~~fish
-python3 scripts/seed_video_demo.py automated-acceptance-tests-web-demo
+dotnet run --file scripts/SeedDemo.cs -- automated-acceptance-tests-web-demo
 ~~~
 
 
 [Read the portfolio guide](https://acestus.com/docs/video-automated-acceptance-tests-web/).
 
-Use Node.js and npm. From the demo repo, run the setup line once. Run one line at a time in fish.
+Use .NET 11. From the demo repo, install the Playwright browser once. Run one line at a time in fish.
 
 ~~~fish
-npm install; and npx playwright install chromium
+dotnet run --file SearchDemo.cs -- install
 ~~~
 
 ## 1. Show the browser action
@@ -20,7 +20,7 @@ npm install; and npx playwright install chromium
 Point out the search interaction and expected results region.
 
 ~~~fish
-rg -n 'getByRole|toBeVisible' search.spec.js
+rg -n 'GetByRole|ToHaveTextAsync' SearchDemo.cs
 ~~~
 
 ## 2. Run the browser check
@@ -28,13 +28,13 @@ rg -n 'getByRole|toBeVisible' search.spec.js
 Run the focused Playwright test against the demo HTML. To record a failure, change the matching result string in search.html and rerun.
 
 ~~~fish
-npx playwright test search.spec.js --reporter=line
+dotnet run --file SearchDemo.cs
 ~~~
 
 ## 3. Trace it into CI
 
-Find the browser test invocation and evidence upload.
+Find the browser install and acceptance commands in CI.
 
 ~~~fish
-rg -n 'playwright|upload-artifact' .github/workflows/acceptance.yml
+rg -n 'setup-dotnet|dotnet run' .github/workflows/acceptance.yml
 ~~~

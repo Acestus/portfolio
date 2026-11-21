@@ -3,7 +3,7 @@
 Create all 20 independent local Git repos from the portfolio root. Each repo starts on `main` and includes its own README and demo files.
 
 ~~~fish
-python3 scripts/seed_video_demo.py all
+dotnet run --file scripts/SeedDemo.cs -- all
 ~~~
 
 The command prints each path under `/tmp/acestus-video-demos/`. To keep the repos somewhere else, pass the destination directory as the final argument. To create just one, use the command in that video's runbook.

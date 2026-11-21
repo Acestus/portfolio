@@ -2,14 +2,14 @@
 
 [Read the portfolio guide](https://acestus.com/docs/video-narrow-cloud-operations-assistant/).
 
-Use Python 3 to model a read-only status tool with fictional services. Run one line at a time in fish.
+Use .NET 11 to model a read-only status tool with fictional services. Run one line at a time in fish.
 
 ## 1. Allow a known service
 
 Read its current status.
 
 ~~~fish
-python3 allow_a_known_service.py
+dotnet run --file Demo.cs -- allow-a-known-service
 ~~~
 
 ## 2. Reject an unknown service
@@ -17,7 +17,7 @@ python3 allow_a_known_service.py
 Show the allowlist rejecting an out of scope request.
 
 ~~~fish
-python3 reject_an_unknown_service.py
+dotnet run --file Demo.cs -- reject-an-unknown-service
 ~~~
 
 ## 3. Record the outcome
@@ -25,5 +25,5 @@ python3 reject_an_unknown_service.py
 Print a structured audit record for the lookup.
 
 ~~~fish
-python3 record_the_outcome.py
+dotnet run --file Demo.cs -- record-the-outcome
 ~~~

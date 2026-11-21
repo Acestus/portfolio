@@ -2,14 +2,14 @@
 
 [Read the portfolio guide](https://acestus.com/docs/video-configuration-management-vs-image-rebuild/).
 
-Use Python 3 and temporary local files as stand-ins for a host and images. Run one line at a time in fish.
+Use .NET 11 and temporary local files as stand-ins for a host and images. Run one line at a time in fish.
 
 ## 1. Converge an existing host
 
 Apply the same desired setting twice and show that only the first run changes the file.
 
 ~~~fish
-python3 converge_an_existing_host.py
+dotnet run --file Demo.cs -- converge-an-existing-host
 ~~~
 
 ## 2. Build a replacement image
@@ -17,7 +17,7 @@ python3 converge_an_existing_host.py
 Create a new artifact and keep the previous one available.
 
 ~~~fish
-python3 build_a_replacement_image.py
+dotnet run --file Demo.cs -- build-a-replacement-image
 ~~~
 
 ## 3. Compare recovery paths
@@ -25,5 +25,5 @@ python3 build_a_replacement_image.py
 Show the same expected setting after convergence or image rollback.
 
 ~~~fish
-python3 compare_recovery_paths.py
+dotnet run --file Demo.cs -- compare-recovery-paths
 ~~~

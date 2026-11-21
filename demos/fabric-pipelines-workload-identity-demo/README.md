@@ -2,14 +2,14 @@
 
 [Read the portfolio guide](https://acestus.com/docs/video-fabric-pipelines-workload-identity/).
 
-Local trigger and monitoring exercise. Python 3 only. Run one line at a time in fish.
+Local trigger and monitoring exercise. .NET 11 only. Run one line at a time in fish.
 
 ## 1. Show the scheduled input
 
 Walk through a daily schedule and the bounded input it passes.
 
 ~~~fish
-python3 show_the_scheduled_input.py
+dotnet run --file Demo.cs -- show-the-scheduled-input
 ~~~
 
 ## 2. Explain token expiry
@@ -17,7 +17,7 @@ python3 show_the_scheduled_input.py
 Compare the same illustrative token metadata before and after expiry.
 
 ~~~fish
-python3 explain_token_expiry.py
+dotnet run --file Demo.cs -- explain-token-expiry
 ~~~
 
 ## 3. Follow the run receipt
@@ -25,5 +25,5 @@ python3 explain_token_expiry.py
 Use a sample run ID to link an accepted request to a later status.
 
 ~~~fish
-python3 follow_the_run_receipt.py
+dotnet run --file Demo.cs -- follow-the-run-receipt
 ~~~

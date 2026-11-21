@@ -3,13 +3,13 @@
 From the portfolio root, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
 
 ~~~fish
-python3 scripts/seed_video_demo.py github-actions-azure-oidc-demo
+dotnet run --file scripts/SeedDemo.cs -- github-actions-azure-oidc-demo
 ~~~
 
 
 [Read the portfolio guide](https://acestus.com/docs/video-github-actions-azure-oidc/).
 
-Use ripgrep, Azure CLI, and Python 3. The example workflow is inactive until you configure a demo GitHub environment and Azure federated identity. Its claim example uses a fictional GitHub owner. Run one line at a time in fish.
+Use ripgrep, Azure CLI, and .NET 11. The example workflow is inactive until you configure a demo GitHub environment and Azure federated identity. Its claim example uses a fictional GitHub owner. Run one line at a time in fish.
 
 ## 1. Inspect token issuance
 
@@ -24,7 +24,7 @@ rg -n 'id-token: write|azure/login@|AzureADTokenExchange' identity-workflow.exam
 Show which sample subject matches the configured environment.
 
 ~~~fish
-python3 compare_federated_subjects.py
+dotnet run --file Demo.cs -- compare-federated-subjects
 ~~~
 
 ## 3. Identify the active principal

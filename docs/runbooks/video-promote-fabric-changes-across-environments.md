@@ -3,20 +3,20 @@
 From the portfolio root, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
 
 ~~~fish
-python3 scripts/seed_video_demo.py promote-fabric-changes-across-environments-demo
+dotnet run --file scripts/SeedDemo.cs -- promote-fabric-changes-across-environments-demo
 ~~~
 
 
 [Read the portfolio guide](https://acestus.com/docs/video-promote-fabric-changes-across-environments/).
 
-Local release evidence exercise. Python 3 only. Run one line at a time in fish.
+Local release evidence exercise. .NET 11 only. Run one line at a time in fish.
 
 ## 1. Identify the candidate
 
 Hash one sample definition package and point out the digest used for promotion.
 
 ~~~fish
-python3 identify_the_candidate.py
+dotnet run --file Demo.cs -- identify-the-candidate
 ~~~
 
 ## 2. Carry the same digest
@@ -24,7 +24,7 @@ python3 identify_the_candidate.py
 Compare the candidate identity recorded at the three sample stages.
 
 ~~~fish
-python3 carry_the_same_digest.py
+dotnet run --file Demo.cs -- carry-the-same-digest
 ~~~
 
 ## 3. Reject stale evidence
@@ -32,5 +32,5 @@ python3 carry_the_same_digest.py
 Demonstrate why a receipt from an older attempt blocks promotion.
 
 ~~~fish
-python3 reject_stale_evidence.py
+dotnet run --file Demo.cs -- reject-stale-evidence
 ~~~

@@ -3,20 +3,20 @@
 From the portfolio root, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
 
 ~~~fish
-python3 scripts/seed_video_demo.py bicep-github-actions-workflow-demo
+dotnet run --file scripts/SeedDemo.cs -- bicep-github-actions-workflow-demo
 ~~~
 
 
 [Read the portfolio guide](https://acestus.com/docs/video-bicep-github-actions-workflow/).
 
-Use Azure CLI with its Bicep CLI installed, Python 3, and ripgrep. Publish this demo repo to GitHub and push a change to run its validation workflow. The identity example shows how deployment authentication would be wired. Run one line at a time in fish.
+Use Azure CLI with its Bicep CLI installed, .NET 11, and ripgrep. Publish this demo repo to GitHub and push a change to run its validation workflow. The identity example shows how deployment authentication would be wired. Run one line at a time in fish.
 
 ## 1. Compile the Bicep template
 
 Show the compiled resource types from the existing portfolio template.
 
 ~~~fish
-az bicep build --file main.bicep --stdout | python3 -m json.tool
+az bicep build --file main.bicep --stdout
 ~~~
 
 ## 2. Inspect the federated deploy job

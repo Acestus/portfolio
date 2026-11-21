@@ -3,7 +3,7 @@
 From the portfolio root, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
 
 ~~~fish
-python3 scripts/seed_video_demo.py github-desktop-infrastructure-demo
+dotnet run --file scripts/SeedDemo.cs -- github-desktop-infrastructure-demo
 ~~~
 
 

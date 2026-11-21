@@ -2,14 +2,14 @@
 
 [Read the portfolio guide](https://acestus.com/docs/video-infrastructure-drift-detection/).
 
-Compare sample declared and observed properties with Python 3. Run one line at a time in fish.
+Compare sample declared and observed properties with .NET 11. Run one line at a time in fish.
 
 ## 1. Display desired state
 
 Record the desired owner before making a manual change.
 
 ~~~fish
-python3 display_desired_state.py
+dotnet run --file Demo.cs -- display-desired-state
 ~~~
 
 ## 2. Detect the drift
@@ -17,7 +17,7 @@ python3 display_desired_state.py
 Show the difference in the observed owner.
 
 ~~~fish
-python3 detect_the_drift.py
+dotnet run --file Demo.cs -- detect-the-drift
 ~~~
 
 ## 3. Reconcile tracked properties
@@ -25,5 +25,5 @@ python3 detect_the_drift.py
 Show that matching the owner says nothing about runtime data.
 
 ~~~fish
-python3 reconcile_tracked_properties.py
+dotnet run --file Demo.cs -- reconcile-tracked-properties
 ~~~

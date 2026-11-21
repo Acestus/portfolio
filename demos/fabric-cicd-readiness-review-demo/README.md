@@ -2,14 +2,14 @@
 
 [Read the portfolio guide](https://acestus.com/docs/video-fabric-cicd-readiness-review/).
 
-Local Fabric review worksheet. Python 3 only. Run one line at a time in fish.
+Local Fabric review worksheet. .NET 11 only. Run one line at a time in fish.
 
 ## 1. Inventory Git coverage
 
 Compare the workspace inventory with the definitions in Git.
 
 ~~~fish
-python3 inventory_git_coverage.py
+dotnet run --file Demo.cs -- inventory-git-coverage
 ~~~
 
 ## 2. Check a deployment receipt
@@ -17,7 +17,7 @@ python3 inventory_git_coverage.py
 Compare the reviewed commit with the commit listed on the sample receipt.
 
 ~~~fish
-python3 check_a_deployment_receipt.py
+dotnet run --file Demo.cs -- check-a-deployment-receipt
 ~~~
 
 ## 3. Assign operational follow-up
@@ -25,5 +25,5 @@ python3 check_a_deployment_receipt.py
 Record the missing schedule, connection, and secret checks with owners.
 
 ~~~fish
-python3 assign_operational_follow_up.py
+dotnet run --file Demo.cs -- assign-operational-follow-up
 ~~~
