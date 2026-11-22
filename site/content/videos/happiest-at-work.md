@@ -10,4 +10,5 @@ duration = "1:34"
 
 Small changes, tests, evidence, and reflection in a continuous delivery feedback loop.
 
-[Read the related article](/articles/03-the-work-that-makes-me-happiest/) · [Documentation](/docs/iac-pipeline/)
+**Related article:** [The work that makes me happiest](/articles/03-the-work-that-makes-me-happiest/)  
+**Documentation:** [Infrastructure as Code — AVM, OIDC, and Deployment Stacks](/docs/iac-pipeline/)
