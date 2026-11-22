@@ -10,4 +10,5 @@ duration = "2:44"
 
 Follow the evidence through a repository migration incident, from stale DNS configuration to recovery.
 
-[Read the related article](/articles/09-analysis-git-migration-outage/) · [Documentation](/docs/engineering-delivery-architecture/)
+**Related article:** [Analysis: how one repository sync took a website offline](/articles/09-analysis-git-migration-outage/)  
+**Documentation:** [Engineering delivery architecture](/docs/engineering-delivery-architecture/)
