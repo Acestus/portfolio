@@ -10,4 +10,5 @@ duration = "1:49"
 
 Why meaningful work gives people room to improve the systems and processes they depend on.
 
-[Read the related article](/articles/04-work-that-uses-my-abilities/) · [Documentation](/docs/workflow-toolkit/)
+**Related article:** [Doing work that uses my abilities](/articles/04-work-that-uses-my-abilities/)  
+**Documentation:** [Workflow Toolkit — File-Driven AI Ops](/docs/workflow-toolkit/)
