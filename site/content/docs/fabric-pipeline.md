@@ -284,3 +284,7 @@ silver_events.write.format("delta").mode("overwrite").saveAsTable("platform_tran
 
 
 That is the key Build 2026 story: Fabric is not just a new place to run old database jobs. It is a governed data operating model where OneLake is the storage substrate, Spark handles transformation, Data Pipelines choreograph work, and Direct Lake semantic models serve analytics from the same Delta files.
+
+## Related video walkthroughs
+
+- [A few examples of my work](/videos/work-samples/).
