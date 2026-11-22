@@ -1,7 +1,7 @@
 import { mount } from "pele";
 
 (() => {
-  for (const code of document.querySelectorAll(".docs-prose code.language-mermaid")) {
+  for (const code of document.querySelectorAll(".docs-prose code.language-mermaid, .prose code.language-mermaid")) {
     const source = code.textContent ?? "";
     const original = code.closest(".highlight") ?? code.closest("pre");
     if (!original) continue;

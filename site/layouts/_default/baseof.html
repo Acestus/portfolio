@@ -7,7 +7,7 @@
 <link rel="icon" href="/images/acestus-logo.png" type="image/png"><link rel="stylesheet" href="/site.css">
 {{ if eq .Section "blog" }}<link rel="stylesheet" href="/blog.css">{{ end }}
 {{ if eq .Section "videos" }}<link rel="stylesheet" href="/videos.css">{{ end }}
-{{ if eq .Section "docs" }}<link rel="stylesheet" href="/docs.css"><script src="/docs.js" defer></script>{{ end }}
+{{ if or (eq .Section "docs") (eq .Section "articles") }}<link rel="stylesheet" href="/docs.css"><script src="/docs.js" defer></script>{{ end }}
 <script src="/site.js" defer></script>
 </head><body{{ if eq .Section "docs" }} class="knowledge-body"{{ else if eq .Section "videos" }} class="videos-body"{{ end }}>
 <a class="skip" href="#main">Skip to content</a>
