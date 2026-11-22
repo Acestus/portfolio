@@ -4,6 +4,7 @@ description = "Turn click-driven procedures into reviewable infrastructure code 
 weight = 112
 date = 2026-11-22
 [params]
+thumbnail = "/images/making-operations-visible-and-repeatable-thumbnail.svg"
 h264 = "https://stvideosprdscus001.z21.web.core.windows.net/videos/making-operations-visible-and-repeatable.mp4"
 duration = "3:08"
 +++
