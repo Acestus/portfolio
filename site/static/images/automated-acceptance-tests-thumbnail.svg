@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" role="img" aria-labelledby="title">
+  <title id="title">Automated Acceptance Tests for a Web Workflow</title>
+  <defs>
+    <linearGradient id="background" x2="1" y2="1"><stop stop-color="#101629"/><stop offset="1" stop-color="#29204b"/></linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0H0V48" fill="none" stroke="#c4b5fd" stroke-opacity=".12"/></pattern>
+  </defs>
+  <rect width="1280" height="720" fill="url(#background)"/>
+  <rect width="1280" height="720" fill="url(#grid)"/>
+  <g font-family="Arial, Helvetica, sans-serif" font-weight="700">
+    <text x="76" y="112" fill="#c4b5fd" font-size="23" letter-spacing="4">ACESTUS / QUALITY ENGINEERING</text>
+    <text x="72" y="258" fill="#fff" font-size="72" letter-spacing="-3">ACCEPTANCE</text>
+    <rect x="68" y="289" width="570" height="112" rx="12" fill="#7c3aed"/>
+    <text x="91" y="369" fill="#fff" font-size="70" letter-spacing="-2">TESTS</text>
+    <text x="77" y="482" fill="#e1ddf4" font-size="29">One user story. Repeatable proof.</text>
+    <rect x="720" y="152" width="472" height="414" rx="24" fill="#191b34" stroke="#7264a5" stroke-width="2"/>
+    <text x="765" y="215" fill="#c4b5fd" font-size="20" letter-spacing="3">USER OUTCOME</text>
+    <rect x="760" y="245" width="390" height="92" rx="12" fill="#242947" stroke="#495477" stroke-width="2"/>
+    <text x="790" y="301" fill="#f5f3ff" font-size="27">Search results appear</text>
+    <path d="M955 354v38m0 0-12-12m12 12 12-12" fill="none" stroke="#c4b5fd" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="760" y="407" width="390" height="102" rx="12" fill="#22283e" stroke="#43866e" stroke-width="2"/>
+    <circle cx="805" cy="458" r="17" fill="#31a77a"/>
+    <path d="m797 458 6 6 12-14" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="842" y="468" fill="#f5f3ff" font-size="28">PASS · local and CI</text>
+  </g>
+</svg>

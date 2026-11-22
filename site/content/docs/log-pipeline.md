@@ -259,3 +259,7 @@ flowchart TD
   class n0,n1,n2 process
   class n3 result
 ```
+
+## Related video walkthroughs
+
+- [A few examples of my work](/videos/work-samples/).

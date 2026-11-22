@@ -1,9 +1,9 @@
 # A secure, repeatable VM patching workflow
 
-From the portfolio root, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
+From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Skip setup if the repo already exists. Each demo command enters its repo before running. If you used a custom destination, run the commands in that repo’s README from its root.
 
 ~~~fish
-dotnet run --file scripts/SeedDemo.cs -- secure-vm-patching-workflow-demo
+cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- secure-vm-patching-workflow-demo
 ~~~
 
 
@@ -16,7 +16,7 @@ Local maintenance review using a fictional fleet. .NET 11 only. Run one line at 
 Show the machines selected for a maintenance window.
 
 ~~~fish
-dotnet run --file Demo.cs -- review-patch-scope
+cd /tmp/acestus-video-demos/secure-vm-patching-workflow-demo; and dotnet run --file Demo.cs -- review-patch-scope
 ~~~
 
 ## 2. Apply a named exception
@@ -24,7 +24,7 @@ dotnet run --file Demo.cs -- review-patch-scope
 Show which VM is deferred and display its owner and expiry.
 
 ~~~fish
-dotnet run --file Demo.cs -- apply-a-named-exception
+cd /tmp/acestus-video-demos/secure-vm-patching-workflow-demo; and dotnet run --file Demo.cs -- apply-a-named-exception
 ~~~
 
 ## 3. Verify guest results
@@ -32,5 +32,5 @@ dotnet run --file Demo.cs -- apply-a-named-exception
 Treat failed and unreported guests as follow-up work.
 
 ~~~fish
-dotnet run --file Demo.cs -- verify-guest-results
+cd /tmp/acestus-video-demos/secure-vm-patching-workflow-demo; and dotnet run --file Demo.cs -- verify-guest-results
 ~~~

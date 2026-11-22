@@ -1,9 +1,9 @@
 # A practical Microsoft Fabric CI/CD readiness review
 
-From the portfolio root, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
+From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Skip setup if the repo already exists. Each demo command enters its repo before running. If you used a custom destination, run the commands in that repo’s README from its root.
 
 ~~~fish
-dotnet run --file scripts/SeedDemo.cs -- fabric-cicd-readiness-review-demo
+cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- fabric-cicd-readiness-review-demo
 ~~~
 
 
@@ -16,7 +16,7 @@ Local Fabric review worksheet. .NET 11 only. Run one line at a time in fish.
 Compare the workspace inventory with the definitions in Git.
 
 ~~~fish
-dotnet run --file Demo.cs -- inventory-git-coverage
+cd /tmp/acestus-video-demos/fabric-cicd-readiness-review-demo; and dotnet run --file Demo.cs -- inventory-git-coverage
 ~~~
 
 ## 2. Check a deployment receipt
@@ -24,7 +24,7 @@ dotnet run --file Demo.cs -- inventory-git-coverage
 Compare the reviewed commit with the commit listed on the sample receipt.
 
 ~~~fish
-dotnet run --file Demo.cs -- check-a-deployment-receipt
+cd /tmp/acestus-video-demos/fabric-cicd-readiness-review-demo; and dotnet run --file Demo.cs -- check-a-deployment-receipt
 ~~~
 
 ## 3. Assign operational follow-up
@@ -32,5 +32,5 @@ dotnet run --file Demo.cs -- check-a-deployment-receipt
 Record the missing schedule, connection, and secret checks with owners.
 
 ~~~fish
-dotnet run --file Demo.cs -- assign-operational-follow-up
+cd /tmp/acestus-video-demos/fabric-cicd-readiness-review-demo; and dotnet run --file Demo.cs -- assign-operational-follow-up
 ~~~

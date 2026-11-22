@@ -969,3 +969,8 @@ mindmap
     🔐 Federated identity
     🧪 Independently governed acceptance
 ```
+
+## Related video walkthroughs
+
+- [Analysis sample: Investigating a GitHub sync outage](/videos/analysis-sample/).
+- [Making infrastructure more understandable](/videos/making-infra-more-understandable/).

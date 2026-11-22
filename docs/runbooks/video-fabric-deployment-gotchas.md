@@ -1,9 +1,9 @@
 # Fabric deployment gotchas: schedules, connections, and settings
 
-From the portfolio root, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
+From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Skip setup if the repo already exists. Each demo command enters its repo before running. If you used a custom destination, run the commands in that repo’s README from its root.
 
 ~~~fish
-dotnet run --file scripts/SeedDemo.cs -- fabric-deployment-gotchas-demo
+cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- fabric-deployment-gotchas-demo
 ~~~
 
 
@@ -16,7 +16,7 @@ Local comparison of sample workspace settings. .NET 11 only. Run one line at a t
 Read the schedule, connection, and parameter values before promotion.
 
 ~~~fish
-dotnet run --file Demo.cs -- capture-the-source-settings
+cd /tmp/acestus-video-demos/fabric-deployment-gotchas-demo; and dotnet run --file Demo.cs -- capture-the-source-settings
 ~~~
 
 ## 2. Compare the destination
@@ -24,7 +24,7 @@ dotnet run --file Demo.cs -- capture-the-source-settings
 Show the mapping changes and missing schedule on the destination.
 
 ~~~fish
-dotnet run --file Demo.cs -- compare-the-destination
+cd /tmp/acestus-video-demos/fabric-deployment-gotchas-demo; and dotnet run --file Demo.cs -- compare-the-destination
 ~~~
 
 ## 3. Gate on required settings
@@ -32,5 +32,5 @@ dotnet run --file Demo.cs -- compare-the-destination
 Run the same requirement against incomplete and corrected examples.
 
 ~~~fish
-dotnet run --file Demo.cs -- gate-on-required-settings
+cd /tmp/acestus-video-demos/fabric-deployment-gotchas-demo; and dotnet run --file Demo.cs -- gate-on-required-settings
 ~~~

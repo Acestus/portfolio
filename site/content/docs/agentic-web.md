@@ -257,3 +257,9 @@ flowchart TD
   class n0,n1,n2,n3 process
   class n4 result
 ```
+
+## Demo videos
+
+- [Agent CLI vs. MCP walkthrough](/videos/agentic-cli-vs-mcp/).
+- [Who gets left out when we build with AI](/videos/the-problem-with-ai/).
+- [Writing that represents how I think](/videos/writing-samples/).

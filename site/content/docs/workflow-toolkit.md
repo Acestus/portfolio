@@ -237,3 +237,8 @@ flowchart TD
   class n0,n1,n2 process
   class n3 result
 ```
+
+## Related video walkthroughs
+
+- [Taking responsibility for the outcome](/videos/taking-responsibility-for-the-outcome/).
+- [Doing work that uses my abilities](/videos/unhappiest-at-work/).

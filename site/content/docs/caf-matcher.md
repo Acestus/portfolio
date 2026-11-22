@@ -219,3 +219,7 @@ mindmap
     🌐 Region
     #️⃣ Instance
 ```
+
+## Demo video
+
+[Watch the CAF Naming walkthrough](/videos/caf-naming/).

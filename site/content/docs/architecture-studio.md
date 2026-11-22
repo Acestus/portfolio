@@ -263,3 +263,8 @@ flowchart TD
   class n0,n1,n2 process
   class n3 result
 ```
+
+## Related video walkthroughs
+
+- [Making sense of information](/videos/making-sense-of-information/).
+- [Learning to think like a software engineer](/videos/thinking-like-a-software-engineer/).

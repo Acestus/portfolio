@@ -297,3 +297,7 @@ flowchart TD
   class n0,n1,n2 process
   class n3 result
 ```
+
+## Related video walkthroughs
+
+- [Troubleshooting a data center migration](/videos/data-center-migration/).

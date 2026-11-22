@@ -1,0 +1,23 @@
+#!/bin/sh
+set -eu
+
+if [ "$#" -ne 1 ]; then
+    echo 'Usage: ./reset-demo <new-directory>' >&2
+    exit 2
+fi
+
+root=$(git rev-parse --show-toplevel)
+mkdir -- "$1"
+git -C "$1" init --quiet -b main
+git -C "$1" config user.name 'Acestus Demo'
+git -C "$1" config user.email 'demo@example.invalid'
+git -C "$1" config commit.gpgsign false
+git -C "$1" fetch --quiet --no-tags "$root" \
+    refs/tags/release-0:refs/tags/release-0 \
+    refs/tags/release-1-ready:refs/tags/release-1-ready \
+    refs/tags/feature-3:refs/tags/feature-3 \
+    refs/tags/feature-4:refs/tags/feature-4
+git -C "$1" switch --quiet -c main feature-4
+git -C "$1" tag stg release-0
+git -C "$1" tag prd release-0
+printf 'Fresh demo: %s\n' "$1"

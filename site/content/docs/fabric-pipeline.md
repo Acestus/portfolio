@@ -305,3 +305,7 @@ flowchart TD
   linkStyle 2 stroke:#DAA520,stroke-width:2px
   linkStyle 3 stroke:#1A73C7,stroke-width:2px
 ```
+
+## Related video walkthroughs
+
+- [A few examples of my work](/videos/work-samples/).

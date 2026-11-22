@@ -42,11 +42,6 @@ foreach (var name in selected)
         if (name == "hotfix-demo")
             SeedHotfixHistory(scratch);
         Directory.Move(scratch, target);
-        if (name == "hotfix-demo")
-        {
-            foreach (var stage in new[] { "dev", "stg", "prd" })
-                Git(target, "worktree", "add", "--detach", $".stages/{stage}", stage);
-        }
         Console.WriteLine(target);
     }
     finally
@@ -61,6 +56,14 @@ static void SeedHotfixHistory(string root)
 {
     foreach (var tag in new[] { "release-0", "stg", "prd" })
         Git(root, "tag", tag);
+
+    Git(root, "switch", "--quiet", "--detach", "release-0");
+    string hello = Path.Combine(root, "Hello.cs");
+    string baseline = File.ReadAllText(hello);
+    File.WriteAllText(hello, baseline.Replace("Hello World", "Hello World hotfix 1").Replace("BaseCount = 6", "BaseCount = 7"));
+    Git(root, "commit", "--quiet", "-am", "Prepare the first hotfix from the production baseline");
+    Git(root, "tag", "release-1-ready");
+    Git(root, "switch", "--quiet", "main");
     foreach (var number in new[] { 3, 4 })
     {
         string file = $"Feature{number}.cs";
@@ -69,7 +72,6 @@ static void SeedHotfixHistory(string root)
         Git(root, "commit", "--quiet", "-m", $"Add feature {number}");
         Git(root, "tag", $"feature-{number}");
     }
-    Git(root, "tag", "dev");
 }
 
 static void CopyFixture(string source, string destination)

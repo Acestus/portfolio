@@ -1,9 +1,9 @@
 # Azure Key Vault secrets in a Python application
 
-From the portfolio root, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
+From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Skip setup if the repo already exists. Each demo command enters its repo before running. If you used a custom destination, run the commands in that repo’s README from its root.
 
 ~~~fish
-dotnet run --file scripts/SeedDemo.cs -- key-vault-secrets-python-demo
+cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- key-vault-secrets-python-demo
 ~~~
 
 
@@ -16,7 +16,7 @@ Use .NET 11 and a mock vault with a dummy value. The linked article describes th
 Compare a demo identity with secret read permission against an anonymous identity.
 
 ~~~fish
-dotnet run --file Demo.cs -- show-the-role-boundary
+cd /tmp/acestus-video-demos/key-vault-secrets-python-demo; and dotnet run --file Demo.cs -- show-the-role-boundary
 ~~~
 
 ## 2. Verify allowed read
@@ -24,7 +24,7 @@ dotnet run --file Demo.cs -- show-the-role-boundary
 Compare the dummy result without printing it.
 
 ~~~fish
-dotnet run --file Demo.cs -- verify-allowed-read
+cd /tmp/acestus-video-demos/key-vault-secrets-python-demo; and dotnet run --file Demo.cs -- verify-allowed-read
 ~~~
 
 ## 3. Verify denied read
@@ -32,5 +32,5 @@ dotnet run --file Demo.cs -- verify-allowed-read
 Show the unauthorized identity receives no value.
 
 ~~~fish
-dotnet run --file Demo.cs -- verify-denied-read
+cd /tmp/acestus-video-demos/key-vault-secrets-python-demo; and dotnet run --file Demo.cs -- verify-denied-read
 ~~~

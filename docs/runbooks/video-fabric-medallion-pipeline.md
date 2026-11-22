@@ -1,9 +1,9 @@
 # A Fabric medallion pipeline from raw data to a useful report
 
-From the portfolio root, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
+From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Skip setup if the repo already exists. Each demo command enters its repo before running. If you used a custom destination, run the commands in that repo’s README from its root.
 
 ~~~fish
-dotnet run --file scripts/SeedDemo.cs -- fabric-medallion-pipeline-demo
+cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- fabric-medallion-pipeline-demo
 ~~~
 
 
@@ -16,7 +16,7 @@ Local medallion pipeline with synthetic CSV, using .NET 11. Run one line at a ti
 Show the original source fields and an ingestion stamp.
 
 ~~~fish
-dotnet run --file Demo.cs -- land-bronze-rows
+cd /tmp/acestus-video-demos/fabric-medallion-pipeline-demo; and dotnet run --file Demo.cs -- land-bronze-rows
 ~~~
 
 ## 2. Validate Silver rows
@@ -24,7 +24,7 @@ dotnet run --file Demo.cs -- land-bronze-rows
 Convert valid amounts to numbers and quarantine the empty amount.
 
 ~~~fish
-dotnet run --file Demo.cs -- validate-silver-rows
+cd /tmp/acestus-video-demos/fabric-medallion-pipeline-demo; and dotnet run --file Demo.cs -- validate-silver-rows
 ~~~
 
 ## 3. Reconcile Gold totals
@@ -32,5 +32,5 @@ dotnet run --file Demo.cs -- validate-silver-rows
 Compute and check the report total against the known fixture.
 
 ~~~fish
-dotnet run --file Demo.cs -- reconcile-gold-totals
+cd /tmp/acestus-video-demos/fabric-medallion-pipeline-demo; and dotnet run --file Demo.cs -- reconcile-gold-totals
 ~~~

@@ -1,9 +1,9 @@
 # Scheduling Fabric pipelines with workload identity
 
-From the portfolio root, create the demo repo under `/tmp/acestus-video-demos/`. Run the remaining commands from the new repo, or open its README in Neovim.
+From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Skip setup if the repo already exists. Each demo command enters its repo before running. If you used a custom destination, run the commands in that repo’s README from its root.
 
 ~~~fish
-dotnet run --file scripts/SeedDemo.cs -- fabric-pipelines-workload-identity-demo
+cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- fabric-pipelines-workload-identity-demo
 ~~~
 
 
@@ -16,7 +16,7 @@ Local trigger and monitoring exercise. .NET 11 only. Run one line at a time in f
 Walk through a daily schedule and the bounded input it passes.
 
 ~~~fish
-dotnet run --file Demo.cs -- show-the-scheduled-input
+cd /tmp/acestus-video-demos/fabric-pipelines-workload-identity-demo; and dotnet run --file Demo.cs -- show-the-scheduled-input
 ~~~
 
 ## 2. Explain token expiry
@@ -24,7 +24,7 @@ dotnet run --file Demo.cs -- show-the-scheduled-input
 Compare the same illustrative token metadata before and after expiry.
 
 ~~~fish
-dotnet run --file Demo.cs -- explain-token-expiry
+cd /tmp/acestus-video-demos/fabric-pipelines-workload-identity-demo; and dotnet run --file Demo.cs -- explain-token-expiry
 ~~~
 
 ## 3. Follow the run receipt
@@ -32,5 +32,5 @@ dotnet run --file Demo.cs -- explain-token-expiry
 Use a sample run ID to link an accepted request to a later status.
 
 ~~~fish
-dotnet run --file Demo.cs -- follow-the-run-receipt
+cd /tmp/acestus-video-demos/fabric-pipelines-workload-identity-demo; and dotnet run --file Demo.cs -- follow-the-run-receipt
 ~~~
