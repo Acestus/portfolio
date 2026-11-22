@@ -58,3 +58,9 @@ Responsibility has a personal dimension for me, too. I have three sons and three
 As a historian, I am interested in why organizations choose to build differently and what those choices make possible. As an engineer, I want to contribute to the work itself.
 
 At Oxide, I see an opportunity to bring my experience in Linux, automation, infrastructure, migration, and support to a difficult and tangible engineering effort. I want to help build systems people can understand, operate, and trust—and keep growing alongside the people building them.
+
+## Video walkthroughs
+
+[Watch the Making infrastructure more understandable video](/videos/making-infra-more-understandable/).
+
+[Watch the Troubleshooting a data center migration video](/videos/data-center-migration/).
