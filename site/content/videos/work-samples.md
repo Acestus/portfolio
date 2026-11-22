@@ -4,6 +4,7 @@ description = "A tour through CI/CD, infrastructure as code, logs, observability
 weight = 119
 date = 2026-11-22
 [params]
+thumbnail = "/images/work-samples-thumbnail.svg"
 h264 = "https://stvideosprdscus001.z21.web.core.windows.net/videos/work-samples.mp4"
 duration = "2:10"
 +++
