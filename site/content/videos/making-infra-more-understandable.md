@@ -4,6 +4,7 @@ description = "Connect the technical pieces, document the system, and help the p
 weight = 111
 date = 2026-11-22
 [params]
+thumbnail = "/images/making-infra-more-understandable-thumbnail.svg"
 h264 = "https://stvideosprdscus001.z21.web.core.windows.net/videos/making-infra-more-understandable.mp4"
 duration = "1:57"
 +++
