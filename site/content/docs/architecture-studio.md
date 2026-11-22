@@ -248,3 +248,8 @@ The SPA makes that pattern tangible. ClojureScript data renders the interactive 
 | ADR | Markdown | Pull request plus architecture review | Decision text changes with the system |
 | Fabric topology | Git-synced workspace artifacts and IaC | Environment promotion | Artifacts, parameters, and docs share names and lifecycle |
 | Confluence page | Rendered Markdown via API | Publish job output | Stakeholder docs are regenerated from reviewed content |
+
+## Related video walkthroughs
+
+- [Making sense of information](/videos/making-sense-of-information/).
+- [Learning to think like a software engineer](/videos/thinking-like-a-software-engineer/).
