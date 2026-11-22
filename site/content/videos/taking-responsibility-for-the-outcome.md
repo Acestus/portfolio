@@ -10,4 +10,5 @@ duration = "2:09"
 
 Clarify the goal, work through the details, verify the result, and own the outcome.
 
-[Read the related article](/articles/05-taking-responsibility/) · [Documentation](/docs/workflow-toolkit/)
+**Related article:** [Taking responsibility for the outcome](/articles/05-taking-responsibility/)  
+**Documentation:** [Workflow Toolkit — File-Driven AI Ops](/docs/workflow-toolkit/)
