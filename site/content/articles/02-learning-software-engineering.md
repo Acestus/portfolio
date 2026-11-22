@@ -2,6 +2,7 @@
 title: "Learning to think like a software engineer"
 date: 2026-11-22
 draft: false
+icon: "📚"
 tags: ["contract-work", "engineering", "learning"]
 summary: "How I worked through computer science fundamentals and technical vocabulary to take in complex ideas and connect them."
 ---
@@ -18,7 +19,7 @@ Learning that vocabulary opened a new world to me. I could listen to highly tech
 
 Knowledge is power, and I’m proud of having worked hard enough to participate in conversations with some of the smartest engineers in the world. That accomplishment also reflects who I am as an “information person”: I love taking in complex material, organizing it, and figuring out how the pieces connect.
 
-## Supporting visual (not spoken)
+## Supporting visual
 
 ```mermaid
 flowchart TD

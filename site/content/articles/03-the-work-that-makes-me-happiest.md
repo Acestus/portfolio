@@ -2,6 +2,7 @@
 title: "The work that makes me happiest"
 date: 2026-11-22
 draft: false
+icon: "🔁"
 tags: ["contract-work", "devops", "continuous-delivery"]
 summary: "I enjoy small, testable changes, continuous delivery, and time to reflect on whether the work is moving in the right direction."
 ---
@@ -16,7 +17,7 @@ I’m happiest when my actions match what I believe I should be doing most of th
 
 That is the kind of work I want to bring to a client engagement: make progress in manageable steps, learn from the result, and leave room to improve the way the work is done.
 
-## Supporting visual (not spoken)
+## Supporting visual
 
 ```mermaid
 flowchart TD

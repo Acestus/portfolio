@@ -2,6 +2,7 @@
 title: "Troubleshooting the dependencies behind a data center migration"
 date: 2026-11-22
 draft: false
+icon: "🧩"
 tags: ["contract-work", "troubleshooting", "cloud-migration"]
 summary: "How I helped map identity, LDAP, Group Policy, and DNS responsibilities to Azure services during a customer migration."
 ---
@@ -18,7 +19,7 @@ After approximately six months, the customer was able to shut down its data cent
 
 For me, troubleshooting a complicated environment starts with understanding what the system is responsible for. A domain controller can look like one thing on a diagram, but it may be carrying several separate dependencies. I try to identify them, handle them one at a time, and make sure each responsibility has a place to go before retiring the old system.
 
-## Supporting visual (not spoken)
+## Supporting visual
 
 ```mermaid
 flowchart TD

@@ -2,6 +2,7 @@
 title: "A few examples of my work"
 date: 2026-11-22
 draft: false
+icon: "💻"
 tags: ["contract-work", "work-samples", "infrastructure"]
 summary: "Examples of my work in CI/CD, infrastructure as code, logs and observability, and software."
 ---
@@ -16,7 +17,7 @@ I also wrote about [how I like to do logs and observability](https://acestus.com
 
 And here is my [portfolio](https://acestus.com/portfolio/). I love taking in complex material, organizing it, and figuring out how the pieces connect. These examples show some of the ways I put that into practice: infrastructure, delivery, observability, and working software.
 
-## Supporting visual (not spoken)
+## Supporting visual
 
 ```mermaid
 flowchart TD

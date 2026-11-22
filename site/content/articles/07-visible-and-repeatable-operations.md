@@ -2,6 +2,7 @@
 title: "Making operations visible and repeatable"
 date: 2026-11-22
 draft: false
+icon: "👁️"
 tags: ["contract-work", "infrastructure-as-code", "operations"]
 summary: "How infrastructure as code and CI/CD make operational changes easier to review, understand, and repeat."
 ---
@@ -20,7 +21,7 @@ In these situations, I resolve the tension by making the process visible without
 
 The goal is not merely to replace clicking with text. The goal is to make the operation understandable, repeatable, and available to the entire team rather than hidden inside a few people’s accounts or memories.
 
-## Supporting visual (not spoken)
+## Supporting visual
 
 ```mermaid
 flowchart TD

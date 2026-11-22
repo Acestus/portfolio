@@ -2,6 +2,7 @@
 title: "Taking responsibility for the outcome"
 date: 2026-11-22
 draft: false
+icon: "🧰"
 tags: ["contract-work", "responsibility", "operations"]
 summary: "What ownership means to me in infrastructure operations, CI/CD, and the software delivery lifecycle."
 ---
@@ -16,7 +17,7 @@ I have tried to cultivate that quality in myself. If a business has a stack of c
 
 That is especially relevant to the software development lifecycle and infrastructure operations. I can own the infrastructure, CI/CD pipeline, and delivery process, verify that it is working, and make sure the work is completed. That is what responsibility looks like in my day-to-day work.
 
-## Supporting visual (not spoken)
+## Supporting visual
 
 ```mermaid
 flowchart TD

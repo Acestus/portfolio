@@ -2,6 +2,7 @@
 title: "Writing that represents how I think"
 date: 2026-11-22
 draft: false
+icon: "✍️"
 tags: ["contract-work", "writing", "work-samples"]
 summary: "Two writing samples about practical local AI agents and a dashboard concept built around a real family workflow."
 ---
@@ -14,7 +15,7 @@ In [my homeschool dashboard business idea](https://acestus.com/articles/homescho
 
 Those pieces are different in subject, but they reflect a similar approach. Start with a real use case, explain the details clearly, and make the connections visible. I try to write in a way that lets another person understand what I was thinking and decide what they can take from it.
 
-## Supporting visual (not spoken)
+## Supporting visual
 
 ```mermaid
 flowchart TD

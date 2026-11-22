@@ -2,6 +2,7 @@
 title: "What clients can expect when working with me"
 date: 2026-11-22
 draft: false
+icon: "🤝"
 tags: ["contract-work", "infrastructure", "support"]
 summary: "My experience in Linux, infrastructure as code, automation, cloud migration, data engineering, and support."
 ---
@@ -16,7 +17,7 @@ For a client, the practical version is this: I bring experience in Linux, infras
 
 I enjoy taking in complex material, organizing it, and figuring out how the pieces connect. I want to make progress in a way that is visible and repeatable, and I welcome oversight, supervision, and review. I’m interested in meaningful technical work where I can contribute, keep learning, and help the system work better for the people who depend on it.
 
-## Supporting visual (not spoken)
+## Supporting visual
 
 ```mermaid
 flowchart TD

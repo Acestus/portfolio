@@ -2,6 +2,7 @@
 title: "Analysis: how one repository sync took a website offline"
 date: 2026-11-22
 draft: false
+icon: "🚨"
 tags: ["contract-work", "analysis", "incident-response"]
 summary: "A GitHub Actions repository migration overwrote DNS configuration; monitoring and Argo CD logs helped trace and recover the outage."
 ---
@@ -20,7 +21,7 @@ I removed the incorrect repository from the configuration with a pull request so
 
 I had scheduled the migration job for 17:00 UTC in part because that would give me a recognizable timeline when investigating a large migration. When a system misbehaves, I start with the observed time, follow the evidence across systems, and check whether the change explains the symptom.
 
-## Supporting visual (not spoken)
+## Supporting visual
 
 ```mermaid
 flowchart TD

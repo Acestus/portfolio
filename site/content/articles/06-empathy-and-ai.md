@@ -2,6 +2,7 @@
 title: "Who gets left out when we build with AI"
 date: 2026-11-22
 draft: false
+icon: "🌍"
 tags: ["contract-work", "ai", "empathy"]
 summary: "A reflection on empathy, technology access, and the people who may not have the resources to use what we build."
 ---
@@ -18,7 +19,7 @@ Capitalism has a remarkable ability to give self-interested people an incentive 
 
 For me, empathy means asking who can use what we build, who cannot, and what assumptions we are making about access. Those are questions worth bringing into technical and product decisions early.
 
-## Supporting visual (not spoken)
+## Supporting visual
 
 ```mermaid
 flowchart TD
