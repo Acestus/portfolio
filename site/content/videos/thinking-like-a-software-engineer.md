@@ -10,4 +10,5 @@ duration = "2:13"
 
 A personal account of building computer science fundamentals and technical vocabulary.
 
-[Read the related article](/articles/02-learning-software-engineering/) · [Documentation](/docs/architecture-studio/)
+**Related article:** [Learning to think like a software engineer](/articles/02-learning-software-engineering/)  
+**Documentation:** [Architecture Studio — C4, ADRs, and Diagrams as Code](/docs/architecture-studio/)
