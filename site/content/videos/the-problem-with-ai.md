@@ -10,4 +10,5 @@ duration = "2:56"
 
 Consider who can use a technology and who is excluded by assumptions about access.
 
-[Read the related article](/articles/06-empathy-and-ai/) · [Documentation](/docs/agentic-web/)
+**Related article:** [Who gets left out when we build with AI](/articles/06-empathy-and-ai/)  
+**Documentation:** [Agentic Web — Skills, MCP, and the New Operator Loop](/docs/agentic-web/)
