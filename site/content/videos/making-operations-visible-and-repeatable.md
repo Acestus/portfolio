@@ -10,4 +10,5 @@ duration = "3:08"
 
 Turn click-driven procedures into reviewable infrastructure code and repeatable delivery.
 
-[Read the related article](/articles/07-visible-and-repeatable-operations/) · [Documentation](/docs/iac-pipeline/)
+**Related article:** [Making operations visible and repeatable](/articles/07-visible-and-repeatable-operations/)  
+**Documentation:** [Infrastructure as Code — AVM, OIDC, and Deployment Stacks](/docs/iac-pipeline/)
