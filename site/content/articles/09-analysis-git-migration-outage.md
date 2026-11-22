@@ -40,3 +40,7 @@ flowchart TD
   class A,B,C,D,G,H,I change
   class E,F evidence
 ```
+
+## Video walkthrough
+
+[Watch the Analysis sample: Investigating a GitHub sync outage video](/videos/analysis-sample/).
