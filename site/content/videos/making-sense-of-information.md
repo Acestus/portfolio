@@ -10,4 +10,5 @@ duration = "3:25"
 
 Evaluate a source, its context, and the evidence before deciding what conclusion it supports.
 
-[Read the related article](/articles/01-making-sense-of-information/) · [Documentation](/docs/architecture-studio/)
+**Related article:** [The hardest work is making sense of information](/articles/01-making-sense-of-information/)  
+**Documentation:** [Architecture Studio — C4, ADRs, and Diagrams as Code](/docs/architecture-studio/)
