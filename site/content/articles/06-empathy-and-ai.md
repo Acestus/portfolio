@@ -34,3 +34,7 @@ flowchart TD
   class A,B,C review
   class D,E action
 ```
+
+## Video walkthrough
+
+[Watch the Who gets left out when we build with AI video](/videos/the-problem-with-ai/).
