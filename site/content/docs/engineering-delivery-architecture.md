@@ -958,3 +958,8 @@ No application code, infrastructure, review protection, credential configuration
 [Hugo documentation](https://gohugo.io/documentation/) — static site generation.
 
 Tags: agentic-development, atdd, github-actions, dotnet, bicep, infrastructure
+
+## Related video walkthroughs
+
+- [Analysis sample: Investigating a GitHub sync outage](/videos/analysis-sample/).
+- [Making infrastructure more understandable](/videos/making-infra-more-understandable/).
