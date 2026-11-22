@@ -4,6 +4,7 @@ description = "Clarify the goal, work through the details, verify the result, an
 weight = 114
 date = 2026-11-22
 [params]
+thumbnail = "/images/taking-responsibility-for-the-outcome-thumbnail.svg"
 h264 = "https://stvideosprdscus001.z21.web.core.windows.net/videos/taking-responsibility-for-the-outcome.mp4"
 duration = "2:09"
 +++
