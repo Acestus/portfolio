@@ -222,3 +222,8 @@ Open source also gives the project a better feedback loop. Teams can compare lan
 
 
 That is the Build 2026 story in one sentence: AI becomes safer when its working memory is inspectable, versioned, and owned by the people doing the work.
+
+## Related video walkthroughs
+
+- [Taking responsibility for the outcome](/videos/taking-responsibility-for-the-outcome/).
+- [Doing work that uses my abilities](/videos/unhappiest-at-work/).
