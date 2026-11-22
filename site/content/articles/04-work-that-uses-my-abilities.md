@@ -34,3 +34,7 @@ flowchart TD
   class A,B,C review
   class D,E action
 ```
+
+## Video walkthrough
+
+[Watch the Doing work that uses my abilities video](/videos/unhappiest-at-work/).
