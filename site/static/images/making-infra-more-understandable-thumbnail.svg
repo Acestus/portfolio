@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" role="img" aria-labelledby="title">
+  <title id="title">Making infrastructure more understandable</title>
+  <defs>
+    <linearGradient id="background" x2="1" y2="1"><stop stop-color="#071423"/><stop offset="1" stop-color="#1c354c"/></linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0H0V48" fill="none" stroke="#a9c8e6" stroke-opacity=".12"/></pattern>
+  </defs>
+  <rect width="1280" height="720" fill="url(#background)"/>
+  <rect width="1280" height="720" fill="url(#grid)"/>
+  <g font-family="Arial, Helvetica, sans-serif" font-weight="700">
+    <text x="76" y="112" fill="#87cffa" font-size="21" letter-spacing="3">ACESTUS / SYSTEMS ENGINEERING</text>
+    <text x="72" y="264" fill="#fff" font-size="72" letter-spacing="-2">MAKE INFRA</text>
+    <rect x="68" y="294" width="530" height="112" rx="12" fill="#b92739"/>
+    <text x="91" y="372" fill="#fff" font-size="64" letter-spacing="-2">UNDERSTANDABLE</text>
+    <text x="77" y="488" fill="#d3e5f5" font-size="22">Connect systems, people, and operations.</text>
+    <rect x="650" y="152" width="562" height="414" rx="24" fill="#12263a" stroke="#507898" stroke-width="2"/>
+    <text x="694" y="216" fill="#8dcfff" font-size="19" letter-spacing="3">THE WHOLE SYSTEM</text>
+    <rect x="700" y="255" width="190" height="70" rx="12" fill="#172f43" stroke="#54768d" stroke-width="2"/><text x="758" y="298" fill="#fff" font-size="24">Linux</text><rect x="970" y="255" width="190" height="70" rx="12" fill="#172f43" stroke="#54768d" stroke-width="2"/><text x="1022" y="298" fill="#fff" font-size="24">Cloud</text><rect x="700" y="420" width="190" height="70" rx="12" fill="#172f43" stroke="#54768d" stroke-width="2"/><text x="738" y="463" fill="#fff" font-size="24">Automation</text><rect x="970" y="420" width="190" height="70" rx="12" fill="#172f43" stroke="#54768d" stroke-width="2"/><text x="1010" y="463" fill="#fff" font-size="24">People</text><path d="M890 290h80M795 325v95M1065 325v95M890 455h80" stroke="#8dcfff" stroke-width="3"/><rect x="835" y="345" width="190" height="60" rx="12" fill="#1e5746"/><text x="868" y="383" fill="#fff" font-size="22">Shared understanding</text>
+  </g>
+</svg>
