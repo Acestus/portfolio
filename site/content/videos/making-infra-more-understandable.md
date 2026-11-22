@@ -10,4 +10,5 @@ duration = "1:57"
 
 Connect the technical pieces, document the system, and help the people who operate it.
 
-[Read the related article](/articles/08-working-with-me/) · [Read the Oxide article](/articles/why-i-want-to-work-at-oxide/) · [Documentation](/docs/engineering-delivery-architecture/)
+**Related articles:** [What clients can expect when working with me](/articles/08-working-with-me/) · [Why I Want to Work at Oxide](/articles/why-i-want-to-work-at-oxide/)  
+**Documentation:** [Engineering delivery architecture](/docs/engineering-delivery-architecture/)
