@@ -32,3 +32,7 @@ flowchart TD
   class A,B,C,D inquiry
   class E result
 ```
+
+## Video walkthrough
+
+[Watch the Making sense of information video](/videos/making-sense-of-information/).
