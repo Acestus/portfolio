@@ -32,3 +32,7 @@ flowchart TD
   class A,B,C delivery
   class D,E operations
 ```
+
+## Video walkthrough
+
+[Watch the A few examples of my work video](/videos/work-samples/).

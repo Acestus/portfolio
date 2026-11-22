@@ -33,3 +33,7 @@ flowchart TD
   class A,B,C learning
   class D outcome
 ```
+
+## Video walkthrough
+
+[Watch the Learning to think like a software engineer video](/videos/thinking-like-a-software-engineer/).

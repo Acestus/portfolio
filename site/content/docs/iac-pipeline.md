@@ -240,3 +240,9 @@ The pattern keeps local modules rare. If a resource type exists in AVM, use the 
 
 
 > **Sanitized operating model:** the platform team promotes the same stack pattern across Production, Connectivity, and Identity subscriptions. Incident references use `INFRA-###`, tenant IDs use Microsoft documentation placeholders, and network examples use `10.0.0.0/16`.
+
+## Related video walkthroughs
+
+- [The work that makes me happiest](/videos/happiest-at-work/).
+- [Making operations visible and repeatable](/videos/making-operations-visible-and-repeatable/).
+- [A few examples of my work](/videos/work-samples/).

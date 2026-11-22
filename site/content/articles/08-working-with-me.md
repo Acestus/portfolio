@@ -32,3 +32,7 @@ flowchart TD
   class A,B,C delivery
   class D,E outcome
 ```
+
+## Video walkthrough
+
+[Watch the Making infrastructure more understandable video](/videos/making-infra-more-understandable/).

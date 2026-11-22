@@ -244,3 +244,7 @@ That mix matters because the goal is not to build another bespoke logging platfo
 
 
 The end result is a pipeline that is real-time without being fragile: event-driven ingestion, managed stream routing, hot KQL analytics, lifecycle-aware retention, and durable alert handling that can be explained from the SPA all the way to production architecture.
+
+## Related video walkthroughs
+
+- [A few examples of my work](/videos/work-samples/).

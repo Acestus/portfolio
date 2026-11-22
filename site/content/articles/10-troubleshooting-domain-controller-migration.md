@@ -40,3 +40,7 @@ flowchart TD
   class A,B,C,D,E,F,G source
   class H,I outcome
 ```
+
+## Video walkthrough
+
+[Watch the Troubleshooting a data center migration video](/videos/data-center-migration/).

@@ -37,3 +37,7 @@ flowchart TD
   class A,B,C delivery
   class D,E,F evidence
 ```
+
+## Video walkthrough
+
+[Watch the Making operations visible and repeatable video](/videos/making-operations-visible-and-repeatable/).

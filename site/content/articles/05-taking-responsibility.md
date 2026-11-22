@@ -32,3 +32,7 @@ flowchart TD
   class A,B,C work
   class D,E verify
 ```
+
+## Video walkthrough
+
+[Watch the Taking responsibility for the outcome video](/videos/taking-responsibility-for-the-outcome/).

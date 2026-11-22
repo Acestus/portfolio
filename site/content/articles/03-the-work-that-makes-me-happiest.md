@@ -32,3 +32,7 @@ flowchart TD
   class A,B delivery
   class C,D evidence
 ```
+
+## Video walkthrough
+
+[Watch the The work that makes me happiest video](/videos/happiest-at-work/).

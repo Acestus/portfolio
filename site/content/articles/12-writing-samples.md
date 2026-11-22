@@ -30,3 +30,7 @@ flowchart TD
   class A,B example
   class C,D,E explanation
 ```
+
+## Video walkthrough
+
+[Watch the Writing that represents how I think video](/videos/writing-samples/).
