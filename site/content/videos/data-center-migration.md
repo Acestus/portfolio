@@ -10,4 +10,5 @@ duration = "2:24"
 
 Trace domain controller responsibilities to Azure replacements before retiring the data center.
 
-[Read the related article](/articles/10-troubleshooting-domain-controller-migration/) · [Read the Oxide article](/articles/why-i-want-to-work-at-oxide/) · [Documentation](/docs/ad-gpo-fundamentals/)
+**Related articles:** [Troubleshooting the dependencies behind a data center migration](/articles/10-troubleshooting-domain-controller-migration/) · [Why I Want to Work at Oxide](/articles/why-i-want-to-work-at-oxide/)  
+**Documentation:** [Incident Triage: AD, GPO, DNS & SQL/VM](/docs/ad-gpo-fundamentals/)
