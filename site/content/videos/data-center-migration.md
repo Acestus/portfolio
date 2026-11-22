@@ -4,6 +4,7 @@ description = "Trace domain controller responsibilities to Azure replacements be
 weight = 114
 date = 2026-11-22
 [params]
+thumbnail = "/images/data-center-migration-thumbnail.svg"
 h264 = "https://stvideosprdscus001.z21.web.core.windows.net/videos/data-center-migration.mp4"
 duration = "2:24"
 +++
