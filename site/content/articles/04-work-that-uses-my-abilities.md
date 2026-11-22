@@ -2,6 +2,7 @@
 title: "Doing work that uses my abilities"
 date: 2026-11-22
 draft: false
+icon: "⚖️"
 tags: ["contract-work", "engineering", "work"]
 summary: "Why I value meaningful work where I can use my abilities to improve systems and processes."
 ---
@@ -18,7 +19,7 @@ So my answer has two parts. Professionally, I’m unhappy when I am prevented fr
 
 That is part of why I value clear priorities and meaningful work in a contract engagement. I want to use my abilities to help improve the systems and processes a client depends on.
 
-## Supporting visual (not spoken)
+## Supporting visual
 
 ```mermaid
 flowchart TD

@@ -1,1 +1,1 @@
-{{ define "main" }}<article class="prose page"><p class="eyebrow">{{ .Section }}</p><h1>{{ .Title }}</h1>{{ .Content }}</article>{{ end }}
+{{ define "main" }}<article class="prose page"><p class="eyebrow">{{ .Section }}</p><h1>{{ with .Params.icon }}<span class="article-icon article-icon-page" aria-hidden="true">{{ . }}</span>{{ end }}{{ .Title }}</h1>{{ .Content }}</article>{{ end }}
