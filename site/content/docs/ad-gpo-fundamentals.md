@@ -282,3 +282,7 @@ Detect→ Triage→ Mitigate→ Fix→ Review
 - **Escalation discipline.** Set a personal time-box — e.g., "if I don't have a mitigation path in 3 minutes, I loop in a second person" — rather than debugging solo past the point where it's still a fast incident.
 
 - **Blameless review.** After mitigation, feed the fix back into monitoring or the runbook (DNS scavenging alerts, GPO drift detection) so the same class of incident is faster to catch — or doesn't happen — next time.
+
+## Related video walkthroughs
+
+- [Troubleshooting a data center migration](/videos/data-center-migration/).
