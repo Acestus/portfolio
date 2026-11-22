@@ -4,6 +4,7 @@ description = "Evaluate a source, its context, and the evidence before deciding 
 weight = 113
 date = 2026-11-22
 [params]
+thumbnail = "/images/making-sense-of-information-thumbnail.svg"
 h264 = "https://stvideosprdscus001.z21.web.core.windows.net/videos/making-sense-of-information.mp4"
 duration = "3:25"
 +++
