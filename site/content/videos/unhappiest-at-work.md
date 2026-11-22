@@ -4,6 +4,7 @@ description = "Why meaningful work gives people room to improve the systems and 
 weight = 117
 date = 2026-11-22
 [params]
+thumbnail = "/images/unhappiest-at-work-thumbnail.svg"
 h264 = "https://stvideosprdscus001.z21.web.core.windows.net/videos/unhappiest-at-work.mp4"
 duration = "1:49"
 +++
