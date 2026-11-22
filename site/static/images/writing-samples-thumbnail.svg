@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" role="img" aria-labelledby="title">
+  <title id="title">Writing that represents how I think</title>
+  <defs>
+    <linearGradient id="background" x2="1" y2="1"><stop stop-color="#071423"/><stop offset="1" stop-color="#1c354c"/></linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0H0V48" fill="none" stroke="#a9c8e6" stroke-opacity=".12"/></pattern>
+  </defs>
+  <rect width="1280" height="720" fill="url(#background)"/>
+  <rect width="1280" height="720" fill="url(#grid)"/>
+  <g font-family="Arial, Helvetica, sans-serif" font-weight="700">
+    <text x="76" y="112" fill="#87cffa" font-size="21" letter-spacing="3">ACESTUS / ENGINEERING WRITING</text>
+    <text x="72" y="264" fill="#fff" font-size="72" letter-spacing="-2">WRITING</text>
+    <rect x="68" y="294" width="530" height="112" rx="12" fill="#b92739"/>
+    <text x="91" y="372" fill="#fff" font-size="64" letter-spacing="-2">SAMPLES</text>
+    <text x="77" y="488" fill="#d3e5f5" font-size="26">Real use cases. Clear thinking.</text>
+    <rect x="650" y="152" width="562" height="414" rx="24" fill="#12263a" stroke="#507898" stroke-width="2"/>
+    <text x="694" y="216" fill="#8dcfff" font-size="19" letter-spacing="3">MAKE THE CONNECTIONS VISIBLE</text>
+    <rect x="700" y="255" width="190" height="76" rx="12" fill="#153a55"/><text x="744" y="303" fill="#fff" font-size="22">Use case</text><path d="M890 293h65" stroke="#8dcfff" stroke-width="4"/><path d="m945 283 10 10-10 10" fill="none" stroke="#8dcfff" stroke-width="4"/><rect x="955" y="255" width="205" height="76" rx="12" fill="#153a55"/><text x="1007" y="303" fill="#fff" font-size="22">Example</text><path d="M1057 331v48" stroke="#8dcfff" stroke-width="4"/><path d="m1047 369 10 10 10-10" fill="none" stroke="#8dcfff" stroke-width="4"/><rect x="830" y="382" width="300" height="76" rx="12" fill="#1e5746"/><text x="877" y="430" fill="#fff" font-size="22">Clear explanation</text><path d="M980 458v34" stroke="#74ddae" stroke-width="4"/><text x="827" y="530" fill="#d3e5f5" font-size="21">Help the reader connect ideas</text>
+  </g>
+</svg>

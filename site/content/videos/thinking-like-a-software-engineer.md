@@ -4,6 +4,7 @@ description = "A personal account of building computer science fundamentals and 
 weight = 116
 date = 2026-11-22
 [params]
+thumbnail = "/images/thinking-like-a-software-engineer-thumbnail.svg"
 h264 = "https://stvideosprdscus001.z21.web.core.windows.net/videos/thinking-like-a-software-engineer.mp4"
 duration = "2:13"
 +++

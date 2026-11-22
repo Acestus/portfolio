@@ -4,6 +4,7 @@ description = "Two examples of writing that connect real use cases, technical de
 weight = 120
 date = 2026-11-22
 [params]
+thumbnail = "/images/writing-samples-thumbnail.svg"
 h264 = "https://stvideosprdscus001.z21.web.core.windows.net/videos/writing-samples.mp4"
 duration = "1:15"
 +++

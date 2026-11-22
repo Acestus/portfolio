@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" role="img" aria-labelledby="title">
+  <title id="title">Taking responsibility for the outcome</title>
+  <defs>
+    <linearGradient id="background" x2="1" y2="1"><stop stop-color="#071423"/><stop offset="1" stop-color="#1c354c"/></linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0H0V48" fill="none" stroke="#a9c8e6" stroke-opacity=".12"/></pattern>
+  </defs>
+  <rect width="1280" height="720" fill="url(#background)"/>
+  <rect width="1280" height="720" fill="url(#grid)"/>
+  <g font-family="Arial, Helvetica, sans-serif" font-weight="700">
+    <text x="76" y="112" fill="#87cffa" font-size="21" letter-spacing="3">ACESTUS / OPERATIONAL OWNERSHIP</text>
+    <text x="72" y="264" fill="#fff" font-size="72" letter-spacing="-2">OWN THE</text>
+    <rect x="68" y="294" width="530" height="112" rx="12" fill="#b92739"/>
+    <text x="91" y="372" fill="#fff" font-size="64" letter-spacing="-2">OUTCOME</text>
+    <text x="77" y="488" fill="#d3e5f5" font-size="26">Clarify. Follow through. Verify.</text>
+    <rect x="650" y="152" width="562" height="414" rx="24" fill="#12263a" stroke="#507898" stroke-width="2"/>
+    <text x="694" y="216" fill="#8dcfff" font-size="19" letter-spacing="3">CONCERN TO RESULT</text>
+    <circle cx="760" cy="300" r="34" fill="#153a55" stroke="#8dcfff" stroke-width="2"/><text x="747" y="308" fill="#fff" font-size="22">1</text><rect x="820" y="272" width="340" height="56" rx="10" fill="#153a55"/><text x="850" y="308" fill="#fff" font-size="21">Clarify the outcome</text><circle cx="760" cy="390" r="34" fill="#153a55" stroke="#8dcfff" stroke-width="2"/><text x="747" y="398" fill="#fff" font-size="22">2</text><rect x="820" y="362" width="340" height="56" rx="10" fill="#153a55"/><text x="850" y="398" fill="#fff" font-size="21">Work through details</text><circle cx="760" cy="480" r="34" fill="#1e5746"/><path d="m745 480 11 11 21-25" fill="none" stroke="#84e0bd" stroke-width="5"/><rect x="820" y="452" width="340" height="56" rx="10" fill="#1e5746"/><text x="850" y="488" fill="#fff" font-size="21">Verify and own the result</text>
+  </g>
+</svg>

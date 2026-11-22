@@ -4,6 +4,7 @@ description = "Small changes, tests, evidence, and reflection in a continuous de
 weight = 109
 date = 2026-11-22
 [params]
+thumbnail = "/images/happiest-at-work-thumbnail.svg"
 h264 = "https://stvideosprdscus001.z21.web.core.windows.net/videos/happiest-at-work.mp4"
 duration = "1:34"
 +++

@@ -4,6 +4,7 @@ description = "Consider who can use a technology and who is excluded by assumpti
 weight = 115
 date = 2026-11-22
 [params]
+thumbnail = "/images/the-problem-with-ai-thumbnail.svg"
 h264 = "https://stvideosprdscus001.z21.web.core.windows.net/videos/the-problem-with-AI.mp4"
 duration = "2:56"
 +++
