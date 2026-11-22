@@ -10,4 +10,5 @@ duration = "1:15"
 
 Two examples of writing that connect real use cases, technical detail, and clear explanation.
 
-[Read the related article](/articles/12-writing-samples/) · [Documentation](/docs/agentic-web/)
+**Related article:** [Writing that represents how I think](/articles/12-writing-samples/)  
+**Documentation:** [Agentic Web — Skills, MCP, and the New Operator Loop](/docs/agentic-web/)
