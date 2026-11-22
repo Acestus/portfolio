@@ -17,3 +17,13 @@ Expect posts on:
 - Tooling and automation
 
 More to come.
+
+## What I write about
+
+```mermaid
+mindmap
+  root((✍ Cloud engineering field notes))
+    ☁ Azure architecture
+    🛠 SRE and reliability
+    🤖 AI engineering
+```

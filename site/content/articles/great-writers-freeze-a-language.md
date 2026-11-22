@@ -22,3 +22,13 @@ You can see this in the way Dante’s Divine Comedy helped make the Tuscan diale
   
 
 In short, literature doesn’t just reflect culture—it shapes and reinforces it, generation after generation.
+
+## How literature carries language across generations
+
+```mermaid
+mindmap
+  root((📚 Enduring works))
+    Shakespeare and English
+    Dante and Tuscan Italian
+    Cervantes and Spanish
+```

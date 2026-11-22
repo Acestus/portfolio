@@ -232,3 +232,19 @@ The public pattern is intentionally generic. A production operations group is el
 
 
 > The article deliberately avoids tenant IDs, group object IDs, named users, and workspace identifiers. Use placeholders like `<tenant-id>`, `<group-id>`, `<workspace-id>`, and `<ticket-id>` when documenting the public Build 2026 pattern.
+
+## What each Azure Policy effect does
+
+```mermaid
+flowchart TD
+  accTitle: What each Azure Policy effect does
+  P@{ icon: "azure:policy", form: "rounded", label: "Azure Policy effects", pos: "t", h: 32 }
+  P --> A["🔍 Audit reports"]
+  P --> M["✏ Modify changes properties"]
+  P --> D["⛔ Deny blocks requests"]
+  P --> R["🚀 DeployIfNotExist adds resources"]
+  classDef policy fill:#EDE9FE,stroke:#6D28D9,color:#172B4D,stroke-width:2px
+  classDef effect fill:#FEF3C7,stroke:#B45309,color:#172B4D,stroke-width:2px
+  class P policy
+  class A,M,D,R effect
+```

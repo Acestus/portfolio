@@ -71,3 +71,18 @@ Retro arcade aesthetic with neon glow effects: cyan helicopter with animated rot
 
 
 Choplifter was designed by Dan Gorlin and published by Broderbund Software in 1982 for the Apple II. It pioneered the rescue-mission genre and was later ported to nearly every platform. The core loop — fly in, land, load passengers, fly home — remains one of gaming's most satisfying gameplay patterns.
+
+## Rescue loop from pickup to return
+
+```mermaid
+flowchart TD
+  accTitle: Rescue loop from pickup to return
+  n0["🚁 Fly to the pickup"] --> n1
+  n1["🛬 Land and board hostages"] --> n2
+  n2["🏠 Return to base"] --> n3
+  n3["✓ Unload safely"]
+  classDef process fill:#EDE9FE,stroke:#6D28D9,color:#172B4D,stroke-width:2px
+  classDef result fill:#FEF3C7,stroke:#B45309,color:#172B4D,stroke-width:2px
+  class n0,n1,n2 process
+  class n3 result
+```

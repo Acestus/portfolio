@@ -64,3 +64,18 @@ At 640×480 = 307,200 pixels per frame, each requiring sphere intersections, sha
 ```text
 wasm-pack build rust/raytracer --target web --out-dir ../../resources/public/wasm/raytracer
 ```
+
+## Ray tracing a pixel from camera to image
+
+```mermaid
+flowchart TD
+  accTitle: Ray tracing a pixel from camera to image
+  n0["📷 Cast a camera ray"] --> n1
+  n1["🔍 Find the nearest sphere hit"] --> n2
+  n2["💡 Calculate lighting"] --> n3
+  n3["🎨 Set the pixel color"]
+  classDef process fill:#EDE9FE,stroke:#6D28D9,color:#172B4D,stroke-width:2px
+  classDef result fill:#FEF3C7,stroke:#B45309,color:#172B4D,stroke-width:2px
+  class n0,n1,n2 process
+  class n3 result
+```

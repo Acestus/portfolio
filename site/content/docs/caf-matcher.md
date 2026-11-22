@@ -208,6 +208,17 @@ Pull request opens
 
 This is the operational lesson behind the SPA. The game rewards correct matches immediately; the platform should do the same by catching drift in code review rather than after deployment.
 
+## The inputs and checks behind a CAF resource name
+
+```mermaid
+mindmap
+  root((🏷 CAF name))
+    📦 Resource type
+    🛠 Workload
+    🧪 Environment
+    🌐 Region
+    #️⃣ Instance
+```
 
 ## Demo video
 

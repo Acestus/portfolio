@@ -283,6 +283,21 @@ Detect→ Triage→ Mitigate→ Fix→ Review
 
 - **Blameless review.** After mitigation, feed the fix back into monitoring or the runbook (DNS scavenging alerts, GPO drift detection) so the same class of incident is faster to catch — or doesn't happen — next time.
 
+## Evidence to collect during a failed sign-in or policy incident
+
+```mermaid
+flowchart TD
+  accTitle: Evidence to collect during a failed sign-in or policy incident
+  n0["⚠ Reported symptom"] --> n1
+  n1["🌐 Check DNS and domain access"] --> n2
+  n2["👤 Check identity and policy"] --> n3
+  n3["🗄 Check the affected workload"]
+  classDef process fill:#EDE9FE,stroke:#6D28D9,color:#172B4D,stroke-width:2px
+  classDef result fill:#FEF3C7,stroke:#B45309,color:#172B4D,stroke-width:2px
+  class n0,n1,n2 process
+  class n3 result
+```
+
 ## Related video walkthroughs
 
 - [Troubleshooting a data center migration](/videos/data-center-migration/).

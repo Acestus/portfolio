@@ -30,7 +30,7 @@ flowchart TD
   P[Python app] --> I[Default credential]
   I -->|local| D[Developer login]
   I -->|Azure| M[Managed identity]
-  D --> A[Key Vault authorization]
+  D --> A@{ icon: "azure:key-vault", form: "rounded", label: "Key Vault authorization", pos: "t", h: 32 }
   M --> A
   A --> S[Secret value in memory]
   S --> P

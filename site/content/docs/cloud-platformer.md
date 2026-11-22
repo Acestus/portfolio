@@ -94,3 +94,13 @@ Keyboard support uses browser keydown/keyup listeners and a set-backed atom. Tou
 
 
 That detail matters: it means the platformer is not just visually responsive at the 768px breakpoint; the interaction model is mobile-aware too. Combined with canvas bounds clamping and a lightweight HUD, the game remains readable even when embedded in a portfolio page rather than a dedicated fullscreen shell.
+
+## Map of infrastructure concepts in Cloud Platformer
+
+```mermaid
+mindmap
+  root((🎮 Cloud platformer))
+    ☁ Azure infrastructure
+    🗺 Navigate the level
+    🎯 Learn through play
+```

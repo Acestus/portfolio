@@ -28,7 +28,7 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 flowchart TD
   accTitle: From Azure logs to a Fabric operations question
   A[Azure resource] --> L[Log source]
-  L --> I[Ingestion]
+  L --> I@{ icon: "azure:event-hub", form: "rounded", label: "Event Hubs ingestion", pos: "t", h: 32 }
   I --> F[Fabric transform]
   F --> Q[Operations query]
   Q --> D[Dashboard answer]

@@ -104,3 +104,18 @@ The release record should explain what moved, where it moved, and what qualified
 - [Azure VM Patch Management as Code](/articles/azure-vm-patch-management-as-code/)
 - [Azure Functions Python CI/CD](/articles/azure-functions-python-cicd/)
 - [AI Software Factory: Skills, .NET CLI, and Repository Context](/articles/ai-software-factory/)
+
+## How a Fabric release retains its identity
+
+```mermaid
+flowchart TD
+  accTitle: How a Fabric release retains its identity
+  n0["🗂 Source and item definitions"] --> n1
+  n1["📦 Retain release snapshot"] --> n2
+  n2["🚀 Deploy with environment mappings"] --> n3
+  n3["🔍 Verify the exact attempt"]
+  classDef process fill:#CCFBF1,stroke:#0F766E,color:#172B4D,stroke-width:2px
+  classDef result fill:#FFE4E6,stroke:#BE123C,color:#172B4D,stroke-width:2px
+  class n0,n1,n2 process
+  class n3 result
+```

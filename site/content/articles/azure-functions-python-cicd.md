@@ -119,3 +119,18 @@ workflows. Report performed checks and unverified integration boundaries.
 - [Azure VM Patch Management as Code](/articles/azure-vm-patch-management-as-code/)
 - [Microsoft Fabric CI/CD](/articles/microsoft-fabric-cicd/)
 - [AI Software Factory: Skills, .NET CLI, and Repository Context](/articles/ai-software-factory/)
+
+## How the same package reaches each environment
+
+```mermaid
+flowchart TD
+  accTitle: How the same package reaches each environment
+  n0["📦 Build and identify package"] --> n1
+  n1@{ icon: "azure:functions", form: "rounded", label: "Deploy to Azure Functions", pos: "t", h: 32 } --> n2
+  n2["🧪 Run endpoint acceptance"] --> n3
+  n3["📋 Record promotion evidence"]
+  classDef process fill:#DBEAFE,stroke:#2563EB,color:#172B4D,stroke-width:2px
+  classDef result fill:#FFEDD5,stroke:#C2410C,color:#172B4D,stroke-width:2px
+  class n0,n1,n2 process
+  class n3 result
+```

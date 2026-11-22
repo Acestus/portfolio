@@ -1,7 +1,8 @@
 import { mount } from "pele";
+import { resolveDiagramIcon } from "./diagram-icons.js";
 
 (() => {
-  for (const code of document.querySelectorAll(".docs-prose code.language-mermaid, .prose code.language-mermaid")) {
+  for (const code of document.querySelectorAll("main code.language-mermaid")) {
     const source = code.textContent ?? "";
     const original = code.closest(".highlight") ?? code.closest("pre");
     if (!original) continue;
@@ -10,7 +11,8 @@ import { mount } from "pele";
     const canvas = document.createElement("div");
     canvas.className = "docs-diagram-canvas pele";
     canvas.setAttribute("role", "img");
-    canvas.setAttribute("aria-label", "Diagram");
+    const title = source.match(/^\s*accTitle:\s*(.+)$/m)?.[1];
+    canvas.setAttribute("aria-label", title ?? "Diagram");
     const details = document.createElement("details");
     const summary = document.createElement("summary");
     summary.textContent = "View Mermaid source";
@@ -20,7 +22,7 @@ import { mount } from "pele";
     figure.append(canvas, details);
     original.replaceWith(figure);
     try {
-      mount(canvas, source, { zoom: false });
+      mount(canvas, source, { zoom: false, icons: resolveDiagramIcon });
     } catch {
       figure.replaceWith(original);
     }

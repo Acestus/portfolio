@@ -84,3 +84,18 @@ For example:
 - Reading and writing Markdown notes
 - Managing reminders or calendar events
 - Running local scripts
+
+## How the Mac mini assistant handles a message
+
+```mermaid
+sequenceDiagram
+  accTitle: How the Mac mini assistant handles a message
+  participant P as 📱 Phone
+  participant I as 💬 iMessage
+  participant M as 🖥 Mac mini
+  P->>I: Send a request
+  I->>M: Deliver the message
+  M->>M: Run the local OpenClaw prompt
+  M-->>I: Send the reply
+  I-->>P: Deliver the reply
+```

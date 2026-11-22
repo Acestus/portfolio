@@ -285,3 +285,15 @@ Governance is intentionally non-blocking where possible. Modify-effect policies 
 
 
 > Use placeholders in documentation and examples: subscription scopes such as `Production` or `Connectivity hub`, tenant identifiers from docs.microsoft.com examples, and network examples like `10.0.0.0/16`. Public CAF patterns and Microsoft Learn links can remain exact.
+
+## Inputs to the portfolio cost model
+
+```mermaid
+mindmap
+  root((💰 Cost model))
+    ☁ Azure SKUs
+    📊 Fabric capacity
+    🤖 AI Foundry usage
+    📅 Commitment terms
+    👥 Workforce changes
+```

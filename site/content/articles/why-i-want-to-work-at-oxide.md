@@ -59,6 +59,16 @@ As a historian, I am interested in why organizations choose to build differently
 
 At Oxide, I see an opportunity to bring my experience in Linux, automation, infrastructure, migration, and support to a difficult and tangible engineering effort. I want to help build systems people can understand, operate, and trust—and keep growing alongside the people building them.
 
+## What I bring to engineering at Oxide
+
+```mermaid
+mindmap
+  root((🛠 Systems people can operate and trust))
+    🔍 Evidence-led investigation
+    ⚙ Understandable operations
+    🤝 Support for customers and colleagues
+```
+
 ## Video walkthroughs
 
 [Watch the Making infrastructure more understandable video](/videos/making-infra-more-understandable/).

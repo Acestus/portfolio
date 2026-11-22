@@ -23,3 +23,15 @@ For homeschool families, that means less generic "school management software" an
 - Portfolio-style records of what was learned
 
 That is the kind of small, practical software idea that is worth prototyping quickly.
+
+## What a homeschool dashboard brings together
+
+```mermaid
+mindmap
+  root((🏠 Homeschool dashboard))
+    📋 Lesson progress
+    📚 Living books
+    📖 Reading and narration
+    📅 Weekly rhythm
+    🗂 Learning records
+```

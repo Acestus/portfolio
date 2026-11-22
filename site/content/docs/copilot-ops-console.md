@@ -218,3 +218,19 @@ For operational teams, that means the next generation of Copilot experiences sho
 
 
 > **Build takeaway:** the winning pattern is operator-as-orchestrator. Let Copilot dispatch, summarize, investigate, draft, and reconcile — but keep state in durable systems, keep writes deterministic, and keep humans at approval boundaries.
+
+## Ticket handling from triage to requester update
+
+```mermaid
+flowchart TD
+  accTitle: Ticket handling from triage to requester update
+  n0["🎫 Claim a lane"] --> n1
+  n1["📚 Retrieve known context"] --> n2
+  n2["🔍 Investigate the ticket"] --> n3
+  n3["📝 Record approved work"] --> n4
+  n4["💬 Send the requester update"]
+  classDef process fill:#E0E7FF,stroke:#4338CA,color:#172B4D,stroke-width:2px
+  classDef result fill:#ECFCCB,stroke:#4D7C0F,color:#172B4D,stroke-width:2px
+  class n0,n1,n2,n3 process
+  class n4 result
+```
