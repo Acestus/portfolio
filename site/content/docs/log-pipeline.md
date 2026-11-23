@@ -38,7 +38,7 @@ In this design, services emit JSON to an Azure Event Hub namespace such as `evhn
 
 
 
-The SPA mirrors that model. Its ClojureScript demo renders a live stream, stage cards, and a KQL panel for the path from Clojure Functions to Event Hub, Eventstream, Eventhouse, parsed KQL tables, and Gold Lakehouse outputs.
+The browser demo simulates a pipeline in which .NET Azure Functions publish structured JSON events to Azure Event Hubs. It shows the flow through Fabric Eventstream and Eventhouse, then into parsed KQL tables and Gold Lakehouse outputs.
 
 
 
@@ -250,13 +250,14 @@ The end result is a pipeline that is real-time without being fragile: event-driv
 ```mermaid
 flowchart TD
   accTitle: How Azure events become queryable operational evidence
+  producer@{icon: "azure:functions", form: "rounded", label: ".NET Azure Functions", pos: "t", h: 48} --> n0
   n0@{icon: "azure:event-hub", form: "rounded", label: "Azure Event Hubs", pos: "t", h: 48} --> n1
   n1@{icon: "fabric:eventstream", form: "rounded", label: "Fabric Eventstream", pos: "t", h: 48} --> n2
   n2@{icon: "fabric:eventhouse", form: "rounded", label: "Fabric Eventhouse", pos: "t", h: 48} --> n3
-  n3[" KQL query"]
+  n3["KQL query"]
   classDef process fill:#CCFBF1,stroke:#0F766E,color:#172B4D,stroke-width:2px
   classDef result fill:#FFE4E6,stroke:#BE123C,color:#172B4D,stroke-width:2px
-  class n0,n1,n2 process
+  class producer,n0,n1,n2 process
   class n3 result
 ```
 

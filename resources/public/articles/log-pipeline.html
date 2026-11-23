@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
   <h2>1. Why Event-Driven</h2>
   <p>Polling works until the first real incident. A pull-based job asks every source, on a schedule, whether anything interesting happened. That creates idle reads during quiet periods and delayed visibility during spikes. The better pattern is to make every producer publish a durable event as soon as the fact exists.</p>
   <p>In this design, services emit JSON to an Azure Event Hub namespace such as <code>evhns-secops-prd-...</code>. Event Hub provides the shock absorber: partitioned throughput, consumer groups, retention, replay, and a simple contract that producers can target without knowing where analytics data lands.</p>
-  <p>The SPA mirrors that model. Its ClojureScript demo renders a live stream, stage cards, and a KQL panel for the path from Clojure Functions to Event Hub, Eventstream, Eventhouse, parsed KQL tables, and Gold Lakehouse outputs.</p>
+  <p>The browser demo simulates a pipeline in which .NET Azure Functions publish structured JSON events to Azure Event Hubs. It shows the flow through Fabric Eventstream and Eventhouse, then into parsed KQL tables and Gold Lakehouse outputs.</p>
 
   <div class='callout'>
     <strong>Cost note:</strong> At scale, this is cheaper than pushing every operational event into Log Analytics. Eventhouse is optimized for high-volume time-series queries, raw data can age into OneLake-backed storage, and only security-relevant incidents need SIEM-grade retention or Sentinel correlation.
