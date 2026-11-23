@@ -47,9 +47,15 @@ export function resolveDiagramIcon(name) {
 
   // An icon may occur multiple times in one diagram. Keep its gradient IDs local to that copy.
   const prefix = `diagram-icon-${++nextIconId}-`;
-  return svg
+  // Pele's icon slot sets a stroke for outline icons. Give these SVGs their own defaults.
+  const artwork = svg.slice(svg.indexOf("<svg"))
+    .replace(/^<svg\b[^>]*>/, (tag) => {
+      const sized = tag.replace(/\s+(?:width|height)="[^"]*"/g, "");
+      return sized.slice(0, -1) + ' width="24" height="24">';
+    })
     .replace(/\bid="([^"]+)"/g, (_, id) => `id="${prefix}${id}"`)
     .replace(/url\(#([^)]+)\)/g, (_, id) => `url(#${prefix}${id})`);
+  return `<g color="black" stroke="none">${artwork}</g>`;
 }
 
 // Azure-PlantUML distribution paths, pinned to the version uploaded to Azure Storage.
