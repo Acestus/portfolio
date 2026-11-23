@@ -55,7 +55,7 @@ var what_if_output = [
     detail: "Update appSettings",
   },
   {
-    resource: "st-coresec-dev-usw2-001",
+    resource: "stcoresecdevusw2001",
     type: "Microsoft.Storage/storageAccounts",
     change: "no-change",
     detail: "",
@@ -210,7 +210,14 @@ var naming_panel = function () {
     core.create_el(
       "pre",
       { class: "kql-code" },
-      `${"{type}-{project}-{env}-{region}-{instance}\n"}${"│       │        │      │        │\n"}${"│       │        │      │        └─ 001, 002, ctl, dat\n"}${"│       │        │      └─ usw2 (West US 2)\n"}${"│       │        └─ dev, stg, prd\n"}${"│       └─ coresec, coredata, coremgmt\n"}${"└─ func, st, kv, umi, evh, rg"}`,
+      `${"{type}-{project}-{env}-{region}-{instance}\n"}${"│       │        │      │        │\n"}${"│       │        │      │        └─ 001, 002, ctl, dat\n"}${"│       │        │      └─ usw2 (West US 2)\n"}${"│       │        └─ dev, stg, prd\n"}${"│       └─ coresec, coredata, coremgmt\n"}${"└─ func, kv, umi, evh, rg"}`,
+    ),
+  );
+  panel_1.appendChild(
+    core.create_el(
+      "p",
+      {},
+      "Storage accounts join the parts without dashes: stcoresecdevusw2001. Use 3–24 lowercase letters or digits.",
     ),
   );
   return panel_1;

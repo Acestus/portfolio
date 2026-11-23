@@ -108,13 +108,13 @@
     "thumbnail": "/images/portfolio/the-agentic-web.svg"
   },
   {
-    "title": "Clojure REPL",
+    "title": ".NET Storage Naming Lab",
     "url": "/repl.html",
-    "category": "Functional programming",
-    "description": "Experiment with ClojureScript in the browser.",
+    "category": "Azure governance",
+    "description": "Run a C# file to check Azure storage account names locally.",
     "style": "green",
-    "symbol": "λ",
-    "thumbnail": "/images/portfolio/clojure-repl.svg"
+    "symbol": "C#",
+    "thumbnail": "/images/portfolio/dotnet-storage-naming.svg"
   },
   {
     "title": "Particle Storm",

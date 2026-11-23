@@ -16,6 +16,5 @@
   "m365": "web/entries/m365.js",
   "workflow": "web/entries/workflow.js",
   "copilotops": "web/entries/copilotops.js",
-  "fabriccap": "web/entries/fabriccap.js",
-  "repl": "web/vendor/repl.js"
+  "fabriccap": "web/entries/fabriccap.js"
 }

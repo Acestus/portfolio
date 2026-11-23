@@ -2,7 +2,7 @@
 
 Portfolio owns the canonical Hugo source for acestus.com. `site/content` holds authored Markdown, `site/layouts` the templates, and `site/static` static assets. Hugo mounts generated assets from `.build`; `public` is disposable output.
 
-Bun compiles `web/entries` and `web/modules/portfolio` into the existing demo URLs. `web/shell` contains the site navigation scripts. The browser Clojure REPL remains a reviewed, hash-checked browser asset; it needs no Clojure or JVM build tool. Original Clojure sources remain as historical references, not build inputs.
+Bun compiles `web/entries` and `web/modules/portfolio` into the existing demo URLs. `web/shell` contains the site navigation scripts. The .NET Storage Naming Lab ships a C# source file for local execution. Original Clojure sources remain as historical references, not build inputs.
 
 `tools/Portfolio.Build` orchestrates Bun, Hugo, resume PDF/Word-compatible downloads, output verification, and release manifests. `tests/Portfolio.Tests` checks output and browser behavior. Python release scripts inspect untrusted retained archives before Azure authentication. The independently versioned acceptance contract remains pinned in release metadata.
 
