@@ -36,7 +36,7 @@ flowchart TD
   S -->|extract| L
 ```
 
-Use the names registered in `web/shell/diagram-icons.js`. Published pages load Azure-PlantUML SVGs from the matching environment’s Azure Storage website endpoint. The bundled SVGs render while the hosted icons load and remain available if storage is unreachable. Update the pinned storage assets and the registry together when adding an Azure icon. Add icons from the [Microsoft Azure](https://learn.microsoft.com/en-us/azure/architecture/icons/) and [Microsoft Fabric](https://learn.microsoft.com/en-us/fabric/fundamentals/icons) collections when needed. Preserve product icon artwork and colors. Apply diagram palette colors to boxes and arrows. Use plain text for everyday concepts without a product icon.
+Use the names registered in `web/shell/diagram-icons.js`. Published pages load Azure-PlantUML SVGs from the dedicated Azure Storage `assets` container in `rg-assets-prd`. The bundled SVGs render while the hosted icons load and remain available if storage is unreachable. Update the pinned storage assets and the registry together when adding an Azure icon. Add icons from the [Microsoft Azure](https://learn.microsoft.com/en-us/azure/architecture/icons/) and [Microsoft Fabric](https://learn.microsoft.com/en-us/fabric/fundamentals/icons) collections when needed. Preserve product icon artwork and colors. Apply diagram palette colors to boxes and arrows. Use plain text for everyday concepts without a product icon.
 
 ## Medallion flows
 

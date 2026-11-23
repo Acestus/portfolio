@@ -71,29 +71,9 @@ const azureIconPaths = new Map([
 ]);
 
 const assetsVersion = "f360835f8794e18bed6520bb2eea56b482816d95";
-const siteStorageAccounts = new Map([
-  ["orange-tree-06ac39010", "stvideosdevscus001"],
-  ["ambitious-field-01ba59010", "stvideosstgscus001"],
-  ["nice-river-0bd934610", "stvideosprdscus001"],
-]);
-
-function getAzureIconBase(hostname) {
-  if (hostname === "acestus.com" || hostname === "www.acestus.com") {
-    return `https://stvideosprdscus001.z21.web.core.windows.net/assets/azure-plantuml/${assetsVersion}/`;
-  }
-  if (!hostname.endsWith(".azurestaticapps.net")) return undefined;
-  const site = hostname.split(".")[0];
-  for (const [prefix, account] of siteStorageAccounts) {
-    if (site === prefix || site.startsWith(`${prefix}-`)) {
-      return `https://${account}.z21.web.core.windows.net/assets/azure-plantuml/${assetsVersion}/`;
-    }
-  }
-}
+const azureIconBase = `https://stassetsprdscus001.blob.core.windows.net/assets/azure-plantuml/${assetsVersion}/`;
 
 export function loadHostedDiagramIcons(canvas) {
-  const base = getAzureIconBase(location.hostname);
-  if (!base) return;
-
   for (const icon of canvas.querySelectorAll("svg.pele-icon[data-icon]")) {
     const path = azureIconPaths.get(icon.getAttribute("data-icon"));
     if (!path) continue;
@@ -106,7 +86,7 @@ export function loadHostedDiagramIcons(canvas) {
       }
     }, { once: true });
     image.addEventListener("error", () => image.remove(), { once: true });
-    image.setAttribute("href", base + path);
+    image.setAttribute("href", azureIconBase + path);
     icon.append(image);
   }
 }
