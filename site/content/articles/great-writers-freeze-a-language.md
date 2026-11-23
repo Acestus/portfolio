@@ -27,7 +27,7 @@ In short, literature doesn’t just reflect culture—it shapes and reinforces i
 
 ```mermaid
 mindmap
-  root((📚 Enduring works))
+  root((Enduring works))
     Shakespeare and English
     Dante and Tuscan Italian
     Cervantes and Spanish

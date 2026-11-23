@@ -29,8 +29,8 @@ Finally, the speaker made a point I want to work on: “If Jesus matters to you,
 
 ```mermaid
 mindmap
-  root((💬 Words that show love))
-    👦 Tell sons you are proud of them
-    👧 Affirm daughters for who they are
-    ✝ Speak openly about Jesus
+  root((Words that show love))
+     Tell sons you are proud of them
+     Affirm daughters for who they are
+     Speak openly about Jesus
 ```

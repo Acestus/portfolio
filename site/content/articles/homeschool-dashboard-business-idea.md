@@ -28,10 +28,10 @@ That is the kind of small, practical software idea that is worth prototyping qui
 
 ```mermaid
 mindmap
-  root((🏠 Homeschool dashboard))
-    📋 Lesson progress
-    📚 Living books
-    📖 Reading and narration
-    📅 Weekly rhythm
-    🗂 Learning records
+  root((Homeschool dashboard))
+     Lesson progress
+     Living books
+     Reading and narration
+     Weekly rhythm
+     Learning records
 ```

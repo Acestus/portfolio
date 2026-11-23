@@ -249,10 +249,10 @@ The practical operating loop is: observe seven days of Capacity Metrics, decompo
 ```mermaid
 flowchart TD
   accTitle: How workload evidence informs Fabric capacity sizing
-  n0["📊 Estimate workload and concurrency"] --> n1
-  n1["⚠ Check throttling risk"] --> n2
-  n2["🛠 Adjust workload or capacity"] --> n3
-  n3["✓ Recheck cost and headroom"]
+  n0[" Estimate workload and concurrency"] --> n1
+  n1[" Check throttling risk"] --> n2
+  n2[" Adjust workload or capacity"] --> n3
+  n3[" Recheck cost and headroom"]
   classDef process fill:#DBEAFE,stroke:#2563EB,color:#172B4D,stroke-width:2px
   classDef result fill:#FFEDD5,stroke:#C2410C,color:#172B4D,stroke-width:2px
   class n0,n1,n2 process

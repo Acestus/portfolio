@@ -228,10 +228,10 @@ That is the Build 2026 story in one sentence: AI becomes safer when its working 
 ```mermaid
 flowchart TD
   accTitle: How a file-driven ticket update reaches an external system
-  n0["🎫 Select ticket"] --> n1
-  n1["📝 Update its Markdown record"] --> n2
-  n2["👤 Review and approve"] --> n3
-  n3["🔁 Reconcile through CI"]
+  n0[" Select ticket"] --> n1
+  n1[" Update its Markdown record"] --> n2
+  n2[" Review and approve"] --> n3
+  n3[" Reconcile through CI"]
   classDef process fill:#E0E7FF,stroke:#4338CA,color:#172B4D,stroke-width:2px
   classDef result fill:#ECFCCB,stroke:#4D7C0F,color:#172B4D,stroke-width:2px
   class n0,n1,n2 process

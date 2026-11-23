@@ -52,7 +52,7 @@ So who's still reading the newspaper?
 
 ```mermaid
 mindmap
-  root((🔍 What is the source’s relationship to the event?))
-    📜 Primary source firsthand evidence
-    📚 Secondary source interpretation and analysis
+  root((What is the source’s relationship to the event?))
+     Primary source firsthand evidence
+     Secondary source interpretation and analysis
 ```

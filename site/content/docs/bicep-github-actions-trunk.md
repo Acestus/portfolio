@@ -40,11 +40,11 @@ The portfolio's post-deployment job checks the exact published guide and require
 ```mermaid
 flowchart TD
   accTitle: From Bicep pull request to verified delivery
-  n0["✏ Change Bicep"] --> n1
-  n1["🔍 Qualify the pull request"] --> n2
-  n2["🔀 Merge to main"] --> n3
-  n3["🚀 Deploy the retained release"] --> n4
-  n4["✓ Verify the live result"]
+  n0[" Change Bicep"] --> n1
+  n1[" Qualify the pull request"] --> n2
+  n2[" Merge to main"] --> n3
+  n3[" Deploy the retained release"] --> n4
+  n4[" Verify the live result"]
   classDef process fill:#E0E7FF,stroke:#4338CA,color:#172B4D,stroke-width:2px
   classDef result fill:#ECFCCB,stroke:#4D7C0F,color:#172B4D,stroke-width:2px
   class n0,n1,n2,n3 process

@@ -15,6 +15,7 @@ import cosmosDb from "./diagram-icons/cosmosDb.svg" with { type: "text" };
 import loadBalancer from "./diagram-icons/loadBalancer.svg" with { type: "text" };
 import activeDirectory from "./diagram-icons/activeDirectory.svg" with { type: "text" };
 import monitor from "./diagram-icons/monitor.svg" with { type: "text" };
+import costManagement from "./diagram-icons/costManagement.svg" with { type: "text" };
 import virtualNetwork from "./diagram-icons/virtualNetwork.svg" with { type: "text" };
 
 const icons = new Map([
@@ -25,6 +26,7 @@ const icons = new Map([
   ["azure:load-balancer", loadBalancer],
   ["azure:active-directory", activeDirectory],
   ["azure:monitor", monitor],
+  ["azure:cost-management", costManagement],
   ["azure:virtual-network", virtualNetwork],
   ["azure:event-hub", eventHub],
   ["azure:functions", functions],

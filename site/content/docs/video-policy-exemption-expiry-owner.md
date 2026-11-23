@@ -31,7 +31,7 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 ```mermaid
 flowchart TD
   accTitle: Azure Policy exemptions with an expiry and owner
-  F[Policy finding] --> R[Risk and rationale]
+  F@{ icon: "azure:policy", form: "rounded", label: "Azure Policy finding", pos: "t", h: 32 } --> R[Risk and rationale]
   R --> O[Named owner]
   O --> X[Expiry and review date]
   X --> E[Temporary exemption]

@@ -23,10 +23,10 @@ That's why I'm such a fan. It's simple, it works, and it lets me spend more time
 ```mermaid
 flowchart TD
   accTitle: A small change reaches main while unfinished behavior stays gated
-  n0["✏ Make a small change"] --> n1
-  n1["✓ Run checks"] --> n2
-  n2["🔀 Merge to main"] --> n3
-  n3["🚩 Gate unfinished behavior"]
+  n0[" Make a small change"] --> n1
+  n1[" Run checks"] --> n2
+  n2[" Merge to main"] --> n3
+  n3[" Gate unfinished behavior"]
   classDef process fill:#EDE9FE,stroke:#6D28D9,color:#172B4D,stroke-width:2px
   classDef result fill:#FEF3C7,stroke:#B45309,color:#172B4D,stroke-width:2px
   class n0,n1,n2 process

@@ -144,10 +144,10 @@ That rule turns a collection of YAML files into a release process. GitHub Action
 ```mermaid
 flowchart TD
   accTitle: How release evidence moves with the artifact
-  n0["📦 Retain qualified artifact"] --> n1
-  n1["🚀 Development"] --> n2
-  n2["🧪 Staging"] --> n3
-  n3["🌐 Production"]
+  n0[" Retain qualified artifact"] --> n1
+  n1[" Development"] --> n2
+  n2[" Staging"] --> n3
+  n3[" Production"]
   classDef process fill:#EDE9FE,stroke:#6D28D9,color:#172B4D,stroke-width:2px
   classDef result fill:#FEF3C7,stroke:#B45309,color:#172B4D,stroke-width:2px
   class n0,n1,n2 process
