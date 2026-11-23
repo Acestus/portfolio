@@ -215,7 +215,7 @@ var hub_content = function () {
     core.create_el(
       "p",
       { class: "hub-intro" },
-      "Interactive demos showcasing Azure, Fabric, Clojure, and cloud platform engineering.",
+      "Interactive demos showcasing Azure, Fabric, .NET, and cloud platform engineering.",
     ),
   );
   for (let G__2 of squint_core.iterable(apps)) {

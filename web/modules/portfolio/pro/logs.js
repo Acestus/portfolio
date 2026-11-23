@@ -4,7 +4,12 @@ import * as portfolio_DOT_core from "./../core.js";
 import * as ui from "./../components.js";
 import * as portfolio_DOT_components from "./../components.js";
 var pipeline_nodes = [
-  { id: "apps", label: "Clojure Functions", color: "#FFB6C1", icon: "λ" },
+  {
+    id: "apps",
+    label: ".NET Azure Functions",
+    color: "#FFB6C1",
+    iconUrl: "https://stassetsprdscus001.blob.core.windows.net/assets/azure-plantuml/f360835f8794e18bed6520bb2eea56b482816d95/Compute/AzureFunction.svg",
+  },
   { id: "eventhub", label: "Event Hub", color: "#ADD8E6", icon: "📡" },
   { id: "stream", label: "Eventstream", color: "#E0FFFF", icon: "🌊" },
   { id: "raw", label: "transaction_raw", color: "#F5DEB3", icon: "📥" },
@@ -172,11 +177,15 @@ var flow_diagram = function () {
       core.create_el(
         "div",
         { class: "stage-header" },
-        core.create_el(
-          "span",
-          { class: "stage-icon" },
-          squint_core.get(node_8, "icon"),
-        ),
+        node_8.iconUrl
+          ? core.create_el("img", {
+              class: "stage-icon",
+              src: node_8.iconUrl,
+              width: 24,
+              height: 24,
+              alt: "",
+            })
+          : core.create_el("span", { class: "stage-icon" }, node_8.icon),
         core.create_el(
           "span",
           { class: "stage-label" },
@@ -186,7 +195,7 @@ var flow_diagram = function () {
     );
     card_9.addEventListener("click", function (_) {
       return core.toast_BANG_(
-        `${squint_core.get(node_8, "icon") ?? ""}${" "}${squint_core.get(node_8, "label") ?? ""}${" — stage "}${i_7 + 1}${" of "}${squint_core.count(pipeline_nodes) ?? ""}`,
+        `${squint_core.get(node_8, "label") ?? ""}${" — stage "}${i_7 + 1}${" of "}${squint_core.count(pipeline_nodes) ?? ""}`,
       );
     });
     flow_1.appendChild(card_9);
@@ -206,7 +215,7 @@ var logs_content = function () {
     core.create_el(
       "p",
       { class: "dashboard-subtitle" },
-      "Clojure Functions → Event Hub → Eventstream → Eventhouse (KQL) → Gold Lakehouse",
+      ".NET Azure Functions → Event Hub → Eventstream → Eventhouse (KQL) → Gold Lakehouse",
     ),
   );
   const metrics_2 = core.create_el("div", { class: "metrics-row" });
