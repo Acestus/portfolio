@@ -55,4 +55,4 @@ flowchart TD
 
 ## Demo video
 
-[Watch the Fabric medallion pipeline walkthrough](/videos/fabric-medallion-pipeline/).
+{{< video-link "fabric-medallion-pipeline" >}}

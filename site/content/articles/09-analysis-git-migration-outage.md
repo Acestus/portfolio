@@ -43,4 +43,4 @@ flowchart TD
 
 ## Video walkthrough
 
-[Watch the Analysis sample: Investigating a GitHub sync outage video](/videos/analysis-sample/).
+{{< video-link "analysis-sample" >}}

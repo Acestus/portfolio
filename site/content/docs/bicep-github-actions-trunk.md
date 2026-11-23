@@ -10,7 +10,7 @@ The infrastructure pipeline already uses Bicep and GitHub Actions. This guide su
 
 ## Demo video
 
-[![Watch the Bicep and GitHub Actions demo](/images/cicd-with-iac-thumbnail.svg)](/videos/cicd-with-iac/)
+{{< video-link "cicd-with-iac" >}}
 
 Watch the [7-minute end-to-end walkthrough](/videos/cicd-with-iac/) of the trunk pull request, automated checks, and deployment through development, staging, and production.
 

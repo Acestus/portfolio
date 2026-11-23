@@ -49,4 +49,4 @@ flowchart TD
 
 ## Demo video
 
-[Watch the secure VM patching workflow](/videos/virtual-machine-patching/).
+{{< video-link "virtual-machine-patching" >}}

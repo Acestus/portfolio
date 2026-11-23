@@ -37,4 +37,4 @@ flowchart TD
 
 ## Video walkthrough
 
-[Watch the Who gets left out when we build with AI video](/videos/the-problem-with-ai/).
+{{< video-link "the-problem-with-ai" >}}

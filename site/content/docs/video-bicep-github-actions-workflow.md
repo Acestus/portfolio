@@ -48,4 +48,4 @@ flowchart TD
 
 ## Demo video
 
-[Watch the IaC deployment walkthrough](/videos/iac-deployment/).
+{{< video-link "iac-deployment" >}}

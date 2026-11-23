@@ -74,4 +74,4 @@ Adapted from [Valentina Jemuović’s acceptance test architecture in Optivem Jo
 
 ## Demo video
 
-[Watch the automated acceptance tests walkthrough](/videos/automated-acceptance-tests-web/).
+{{< video-link "automated-acceptance-tests-web" >}}

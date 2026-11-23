@@ -260,6 +260,8 @@ flowchart TD
 
 ## Demo videos
 
-- [Agent CLI vs. MCP walkthrough](/videos/agentic-cli-vs-mcp/).
-- [Who gets left out when we build with AI](/videos/the-problem-with-ai/).
-- [Writing that represents how I think](/videos/writing-samples/).
+{{< video-link "agentic-cli-vs-mcp" >}}
+
+{{< video-link "the-problem-with-ai" >}}
+
+{{< video-link "writing-samples" >}}

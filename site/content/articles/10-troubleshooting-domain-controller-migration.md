@@ -43,4 +43,4 @@ flowchart TD
 
 ## Video walkthrough
 
-[Watch the Troubleshooting a data center migration video](/videos/data-center-migration/).
+{{< video-link "data-center-migration" >}}

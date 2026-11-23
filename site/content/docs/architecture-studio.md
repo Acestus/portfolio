@@ -266,5 +266,6 @@ flowchart TD
 
 ## Related video walkthroughs
 
-- [Making sense of information](/videos/making-sense-of-information/).
-- [Learning to think like a software engineer](/videos/thinking-like-a-software-engineer/).
+{{< video-link "making-sense-of-information" >}}
+
+{{< video-link "thinking-like-a-software-engineer" >}}

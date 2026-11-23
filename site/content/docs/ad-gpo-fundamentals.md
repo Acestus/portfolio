@@ -300,4 +300,4 @@ flowchart TD
 
 ## Related video walkthroughs
 
-- [Troubleshooting a data center migration](/videos/data-center-migration/).
+{{< video-link "data-center-migration" >}}

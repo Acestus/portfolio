@@ -240,5 +240,6 @@ flowchart TD
 
 ## Related video walkthroughs
 
-- [Taking responsibility for the outcome](/videos/taking-responsibility-for-the-outcome/).
-- [Doing work that uses my abilities](/videos/unhappiest-at-work/).
+{{< video-link "taking-responsibility-for-the-outcome" >}}
+
+{{< video-link "unhappiest-at-work" >}}
