@@ -46,9 +46,9 @@ The part of the role that most motivates me is its focus on helping every team w
 
 ```mermaid
 mindmap
-  root((🛠 Internal operations))
-    ⚙ Automation
-    📊 Data and evidence
-    🔐 Security and reliability
-    📚 Documentation
+  root((Internal operations))
+     Automation
+     Data and evidence
+     Security and reliability
+     Documentation
 ```

@@ -43,10 +43,10 @@ That’s what makes Star Trek’s world feel richer, and what’s missing when m
 
 ```mermaid
 mindmap
-  root((🖖 Technology and character))
-    💬 Troi connects with people
-    📡 Picard and Riker command
-    🛡 Worf reads tactical information
-    🖥 Data works with systems
-    👁 Geordi gains another way to see
+  root((Technology and character))
+     Troi connects with people
+     Picard and Riker command
+     Worf reads tactical information
+     Data works with systems
+     Geordi gains another way to see
 ```

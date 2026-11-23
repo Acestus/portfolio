@@ -98,10 +98,10 @@ The canvas choice also keeps latency low. Labels are drawn directly inside each 
 ```mermaid
 flowchart TD
   accTitle: How a frame updates the game
-  n0["🎮 Read paddle input"] --> n1
-  n1["⚙ Update ball movement"] --> n2
-  n2["🧱 Resolve collisions"] --> n3
-  n3["🎨 Draw the next frame"]
+  n0[" Read paddle input"] --> n1
+  n1[" Update ball movement"] --> n2
+  n2[" Resolve collisions"] --> n3
+  n3[" Draw the next frame"]
   classDef process fill:#CCFBF1,stroke:#0F766E,color:#172B4D,stroke-width:2px
   classDef result fill:#FFE4E6,stroke:#BE123C,color:#172B4D,stroke-width:2px
   class n0,n1,n2 process

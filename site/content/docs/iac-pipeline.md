@@ -246,10 +246,10 @@ The pattern keeps local modules rare. If a resource type exists in AVM, use the 
 ```mermaid
 flowchart TD
   accTitle: Bicep release path with federated identity
-  n0["🧱 Compose Bicep and verified modules"] --> n1
-  n1["🔍 Review and validate change"] --> n2
-  n2["🔐 Authenticate through OIDC"] --> n3
-  n3["🚀 Apply deployment stack"]
+  n0[" Compose Bicep and verified modules"] --> n1
+  n1[" Review and validate change"] --> n2
+  n2[" Authenticate through OIDC"] --> n3
+  n3[" Apply deployment stack"]
   classDef process fill:#DBEAFE,stroke:#2563EB,color:#172B4D,stroke-width:2px
   classDef result fill:#FFEDD5,stroke:#C2410C,color:#172B4D,stroke-width:2px
   class n0,n1,n2 process

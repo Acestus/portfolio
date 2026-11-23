@@ -10,7 +10,7 @@ Put diagrams in fenced `mermaid` blocks in the owning Markdown file under `site/
 - Use `flowchart TD` for pipelines, branching decisions, and operational workflows. Use `sequenceDiagram` for message exchanges, `stateDiagram-v2` for state transitions, and `mindmap` for related ideas without an implied order. Keep a compact horizontal diagram when it serves a comparison or waterfall.
 - Keep node names short, edge labels specific, and branch conditions visible. Add a descriptive `accTitle` to flowcharts. Describe the core result in the adjacent prose so meaning does not depend on the diagram or its colors.
 - Use two complementary hues for topic flowcharts, with pale fills, dark text, and a 2 px colored border. Group nodes by their function, such as implementation versus verification. Choose distinct pairings across neighboring guides. Reserve Bronze, Silver, and Gold colors for actual medallion layers.
-- Prefer familiar icons in key labels, and keep the text understandable without them. Keep service names in the labels. Use the existing Pele CSS theme for sequence diagrams and general typography. Check the pinned Pele renderer before relying on Mermaid extensions, icons, or initialization directives.
+- Use Azure or Fabric service SVGs through the local icon registry for real services. Do not use emoji as diagram icons. For concepts without an appropriate service icon, use plain text nodes. Keep service names in labels. Use the existing Pele CSS theme for sequence diagrams and general typography. Check the pinned Pele renderer before relying on Mermaid extensions, icons, or initialization directives.
 
 ```mermaid
 flowchart TD

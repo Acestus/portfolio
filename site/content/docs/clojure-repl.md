@@ -103,8 +103,8 @@ This playground feels like a love letter because it is one. It turns a browser t
 flowchart TD
   accTitle: What happens when an expression is evaluated
   n0["⌨ Enter ClojureScript"] --> n1
-  n1["⚙ Evaluate in SCI"] --> n2
-  n2["📋 Show value or error"]
+  n1[" Evaluate in SCI"] --> n2
+  n2[" Show value or error"]
   classDef process fill:#DBEAFE,stroke:#2563EB,color:#172B4D,stroke-width:2px
   classDef result fill:#FFEDD5,stroke:#C2410C,color:#172B4D,stroke-width:2px
   class n0,n1 process

@@ -207,9 +207,9 @@ The SPA references agents such as Confluence search, project planning, and Teams
 ```mermaid
 flowchart TD
   accTitle: How access changes over an employee lifecycle
-  n0["👋 Joiner access"] --> n1
-  n1["🔄 Mover entitlement review"] --> n2
-  n2["🚪 Leaver access removal"]
+  n0[" Joiner access"] --> n1
+  n1[" Mover entitlement review"] --> n2
+  n2[" Leaver access removal"]
   classDef process fill:#E0E7FF,stroke:#4338CA,color:#172B4D,stroke-width:2px
   classDef result fill:#ECFCCB,stroke:#4D7C0F,color:#172B4D,stroke-width:2px
   class n0,n1 process

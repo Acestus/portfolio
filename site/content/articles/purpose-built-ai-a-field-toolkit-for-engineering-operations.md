@@ -44,10 +44,10 @@ Every ticket carries an agentic score (1–5) set at intake — a pre-classifica
 ```mermaid
 flowchart TD
   accTitle: How approved work reaches ticket systems
-  n0["🧩 Select a narrow skill"] --> n1
-  n1["📝 Record proposed work in Markdown"] --> n2
-  n2["👤 Human reviews the file"] --> n3
-  n3["🔁 CI syncs approved changes"]
+  n0[" Select a narrow skill"] --> n1
+  n1[" Record proposed work in Markdown"] --> n2
+  n2[" Human reviews the file"] --> n3
+  n3[" CI syncs approved changes"]
   classDef process fill:#EDE9FE,stroke:#6D28D9,color:#172B4D,stroke-width:2px
   classDef result fill:#FEF3C7,stroke:#B45309,color:#172B4D,stroke-width:2px
   class n0,n1,n2 process

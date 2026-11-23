@@ -99,8 +99,8 @@ That detail matters: it means the platformer is not just visually responsive at 
 
 ```mermaid
 mindmap
-  root((🎮 Cloud platformer))
-    ☁ Azure infrastructure
-    🗺 Navigate the level
-    🎯 Learn through play
+  root((Cloud platformer))
+     Azure infrastructure
+     Navigate the level
+     Learn through play
 ```

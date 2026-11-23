@@ -110,10 +110,10 @@ The release record should explain what moved, where it moved, and what qualified
 ```mermaid
 flowchart TD
   accTitle: How a Fabric release retains its identity
-  n0["🗂 Source and item definitions"] --> n1
-  n1["📦 Retain release snapshot"] --> n2
-  n2["🚀 Deploy with environment mappings"] --> n3
-  n3["🔍 Verify the exact attempt"]
+  n0[" Source and item definitions"] --> n1
+  n1[" Retain release snapshot"] --> n2
+  n2[" Deploy with environment mappings"] --> n3
+  n3[" Verify the exact attempt"]
   classDef process fill:#CCFBF1,stroke:#0F766E,color:#172B4D,stroke-width:2px
   classDef result fill:#FFE4E6,stroke:#BE123C,color:#172B4D,stroke-width:2px
   class n0,n1,n2 process

@@ -290,10 +290,10 @@ Governance is intentionally non-blocking where possible. Modify-effect policies 
 
 ```mermaid
 mindmap
-  root((💰 Cost model))
-    ☁ Azure SKUs
-    📊 Fabric capacity
-    🤖 AI Foundry usage
-    📅 Commitment terms
-    👥 Workforce changes
+  root((Cost model))
+     Azure SKUs
+     Fabric capacity
+     AI Foundry usage
+     Commitment terms
+     Workforce changes
 ```

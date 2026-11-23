@@ -254,10 +254,10 @@ The SPA makes that pattern tangible. ClojureScript data renders the interactive 
 ```mermaid
 flowchart TD
   accTitle: How an architecture decision stays current
-  n0["📝 Record the decision in an ADR"] --> n1
-  n1["🗺 Update the architecture diagram"] --> n2
-  n2["👥 Review the change"] --> n3
-  n3["📚 Publish and maintain"]
+  n0[" Record the decision in an ADR"] --> n1
+  n1[" Update the architecture diagram"] --> n2
+  n2[" Review the change"] --> n3
+  n3[" Publish and maintain"]
   classDef process fill:#CCFBF1,stroke:#0F766E,color:#172B4D,stroke-width:2px
   classDef result fill:#FFE4E6,stroke:#BE123C,color:#172B4D,stroke-width:2px
   class n0,n1,n2 process

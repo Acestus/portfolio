@@ -71,10 +71,10 @@ For a machine-readable stream of selected updates and digests from some of these
 
 ```mermaid
 mindmap
-  root((📚 Sources I follow))
-    ☁ Azure and platforms
-    🛠 Software and architecture
-    🤖 AI and research
-    👥 Careers and leadership
-    🔐 Security and operations
+  root((Sources I follow))
+     Azure and platforms
+     Software and architecture
+     AI and research
+     Careers and leadership
+     Security and operations
 ```

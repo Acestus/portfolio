@@ -22,8 +22,8 @@ More to come.
 
 ```mermaid
 mindmap
-  root((✍ Cloud engineering field notes))
-    ☁ Azure architecture
-    🛠 SRE and reliability
-    🤖 AI engineering
+  root((Cloud engineering field notes))
+     Azure architecture
+     SRE and reliability
+     AI engineering
 ```

@@ -77,10 +77,10 @@ Choplifter was designed by Dan Gorlin and published by Broderbund Software in 19
 ```mermaid
 flowchart TD
   accTitle: Rescue loop from pickup to return
-  n0["🚁 Fly to the pickup"] --> n1
-  n1["🛬 Land and board hostages"] --> n2
-  n2["🏠 Return to base"] --> n3
-  n3["✓ Unload safely"]
+  n0[" Fly to the pickup"] --> n1
+  n1[" Land and board hostages"] --> n2
+  n2[" Return to base"] --> n3
+  n3[" Unload safely"]
   classDef process fill:#EDE9FE,stroke:#6D28D9,color:#172B4D,stroke-width:2px
   classDef result fill:#FEF3C7,stroke:#B45309,color:#172B4D,stroke-width:2px
   class n0,n1,n2 process

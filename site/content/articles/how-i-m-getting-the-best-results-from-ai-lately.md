@@ -21,11 +21,11 @@ That workflow works because it treats AI like a partner for better thinking, not
 ```mermaid
 flowchart TD
   accTitle: From initial intent to an informed decision
-  n0["💬 State intent"] --> n1
-  n1["❔ Interview for clarity"] --> n2
-  n2["📚 Ground in prior documentation"] --> n3
-  n3["🔍 Identify gaps"] --> n4
-  n4["💡 Choose suggestions"] --> n5
+  n0[" State intent"] --> n1
+  n1[" Interview for clarity"] --> n2
+  n2[" Ground in prior documentation"] --> n3
+  n3[" Identify gaps"] --> n4
+  n4[" Choose suggestions"] --> n5
   n5["▶ Act"]
   classDef process fill:#E0E7FF,stroke:#4338CA,color:#172B4D,stroke-width:2px
   classDef result fill:#ECFCCB,stroke:#4D7C0F,color:#172B4D,stroke-width:2px

@@ -98,8 +98,8 @@ Technically, the SPA mirrors that discipline. Threats are data, not hard-coded r
 ```mermaid
 stateDiagram-v2
   accTitle: What happens when a shot hits an invader
-  state "⚠ Active threat" as Active
-  state "✓ Cleared threat" as Cleared
+  state " Active threat" as Active
+  state " Cleared threat" as Cleared
   [*] --> Active: Spawn invader
   Active --> Cleared: Bullet hits and score increases
 ```

@@ -212,12 +212,12 @@ This is the operational lesson behind the SPA. The game rewards correct matches 
 
 ```mermaid
 mindmap
-  root((🏷 CAF name))
-    📦 Resource type
-    🛠 Workload
-    🧪 Environment
-    🌐 Region
-    #️⃣ Instance
+  root((CAF name))
+     Resource type
+     Workload
+     Environment
+     Region
+    # Instance
 ```
 
 ## Demo video

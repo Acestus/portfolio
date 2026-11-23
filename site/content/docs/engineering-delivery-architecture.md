@@ -963,11 +963,11 @@ Tags: agentic-development, atdd, github-actions, dotnet, bicep, infrastructure
 
 ```mermaid
 mindmap
-  root((🏛 Shared delivery model))
-    📦 Independent repositories
-    ⚙ Shared CI
-    🔐 Federated identity
-    🧪 Independently governed acceptance
+  root((Shared delivery model))
+     Independent repositories
+     Shared CI
+     Federated identity
+     Independently governed acceptance
 ```
 
 ## Related video walkthroughs

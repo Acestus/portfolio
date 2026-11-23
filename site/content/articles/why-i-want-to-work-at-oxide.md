@@ -63,10 +63,10 @@ At Oxide, I see an opportunity to bring my experience in Linux, automation, infr
 
 ```mermaid
 mindmap
-  root((🛠 Systems people can operate and trust))
-    🔍 Evidence-led investigation
-    ⚙ Understandable operations
-    🤝 Support for customers and colleagues
+  root((Systems people can operate and trust))
+     Evidence-led investigation
+     Understandable operations
+     Support for customers and colleagues
 ```
 
 ## Video walkthroughs
