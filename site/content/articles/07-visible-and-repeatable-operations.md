@@ -40,4 +40,4 @@ flowchart TD
 
 ## Video walkthrough
 
-[Watch the Making operations visible and repeatable video](/videos/making-operations-visible-and-repeatable/).
+{{< video-link "making-operations-visible-and-repeatable" >}}

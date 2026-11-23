@@ -308,4 +308,4 @@ flowchart TD
 
 ## Related video walkthroughs
 
-- [A few examples of my work](/videos/work-samples/).
+{{< video-link "work-samples" >}}

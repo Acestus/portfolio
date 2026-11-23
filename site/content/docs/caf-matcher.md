@@ -222,4 +222,4 @@ mindmap
 
 ## Demo video
 
-[Watch the CAF Naming walkthrough](/videos/caf-naming/).
+{{< video-link "caf-naming" >}}

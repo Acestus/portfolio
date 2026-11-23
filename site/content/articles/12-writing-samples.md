@@ -33,4 +33,4 @@ flowchart TD
 
 ## Video walkthrough
 
-[Watch the Writing that represents how I think video](/videos/writing-samples/).
+{{< video-link "writing-samples" >}}

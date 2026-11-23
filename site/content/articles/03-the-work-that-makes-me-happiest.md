@@ -35,4 +35,4 @@ flowchart TD
 
 ## Video walkthrough
 
-[Watch the The work that makes me happiest video](/videos/happiest-at-work/).
+{{< video-link "happiest-at-work" >}}

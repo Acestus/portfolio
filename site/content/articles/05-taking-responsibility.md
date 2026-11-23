@@ -35,4 +35,4 @@ flowchart TD
 
 ## Video walkthrough
 
-[Watch the Taking responsibility for the outcome video](/videos/taking-responsibility-for-the-outcome/).
+{{< video-link "taking-responsibility-for-the-outcome" >}}

@@ -71,6 +71,6 @@ mindmap
 
 ## Video walkthroughs
 
-[Watch the Making infrastructure more understandable video](/videos/making-infra-more-understandable/).
+{{< video-link "making-infra-more-understandable" >}}
 
-[Watch the Troubleshooting a data center migration video](/videos/data-center-migration/).
+{{< video-link "data-center-migration" >}}

@@ -35,4 +35,4 @@ flowchart TD
 
 ## Video walkthrough
 
-[Watch the Making infrastructure more understandable video](/videos/making-infra-more-understandable/).
+{{< video-link "making-infra-more-understandable" >}}

@@ -37,4 +37,4 @@ flowchart TD
 
 ## Video walkthrough
 
-[Watch the Doing work that uses my abilities video](/videos/unhappiest-at-work/).
+{{< video-link "unhappiest-at-work" >}}

@@ -36,4 +36,4 @@ flowchart TD
 
 ## Video walkthrough
 
-[Watch the Learning to think like a software engineer video](/videos/thinking-like-a-software-engineer/).
+{{< video-link "thinking-like-a-software-engineer" >}}

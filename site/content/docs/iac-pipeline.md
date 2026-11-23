@@ -258,6 +258,8 @@ flowchart TD
 
 ## Related video walkthroughs
 
-- [The work that makes me happiest](/videos/happiest-at-work/).
-- [Making operations visible and repeatable](/videos/making-operations-visible-and-repeatable/).
-- [A few examples of my work](/videos/work-samples/).
+{{< video-link "happiest-at-work" >}}
+
+{{< video-link "making-operations-visible-and-repeatable" >}}
+
+{{< video-link "work-samples" >}}
