@@ -123,7 +123,7 @@ flowchart TD
   input["🎯 Target inventory"] --> n1
   n0["📋 Patch policy"] --> n1
   n1["🔍 Preview configuration and assignments"] --> n2
-  n2["🕒 Apply in maintenance window"] --> n3
+  n2["🕒 Apply in maintenance window"] --> n3@{ icon: "azure:virtual-machine", form: "rounded", label: "Azure Virtual Machine", pos: "t", h: 32 }
   n3["✓ Check guest results"]
   classDef process fill:#CCFBF1,stroke:#0F766E,color:#172B4D,stroke-width:2px
   classDef result fill:#FFE4E6,stroke:#BE123C,color:#172B4D,stroke-width:2px

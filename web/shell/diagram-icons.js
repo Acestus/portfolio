@@ -9,8 +9,23 @@ import eventstream from "./diagram-icons/eventstream.svg" with { type: "text" };
 import eventhouse from "./diagram-icons/eventhouse.svg" with { type: "text" };
 import powerBi from "./diagram-icons/powerBi.svg" with { type: "text" };
 
+import kubernetes from "./diagram-icons/kubernetes.svg" with { type: "text" };
+import containerRegistry from "./diagram-icons/containerRegistry.svg" with { type: "text" };
+import cosmosDb from "./diagram-icons/cosmosDb.svg" with { type: "text" };
+import loadBalancer from "./diagram-icons/loadBalancer.svg" with { type: "text" };
+import activeDirectory from "./diagram-icons/activeDirectory.svg" with { type: "text" };
+import monitor from "./diagram-icons/monitor.svg" with { type: "text" };
+import virtualNetwork from "./diagram-icons/virtualNetwork.svg" with { type: "text" };
+
 const icons = new Map([
   ["azure:sql-database", sql],
+  ["azure:kubernetes-service", kubernetes],
+  ["azure:container-registry", containerRegistry],
+  ["azure:cosmos-db", cosmosDb],
+  ["azure:load-balancer", loadBalancer],
+  ["azure:active-directory", activeDirectory],
+  ["azure:monitor", monitor],
+  ["azure:virtual-network", virtualNetwork],
   ["azure:event-hub", eventHub],
   ["azure:functions", functions],
   ["azure:virtual-machine", virtualMachine],

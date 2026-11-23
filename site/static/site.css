@@ -293,6 +293,8 @@ nav a[aria-current] {
     linear-gradient(90deg, #fff1 1px, transparent 1px);
   background-size: 24px 24px;
 }
+.project-art.has-thumbnail { background: #1b2832; }
+.project-art.has-thumbnail > img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 .art-green {
   background-color: #254b40;
   color: #d9e5b6;

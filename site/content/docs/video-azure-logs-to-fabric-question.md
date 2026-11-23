@@ -27,7 +27,7 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 ```mermaid
 flowchart TD
   accTitle: From Azure logs to a Fabric operations question
-  A[Azure resource] --> L[Log source]
+  A@{ icon: "azure:monitor", form: "rounded", label: "Azure Monitor", pos: "t", h: 32 } --> L[Log source]
   L --> I@{ icon: "azure:event-hub", form: "rounded", label: "Event Hubs ingestion", pos: "t", h: 32 }
   I --> F[Fabric transform]
   F --> Q[Operations query]
