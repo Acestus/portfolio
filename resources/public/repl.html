@@ -1,60 +1,25 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Live ClojureScript REPL powered by SCI — evaluate code in your browser">
-  <meta name="theme-color" content="#0a0a2a">
-  <meta property="og:title" content="ClojureScript REPL — acestus.com">
-  <meta property="og:description" content="Live ClojureScript REPL powered by SCI — evaluate code in your browser">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://portfolio.acestus.com/repl.html">
-  <meta property="og:image" content="https://portfolio.acestus.com/favicon.svg">
+  <meta name="description" content="Check Azure storage account names with a file-based C# program.">
+  <title>.NET Storage Naming Lab | Acestus</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <title>ClojureScript REPL — acestus.com</title>
-  <link rel="stylesheet" href="/css/shared.css">
-  <link rel="stylesheet" href="/css/arcade.css">
-  <link rel="stylesheet" href="/css/repl.css">
+  <link rel="stylesheet" href="/site.css">
 </head>
-<body class="arcade-theme">
-<header class="site-nav" role="banner">
-  <a class="site-name" href="/">acestus.com</a>
-  <nav role="navigation" aria-label="Main">
-    <button class="nav-toggle" aria-controls="main-nav" aria-expanded="false">☰</button>
-    <div class="nav-links" id="main-nav">
-      <a class="nav-link" href="/">Portfolio</a>
-    </div>
-  </nav>
-</header>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  var toggle = document.querySelector('.nav-toggle');
-  var links = document.getElementById('main-nav');
-  if (!toggle || !links) return;
-
-  toggle.addEventListener('click', function() {
-    var isOpen = links.classList.toggle('open');
-    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-  });
-
-  links.querySelectorAll('a').forEach(function(a) {
-    a.addEventListener('click', function() {
-      links.classList.remove('open');
-      toggle.setAttribute('aria-expanded', 'false');
-    });
-  });
-
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      links.classList.remove('open');
-      toggle.setAttribute('aria-expanded', 'false');
-    }
-  });
-});
-</script>
-
-  <div id="app"></div>
-  <script src="/js/repl/main.js"></script>
-  <script src="/js/nav.js"></script>
+<body>
+  <main id="app" class="page prose">
+    <p><a href="/portfolio/">Portfolio</a></p>
+    <h1>.NET Storage Naming Lab</h1>
+    <p>Check Azure storage account names with a C# file you can run locally with the .NET 10 SDK or later.</p>
+    <p><a class="button" href="/downloads/StorageNaming.cs" download>Download StorageNaming.cs</a></p>
+    <h2>Try a valid name</h2>
+    <pre style="overflow-x: auto;"><code>dotnet run --file StorageNaming.cs -- stprojectdevscus001</code></pre>
+    <h2>Try a name with dashes</h2>
+    <pre style="overflow-x: auto;"><code>dotnet run --file StorageNaming.cs -- st-project-dev-scus-001</code></pre>
+    <p>The validator checks for 3–24 lowercase ASCII letters or digits. Azure checks global name availability separately.</p>
+    <p><a href="/docs/clojure-repl/">Read the lab guide</a> · <a href="/matcher.html">Play the CAF Naming Puzzle</a></p>
+  </main>
 </body>
 </html>

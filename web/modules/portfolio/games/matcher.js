@@ -13,7 +13,7 @@ var caf_pairs = [
     caf: "func-project-dev-scus-001",
     prefix: "func",
   },
-  { resource: "Storage Account", caf: "st-project-dev-scus-001", prefix: "st" },
+  { resource: "Storage Account", caf: "stprojectdevscus001", prefix: "st" },
   { resource: "Key Vault", caf: "kv-project-dev-scus-001", prefix: "kv" },
   {
     resource: "Virtual Network",
@@ -314,6 +314,13 @@ var init = function () {
   const name_els_9 = squint_core.atom([]);
   wrapper_1.appendChild(style_el_2);
   wrapper_1.appendChild(header_3);
+  wrapper_1.appendChild(
+    core.create_el(
+      "p",
+      { class: "matcher-rule" },
+      "Storage accounts use 3–24 lowercase letters or digits. Join the CAF parts without dashes.",
+    ),
+  );
   container_4.appendChild(left_col_5);
   container_4.appendChild(right_col_6);
   wrapper_1.appendChild(container_4);

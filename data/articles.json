@@ -20,9 +20,9 @@
     "description": "The Microsoft Build 2026 refresh turns the CAF matcher from a simple puzzle explainer into a governance article about naming that scales. The SPA teaches the same muscle memory platform teams need in …"
   },
   {
-    "title": "ClojureScript REPL Playground",
+    "title": ".NET Storage Naming Lab",
     "url": "/articles/clojure-repl.html",
-    "description": "Live in-browser ClojureScript evaluation powered by SCI (Small Clojure Interpreter). No server is required; code is evaluated locally in the browser, examples are injected into the editor, and Ctrl+En…"
+    "description": "Check Azure storage account names with a file-based .NET tool."
   },
   {
     "title": "Cloud Platformer — Navigating Azure Infrastructure",

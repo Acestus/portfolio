@@ -153,6 +153,8 @@ Not every Azure service can use the hyphenated pattern exactly. CAF is a convent
 
 
 
+Try the [.NET Storage Naming Lab](/repl.html) to check the syntax of a proposed storage account name.
+
 ## Fabric Artifact Naming
 
 

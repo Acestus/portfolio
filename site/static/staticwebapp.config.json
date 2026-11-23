@@ -211,6 +211,7 @@
     "Referrer-Policy": "strict-origin-when-cross-origin"
   },
   "mimeTypes": {
+    ".cs": "text/plain; charset=utf-8",
     ".pdf": "application/pdf",
     ".wasm": "application/wasm"
   }

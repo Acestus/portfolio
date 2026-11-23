@@ -113,7 +113,9 @@ public static class SiteServer
         var app = builder.Build();
         var provider = new PhysicalFileProvider(Path.GetFullPath(directory));
         app.UseDefaultFiles(new DefaultFilesOptions { FileProvider = provider });
-        app.UseStaticFiles(new StaticFileOptions { FileProvider = provider });
+        var contentTypes = new FileExtensionContentTypeProvider();
+        contentTypes.Mappings[".cs"] = "text/plain; charset=utf-8";
+        app.UseStaticFiles(new StaticFileOptions { FileProvider = provider, ContentTypeProvider = contentTypes });
         app.Run(async context => { context.Response.StatusCode = 404; context.Response.ContentType = "text/html"; await context.Response.SendFileAsync(Path.Combine(directory, "404.html")); });
         return app;
     }

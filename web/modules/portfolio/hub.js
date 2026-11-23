@@ -110,10 +110,10 @@ var apps = [
         desc: "Platform engineering workspace provisioning",
       },
       {
-        title: "Clojure REPL",
+        title: ".NET Storage Naming Lab",
         href: "/repl.html",
-        icon: "λ",
-        desc: "Live ClojureScript in your browser",
+        icon: "C#",
+        desc: "Check storage account names with a C# file",
       },
       {
         title: "Architecture Studio",

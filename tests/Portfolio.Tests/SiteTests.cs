@@ -200,20 +200,19 @@ public class MigrationTests
     }
 
     [Fact]
-    public async Task RetainedReplEvaluatesWithButtonAndKeyboard()
+    public async Task DotNetNamingLabPublishesItsRunnableSource()
     {
         using var playwright = await Playwright.CreateAsync();
         await using var browser = await playwright.Chromium.LaunchAsync(new() { Headless = true });
-        var page = await browser.NewPageAsync();
+        var page = await browser.NewPageAsync(new() { AcceptDownloads = true });
         await page.GotoAsync(Target + "/repl.html");
-        await page.Locator(".repl-editor").FillAsync("(+ 20 22)");
-        await page.Locator(".repl-run-btn").ClickAsync();
-        await Assertions.Expect(page.Locator(".repl-output")).ToContainTextAsync("42");
-        await page.Locator(".repl-clear-btn").ClickAsync();
-        await page.Locator(".repl-editor").FillAsync("(reduce + [1 2 3])");
-        await page.Locator(".repl-editor").PressAsync("Control+Enter");
-        await Assertions.Expect(page.Locator(".repl-output")).ToContainTextAsync("6");
+        await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Name = ".NET Storage Naming Lab" })).ToBeVisibleAsync();
+        var download = await page.RunAndWaitForDownloadAsync(() =>
+            page.GetByRole(AriaRole.Link, new() { Name = "Download StorageNaming.cs" }).ClickAsync());
+        Assert.Equal("StorageNaming.cs", download.SuggestedFilename);
+        Assert.Contains("var valid = name.Length", await File.ReadAllTextAsync(await download.PathAsync()));
     }
+
 
     [Theory]
     [InlineData("helicopter")]

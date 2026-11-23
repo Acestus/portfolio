@@ -34,6 +34,8 @@ The platform team standardizes Azure infrastructure on [Bicep modules](https://l
 
 
 
+Storage accounts use the same naming components without separators. For example, use `stcoresecdevusw2001`. Check the full string for 3–24 lowercase letters or digits before deploying. Azure checks global name availability separately. [Azure naming rules](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules)
+
 This does not remove engineering judgment. Teams still decide naming, RBAC boundaries, tags, diagnostics, network posture, and lifecycle scope. AVM simply moves the low-level resource shape to a maintained baseline and lets the local stack focus on the platform pattern.
 
 
