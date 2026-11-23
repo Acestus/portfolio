@@ -27,7 +27,7 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 ```mermaid
 flowchart TD
   accTitle: Azure Policy that fixes missing tags
-  R[Resource] --> P@{ icon: "azure:policy", form: "rounded", label: "Azure Policy evaluation", pos: "t", h: 32 }
+  R[Resource] --> P@{ icon: "azure:policy", form: "rounded", label: "Azure Policy evaluation", pos: "t", h: 48 }
   P -->|missing tag| N[Noncompliant]
   N --> M[Remediation task]
   M --> I[Managed identity]

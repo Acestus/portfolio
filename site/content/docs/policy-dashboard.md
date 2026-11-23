@@ -238,7 +238,7 @@ The public pattern is intentionally generic. A production operations group is el
 ```mermaid
 flowchart TD
   accTitle: What each Azure Policy effect does
-  P@{icon: "azure:policy", form: "rounded", label: "Azure Policy effects", pos: "t", h: 32}
+  P@{icon: "azure:policy", form: "rounded", label: "Azure Policy effects", pos: "t", h: 48}
   P --> A[" Audit reports"]
   P --> M[" Modify changes properties"]
   P --> D[" Deny blocks requests"]
