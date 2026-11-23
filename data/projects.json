@@ -5,7 +5,8 @@
     "category": "Architecture",
     "description": "C4 models, architecture decisions, and diagrams as code.",
     "style": "green",
-    "symbol": "[ ]"
+    "symbol": "[ ]",
+    "thumbnail": "/images/portfolio/architecture-studio.svg"
   },
   {
     "title": "Infrastructure Pipeline",
@@ -13,7 +14,8 @@
     "category": "Delivery",
     "description": "Explore infrastructure as code, deployment gates, and Azure patterns.",
     "style": "sand",
-    "symbol": "→"
+    "symbol": "→",
+    "thumbnail": "/images/portfolio/infrastructure-pipeline.svg"
   },
   {
     "title": "Fabric Capacity Tuner",
@@ -21,7 +23,8 @@
     "category": "Data platforms",
     "description": "Explore capacity sizing and throttling in Microsoft Fabric.",
     "style": "blue",
-    "symbol": "≋"
+    "symbol": "≋",
+    "thumbnail": "/images/portfolio/fabric-capacity-tuner.svg"
   },
   {
     "title": "Workflow Toolkit",
@@ -29,7 +32,8 @@
     "category": "Automation",
     "description": "A practical look at file-driven operational workflows.",
     "style": "sand",
-    "symbol": "⌘"
+    "symbol": "⌘",
+    "thumbnail": "/images/portfolio/workflow-toolkit.svg"
   },
   {
     "title": "Platform Console",
@@ -37,7 +41,8 @@
     "category": "Platform engineering",
     "description": "Explore self-service provisioning and infrastructure operations.",
     "style": "green",
-    "symbol": "▤"
+    "symbol": "▤",
+    "thumbnail": "/images/portfolio/platform-console.svg"
   },
   {
     "title": "Log Pipeline",
@@ -45,7 +50,8 @@
     "category": "Observability",
     "description": "Follow events through a cloud analytics pipeline.",
     "style": "blue",
-    "symbol": "≋"
+    "symbol": "≋",
+    "thumbnail": "/images/portfolio/log-pipeline.svg"
   },
   {
     "title": "Fabric Pipeline",
@@ -53,7 +59,8 @@
     "category": "Data platforms",
     "description": "An interactive view of medallion data architecture.",
     "style": "green",
-    "symbol": "◇"
+    "symbol": "◇",
+    "thumbnail": "/images/portfolio/fabric-pipeline.svg"
   },
   {
     "title": "Policy Dashboard",
@@ -61,7 +68,8 @@
     "category": "Governance",
     "description": "Explore policy evaluation and governance patterns.",
     "style": "sand",
-    "symbol": "✓"
+    "symbol": "✓",
+    "thumbnail": "/images/portfolio/policy-dashboard.svg"
   },
   {
     "title": "Microsoft 365 Administration",
@@ -69,7 +77,8 @@
     "category": "Identity",
     "description": "Explore administration, identity, and lifecycle workflows.",
     "style": "blue",
-    "symbol": "⊞"
+    "symbol": "⊞",
+    "thumbnail": "/images/portfolio/microsoft-365-administration.svg"
   },
   {
     "title": "Pricing Optimizer",
@@ -77,7 +86,8 @@
     "category": "FinOps",
     "description": "An interactive exploration of cloud cost decisions.",
     "style": "sand",
-    "symbol": "$"
+    "symbol": "$",
+    "thumbnail": "/images/portfolio/pricing-optimizer.svg"
   },
   {
     "title": "Copilot-Ops Console",
@@ -85,7 +95,8 @@
     "category": "Automation",
     "description": "Explore the operator’s view of file-driven AI workflows.",
     "style": "green",
-    "symbol": "⌘"
+    "symbol": "⌘",
+    "thumbnail": "/images/portfolio/copilot-ops-console.svg"
   },
   {
     "title": "The Agentic Web",
@@ -93,7 +104,8 @@
     "category": "Architecture",
     "description": "Explore interfaces and the operator-in-the-loop model.",
     "style": "blue",
-    "symbol": "↗"
+    "symbol": "↗",
+    "thumbnail": "/images/portfolio/the-agentic-web.svg"
   },
   {
     "title": "Clojure REPL",
@@ -101,7 +113,8 @@
     "category": "Functional programming",
     "description": "Experiment with ClojureScript in the browser.",
     "style": "green",
-    "symbol": "λ"
+    "symbol": "λ",
+    "thumbnail": "/images/portfolio/clojure-repl.svg"
   },
   {
     "title": "Particle Storm",
@@ -109,7 +122,8 @@
     "category": "Rust + WebAssembly",
     "description": "Explore particles, gravity, and browser-side computation.",
     "style": "blue",
-    "symbol": "✳"
+    "symbol": "✳",
+    "thumbnail": "/images/portfolio/particle-storm.svg"
   },
   {
     "title": "Raytracer",
@@ -117,7 +131,8 @@
     "category": "Rust + WebAssembly",
     "description": "Watch a scene rendered through progressive ray tracing.",
     "style": "sand",
-    "symbol": "◒"
+    "symbol": "◒",
+    "thumbnail": "/images/portfolio/raytracer.svg"
   },
   {
     "title": "Game of Life",
@@ -125,7 +140,8 @@
     "category": "Rust + WebAssembly",
     "description": "Explore Conway’s cellular automaton in the browser.",
     "style": "green",
-    "symbol": "▦"
+    "symbol": "▦",
+    "thumbnail": "/images/portfolio/game-of-life.svg"
   },
   {
     "title": "Cloud Platformer",
@@ -133,7 +149,8 @@
     "category": "Arcade",
     "description": "A playful cloud infrastructure platform game.",
     "style": "blue",
-    "symbol": "↑"
+    "symbol": "↑",
+    "thumbnail": "/images/portfolio/cloud-platformer.svg"
   },
   {
     "title": "Space Invaders",
@@ -141,7 +158,8 @@
     "category": "Arcade",
     "description": "An arcade experiment with a security theme.",
     "style": "green",
-    "symbol": "✦"
+    "symbol": "✦",
+    "thumbnail": "/images/portfolio/space-invaders.svg"
   },
   {
     "title": "CAF Naming Puzzle",
@@ -149,7 +167,8 @@
     "category": "Arcade",
     "description": "Match cloud resources to naming conventions.",
     "style": "sand",
-    "symbol": "⊞"
+    "symbol": "⊞",
+    "thumbnail": "/images/portfolio/caf-naming-puzzle.svg"
   },
   {
     "title": "Tech Breakout",
@@ -157,7 +176,8 @@
     "category": "Arcade",
     "description": "A browser-side breakout experiment.",
     "style": "blue",
-    "symbol": "▰"
+    "symbol": "▰",
+    "thumbnail": "/images/portfolio/tech-breakout.svg"
   },
   {
     "title": "Cloud Lift",
@@ -165,6 +185,7 @@
     "category": "Arcade",
     "description": "A cloud migration rescue game.",
     "style": "green",
-    "symbol": "↑"
+    "symbol": "↑",
+    "thumbnail": "/images/portfolio/cloud-lift.svg"
   }
 ]
