@@ -2,7 +2,6 @@
 title: "Who gets left out when we build with AI"
 date: 2026-11-22
 draft: false
-icon: "🌍"
 tags: ["contract-work", "ai", "empathy"]
 summary: "A reflection on empathy, technology access, and the people who may not have the resources to use what we build."
 ---

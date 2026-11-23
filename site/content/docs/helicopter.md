@@ -1,5 +1,5 @@
 ---
-title: "🚁 Choplifter — Rescue Mission"
+title: "Choplifter — Rescue Mission"
 description: "TL;DR: A homage to the classic 1982 Choplifter by Broderbund. Fly your helicopter into enemy territory, land near buildings to rescue hostages, and fly them back to base — while dodging tanks and jets. Built in…"
 space: "Working examples"
 date: "2026-11-04"

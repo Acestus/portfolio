@@ -1,5 +1,5 @@
 ---
-title: "🔮 Raytracer — Rust + WASM"
+title: "Raytracer — Rust + WASM"
 description: "For each pixel, a ray is cast from the camera through the image plane into the scene. The ray tests intersection against every sphere. At the hit point, we compute lighting (diffuse + specular) from two point lights,…"
 space: "Working examples"
 date: "2026-11-04"

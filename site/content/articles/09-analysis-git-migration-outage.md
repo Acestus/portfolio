@@ -2,7 +2,6 @@
 title: "Analysis: how one repository sync took a website offline"
 date: 2026-11-22
 draft: false
-icon: "🚨"
 tags: ["contract-work", "analysis", "incident-response"]
 summary: "A GitHub Actions repository migration overwrote DNS configuration; monitoring and Argo CD logs helped trace and recover the outage."
 ---

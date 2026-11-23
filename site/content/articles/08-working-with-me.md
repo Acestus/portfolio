@@ -2,7 +2,6 @@
 title: "What clients can expect when working with me"
 date: 2026-11-22
 draft: false
-icon: "🤝"
 tags: ["contract-work", "infrastructure", "support"]
 summary: "My experience in Linux, infrastructure as code, automation, cloud migration, data engineering, and support."
 ---

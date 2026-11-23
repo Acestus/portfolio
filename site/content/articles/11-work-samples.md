@@ -2,7 +2,6 @@
 title: "A few examples of my work"
 date: 2026-11-22
 draft: false
-icon: "💻"
 tags: ["contract-work", "work-samples", "infrastructure"]
 summary: "Examples of my work in CI/CD, infrastructure as code, logs and observability, and software."
 ---

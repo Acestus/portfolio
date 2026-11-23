@@ -2,7 +2,6 @@
 title: "Doing work that uses my abilities"
 date: 2026-11-22
 draft: false
-icon: "⚖️"
 tags: ["contract-work", "engineering", "work"]
 summary: "Why I value meaningful work where I can use my abilities to improve systems and processes."
 ---

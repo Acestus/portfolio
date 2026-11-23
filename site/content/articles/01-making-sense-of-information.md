@@ -2,7 +2,6 @@
 title: "The hardest work is making sense of information"
 date: 2026-11-22
 draft: false
-icon: "🔎"
 tags: ["contract-work", "engineering", "analysis"]
 summary: "Making sense of technical information means checking sources, context, incentives, and evidence before drawing a conclusion."
 ---
