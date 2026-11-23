@@ -1,5 +1,5 @@
 ---
-title: "🧬 Game of Life — Rust + WASM"
+title: "Game of Life — Rust + WASM"
 description: "Each cell follows four simple rules:"
 space: "Working examples"
 date: "2026-11-04"

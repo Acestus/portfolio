@@ -2,7 +2,6 @@
 title: "Taking responsibility for the outcome"
 date: 2026-11-22
 draft: false
-icon: "🧰"
 tags: ["contract-work", "responsibility", "operations"]
 summary: "What ownership means to me in infrastructure operations, CI/CD, and the software delivery lifecycle."
 ---

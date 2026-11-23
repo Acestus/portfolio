@@ -90,22 +90,22 @@
     "description": "File-driven operations beat yet another SaaS dashboard because the operator keeps ownership of the truth: tickets, time, follow-ups, approvals, and standup notes are durable markdown files that can be…"
   },
   {
-    "title": "🌀 Particle Storm — Rust + WASM",
+    "title": "Particle Storm — Rust + WASM",
     "url": "/articles/particle-storm.html",
     "description": "JavaScript is fast, but for tight inner loops updating thousands of particles per frame, Rust's zero-cost abstractions and LLVM-optimized WASM output provide measurably smoother animation. The particl…"
   },
   {
-    "title": "🔮 Raytracer — Rust + WASM",
+    "title": "Raytracer — Rust + WASM",
     "url": "/articles/raytracer.html",
     "description": "For each pixel, a ray is cast from the camera through the image plane into the scene. The ray tests intersection against every sphere. At the hit point, we compute lighting (diffuse + specular) from t…"
   },
   {
-    "title": "🚁 Choplifter — Rescue Mission",
+    "title": "Choplifter — Rescue Mission",
     "url": "/articles/helicopter.html",
     "description": "TL;DR: A homage to the classic 1982 Choplifter by Broderbund. Fly your helicopter into enemy territory, land near buildings to rescue hostages, and fly them back to base — while dodging tanks and jets…"
   },
   {
-    "title": "🧬 Game of Life — Rust + WASM",
+    "title": "Game of Life — Rust + WASM",
     "url": "/articles/game-of-life.html",
     "description": "Each cell follows four simple rules:…"
   }

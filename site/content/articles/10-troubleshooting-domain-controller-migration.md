@@ -2,7 +2,6 @@
 title: "Troubleshooting the dependencies behind a data center migration"
 date: 2026-11-22
 draft: false
-icon: "🧩"
 tags: ["contract-work", "troubleshooting", "cloud-migration"]
 summary: "How I helped map identity, LDAP, Group Policy, and DNS responsibilities to Azure services during a customer migration."
 ---

@@ -2,7 +2,6 @@
 title: "Making operations visible and repeatable"
 date: 2026-11-22
 draft: false
-icon: "👁️"
 tags: ["contract-work", "infrastructure-as-code", "operations"]
 summary: "How infrastructure as code and CI/CD make operational changes easier to review, understand, and repeat."
 ---

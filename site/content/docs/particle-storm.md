@@ -1,5 +1,5 @@
 ---
-title: "🌀 Particle Storm — Rust + WASM"
+title: "Particle Storm — Rust + WASM"
 description: "JavaScript is fast, but for tight inner loops updating thousands of particles per frame, Rust's zero-cost abstractions and LLVM-optimized WASM output provide measurably smoother animation. The particle update loop…"
 space: "Working examples"
 date: "2026-11-04"

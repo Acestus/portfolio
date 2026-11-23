@@ -2,7 +2,6 @@
 title: "Learning to think like a software engineer"
 date: 2026-11-22
 draft: false
-icon: "📚"
 tags: ["contract-work", "engineering", "learning"]
 summary: "How I worked through computer science fundamentals and technical vocabulary to take in complex ideas and connect them."
 ---

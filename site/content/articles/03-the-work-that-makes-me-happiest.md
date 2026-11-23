@@ -2,7 +2,6 @@
 title: "The work that makes me happiest"
 date: 2026-11-22
 draft: false
-icon: "🔁"
 tags: ["contract-work", "devops", "continuous-delivery"]
 summary: "I enjoy small, testable changes, continuous delivery, and time to reflect on whether the work is moving in the right direction."
 ---
