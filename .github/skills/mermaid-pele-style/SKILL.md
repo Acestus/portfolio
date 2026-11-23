@@ -27,12 +27,12 @@ flowchart TD
 
 ## Service icons
 
-Use named icon nodes when a flowchart names an Azure or Fabric service:
+Use named icon nodes when a flowchart names an Azure or Fabric service. Use `h: 48` as the default so the SVG artwork is easy to read.
 
 ```mermaid
 flowchart TD
-  S@{ icon: "azure:sql-database", form: "rounded", label: "Azure SQL Database", pos: "t", h: 32 }
-  L@{ icon: "fabric:lakehouse", form: "rounded", label: "Bronze Lakehouse", pos: "t", h: 32 }
+  S@{ icon: "azure:sql-database", form: "rounded", label: "Azure SQL Database", pos: "t", h: 48 }
+  L@{ icon: "fabric:lakehouse", form: "rounded", label: "Bronze Lakehouse", pos: "t", h: 48 }
   S -->|extract| L
 ```
 

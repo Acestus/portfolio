@@ -290,7 +290,7 @@ That is the key Build 2026 story: Fabric is not just a new place to run old data
 ```mermaid
 flowchart TD
   accTitle: Fabric medallion data flow
-  n0@{ icon: "azure:sql-database", form: "rounded", label: "Source · Operational SQL", pos: "t", h: 32 } -->|extract| n1
+  n0@{ icon: "azure:sql-database", form: "rounded", label: "Source · Operational SQL", pos: "t", h: 48 } -->|extract| n1
   n1@{ icon: "fabric:lakehouse", form: "rounded", label: "Bronze · Raw Lakehouse", pos: "t", h: 48 } -->|validate| n2
   n2@{ icon: "fabric:lakehouse", form: "rounded", label: "Silver · Validated Lakehouse", pos: "t", h: 48 } -->|curate| n3
   n3@{ icon: "fabric:lakehouse", form: "rounded", label: "Gold · Curated Lakehouse", pos: "t", h: 48 } -->|serve| n4

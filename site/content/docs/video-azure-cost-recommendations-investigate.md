@@ -27,7 +27,7 @@ Finish with the evidence a viewer can reproduce: the source change, check output
 ```mermaid
 flowchart TD
   accTitle: Azure cost recommendations: investigate before deleting
-  R@{ icon: "azure:cost-management", form: "rounded", label: "Azure Cost Management recommendation", pos: "t", h: 32 } --> U[Usage evidence]
+  R@{ icon: "azure:cost-management", form: "rounded", label: "Azure Cost Management recommendation", pos: "t", h: 48 } --> U[Usage evidence]
   R --> O[Owner and purpose]
   R --> D[Dependencies]
   U --> X{Safe to change?}

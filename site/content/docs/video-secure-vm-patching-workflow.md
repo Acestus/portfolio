@@ -31,7 +31,7 @@ flowchart TD
   P[Patch policy] --> A[Assignment]
   S --> A
   A --> W[Maintenance window]
-  W --> G@{ icon: "azure:virtual-machine", form: "rounded", label: "VM guest installation", pos: "t", h: 32 }
+  W --> G@{ icon: "azure:virtual-machine", form: "rounded", label: "VM guest installation", pos: "t", h: 48 }
   G --> V[Result verification]
   V --> E[Exceptions and follow-up]
 

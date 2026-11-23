@@ -126,7 +126,7 @@ workflows. Report performed checks and unverified integration boundaries.
 flowchart TD
   accTitle: How the same package reaches each environment
   n0[" Build and identify package"] --> n1
-  n1@{icon: "azure:functions", form: "rounded", label: "Deploy to Azure Functions", pos: "t", h: 32} --> n2
+  n1@{icon: "azure:functions", form: "rounded", label: "Deploy to Azure Functions", pos: "t", h: 48} --> n2
   n2[" Run endpoint acceptance"] --> n3
   n3[" Record promotion evidence"]
   classDef process fill:#DBEAFE,stroke:#2563EB,color:#172B4D,stroke-width:2px
