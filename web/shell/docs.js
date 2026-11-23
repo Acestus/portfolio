@@ -1,5 +1,5 @@
 import { mount } from "pele";
-import { resolveDiagramIcon } from "./diagram-icons.js";
+import { loadHostedDiagramIcons, resolveDiagramIcon } from "./diagram-icons.js";
 
 (() => {
   for (const code of document.querySelectorAll("main code.language-mermaid")) {
@@ -23,6 +23,7 @@ import { resolveDiagramIcon } from "./diagram-icons.js";
     original.replaceWith(figure);
     try {
       mount(canvas, source, { zoom: false, icons: resolveDiagramIcon });
+      loadHostedDiagramIcons(canvas);
     } catch {
       figure.replaceWith(original);
     }
