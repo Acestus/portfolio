@@ -1,9 +1,9 @@
 # Azure cost recommendations: investigate before deleting
 
-From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Skip setup if the repo already exists. Each demo command enters its repo before running. If you used a custom destination, run the commands in that repo’s README from its root.
+Run each line from `docs/runbooks/` in Neovim, Bash, or fish. Run setup once to create the demo at `/tmp/acestus-video-demos/azure-cost-recommendations-investigate-demo`. If it already exists, start with the next command.
 
 ~~~fish
-cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- azure-cost-recommendations-investigate-demo
+fish -c 'cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- azure-cost-recommendations-investigate-demo'
 ~~~
 
 
@@ -16,7 +16,7 @@ Local recommendation review using fictional costs and resources. .NET 11 only. R
 Compute average CPU from the narrow sample window.
 
 ~~~fish
-cd /tmp/acestus-video-demos/azure-cost-recommendations-investigate-demo; and dotnet run --file Demo.cs -- read-the-signal
+fish -c 'cd -- /tmp/acestus-video-demos/azure-cost-recommendations-investigate-demo; and dotnet run --file Demo.cs -- read-the-signal'
 ~~~
 
 ## 2. Look for dependencies
@@ -24,7 +24,7 @@ cd /tmp/acestus-video-demos/azure-cost-recommendations-investigate-demo; and dot
 Reveal a backup job that changes the decision despite low mean CPU.
 
 ~~~fish
-cd /tmp/acestus-video-demos/azure-cost-recommendations-investigate-demo; and dotnet run --file Demo.cs -- look-for-dependencies
+fish -c 'cd -- /tmp/acestus-video-demos/azure-cost-recommendations-investigate-demo; and dotnet run --file Demo.cs -- look-for-dependencies'
 ~~~
 
 ## 3. Compare against a baseline
@@ -32,5 +32,5 @@ cd /tmp/acestus-video-demos/azure-cost-recommendations-investigate-demo; and dot
 Estimate the observed change from two equal sample cost windows.
 
 ~~~fish
-cd /tmp/acestus-video-demos/azure-cost-recommendations-investigate-demo; and dotnet run --file Demo.cs -- compare-against-a-baseline
+fish -c 'cd -- /tmp/acestus-video-demos/azure-cost-recommendations-investigate-demo; and dotnet run --file Demo.cs -- compare-against-a-baseline'
 ~~~

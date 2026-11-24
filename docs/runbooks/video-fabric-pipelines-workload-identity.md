@@ -1,9 +1,9 @@
 # Scheduling Fabric pipelines with workload identity
 
-From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Skip setup if the repo already exists. Each demo command enters its repo before running. If you used a custom destination, run the commands in that repo’s README from its root.
+Run each line from `docs/runbooks/` in Neovim, Bash, or fish. Run setup once to create the demo at `/tmp/acestus-video-demos/fabric-pipelines-workload-identity-demo`. If it already exists, start with the next command.
 
 ~~~fish
-cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- fabric-pipelines-workload-identity-demo
+fish -c 'cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- fabric-pipelines-workload-identity-demo'
 ~~~
 
 
@@ -16,7 +16,7 @@ Local trigger and monitoring exercise. .NET 11 only. Run one line at a time in f
 Walk through a daily schedule and the bounded input it passes.
 
 ~~~fish
-cd /tmp/acestus-video-demos/fabric-pipelines-workload-identity-demo; and dotnet run --file Demo.cs -- show-the-scheduled-input
+fish -c 'cd -- /tmp/acestus-video-demos/fabric-pipelines-workload-identity-demo; and dotnet run --file Demo.cs -- show-the-scheduled-input'
 ~~~
 
 ## 2. Explain token expiry
@@ -24,7 +24,7 @@ cd /tmp/acestus-video-demos/fabric-pipelines-workload-identity-demo; and dotnet 
 Compare the same illustrative token metadata before and after expiry.
 
 ~~~fish
-cd /tmp/acestus-video-demos/fabric-pipelines-workload-identity-demo; and dotnet run --file Demo.cs -- explain-token-expiry
+fish -c 'cd -- /tmp/acestus-video-demos/fabric-pipelines-workload-identity-demo; and dotnet run --file Demo.cs -- explain-token-expiry'
 ~~~
 
 ## 3. Follow the run receipt
@@ -32,5 +32,5 @@ cd /tmp/acestus-video-demos/fabric-pipelines-workload-identity-demo; and dotnet 
 Use a sample run ID to link an accepted request to a later status.
 
 ~~~fish
-cd /tmp/acestus-video-demos/fabric-pipelines-workload-identity-demo; and dotnet run --file Demo.cs -- follow-the-run-receipt
+fish -c 'cd -- /tmp/acestus-video-demos/fabric-pipelines-workload-identity-demo; and dotnet run --file Demo.cs -- follow-the-run-receipt'
 ~~~

@@ -1,9 +1,9 @@
 # Azure Key Vault secrets in a Python application
 
-From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Skip setup if the repo already exists. Each demo command enters its repo before running. If you used a custom destination, run the commands in that repo’s README from its root.
+Run each line from `docs/runbooks/` in Neovim, Bash, or fish. Run setup once to create the demo at `/tmp/acestus-video-demos/key-vault-secrets-python-demo`. If it already exists, start with the next command.
 
 ~~~fish
-cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- key-vault-secrets-python-demo
+fish -c 'cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- key-vault-secrets-python-demo'
 ~~~
 
 
@@ -16,7 +16,7 @@ Use .NET 11 and a mock vault with a dummy value. The linked article describes th
 Compare a demo identity with secret read permission against an anonymous identity.
 
 ~~~fish
-cd /tmp/acestus-video-demos/key-vault-secrets-python-demo; and dotnet run --file Demo.cs -- show-the-role-boundary
+fish -c 'cd -- /tmp/acestus-video-demos/key-vault-secrets-python-demo; and dotnet run --file Demo.cs -- show-the-role-boundary'
 ~~~
 
 ## 2. Verify allowed read
@@ -24,7 +24,7 @@ cd /tmp/acestus-video-demos/key-vault-secrets-python-demo; and dotnet run --file
 Compare the dummy result without printing it.
 
 ~~~fish
-cd /tmp/acestus-video-demos/key-vault-secrets-python-demo; and dotnet run --file Demo.cs -- verify-allowed-read
+fish -c 'cd -- /tmp/acestus-video-demos/key-vault-secrets-python-demo; and dotnet run --file Demo.cs -- verify-allowed-read'
 ~~~
 
 ## 3. Verify denied read
@@ -32,5 +32,5 @@ cd /tmp/acestus-video-demos/key-vault-secrets-python-demo; and dotnet run --file
 Show the unauthorized identity receives no value.
 
 ~~~fish
-cd /tmp/acestus-video-demos/key-vault-secrets-python-demo; and dotnet run --file Demo.cs -- verify-denied-read
+fish -c 'cd -- /tmp/acestus-video-demos/key-vault-secrets-python-demo; and dotnet run --file Demo.cs -- verify-denied-read'
 ~~~

@@ -1,22 +1,22 @@
 # A beginner's GitHub Desktop workflow for infrastructure projects
 
-From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Skip setup if the repo already exists. Each demo command enters its repo before running. If you used a custom destination, run the commands in that repo’s README from its root.
+Run each line from `docs/runbooks/` in Neovim, Bash, or fish. Run setup once to create the demo at `/tmp/acestus-video-demos/github-desktop-infrastructure-demo`. If it already exists, start with the next command.
 
 ~~~fish
-cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- github-desktop-infrastructure-demo
+fish -c 'cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- github-desktop-infrastructure-demo'
 ~~~
 
 
 [Read the portfolio guide](https://acestus.com/docs/video-github-desktop-infrastructure/).
 
-Open this newly created local repo in GitHub Desktop. Publish it to a demo GitHub account before creating a PR. Run the Git lines from the clone root. Run one line at a time in fish.
+Open the seeded repo in GitHub Desktop. Publish it to a demo GitHub account before creating a PR. Create the branch and commit in that same checkout so the commands below can find them.
 
 ## 1. Clone and branch in Desktop
 
-Open the demo repository in GitHub Desktop or clone its published copy, then create a branch called demo/infrastructure-note.
+In GitHub Desktop, create a branch called `demo/infrastructure-note` in the seeded repo.
 
 ~~~fish
-cd /tmp/acestus-video-demos/github-desktop-infrastructure-demo; and git branch --show-current
+git -C /tmp/acestus-video-demos/github-desktop-infrastructure-demo branch --show-current
 ~~~
 
 ## 2. Edit and commit in Desktop
@@ -24,7 +24,7 @@ cd /tmp/acestus-video-demos/github-desktop-infrastructure-demo; and git branch -
 Edit the tag in infrastructure.md, review Changes, and commit it. Show the commit and diff.
 
 ~~~fish
-cd /tmp/acestus-video-demos/github-desktop-infrastructure-demo; and git show --stat --patch HEAD
+git -C /tmp/acestus-video-demos/github-desktop-infrastructure-demo show --stat --patch HEAD
 ~~~
 
 ## 3. Publish and review in Desktop
@@ -32,5 +32,5 @@ cd /tmp/acestus-video-demos/github-desktop-infrastructure-demo; and git show --s
 Publish the branch and open the PR in GitHub. Review its files and checks with GitHub CLI.
 
 ~~~fish
-cd /tmp/acestus-video-demos/github-desktop-infrastructure-demo; and gh pr view --json url,files,statusCheckRollup
+fish -c 'cd -- /tmp/acestus-video-demos/github-desktop-infrastructure-demo; and gh pr view --json url,files,statusCheckRollup'
 ~~~

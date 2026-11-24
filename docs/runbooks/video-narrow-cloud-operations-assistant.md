@@ -1,9 +1,9 @@
 # A narrow AI assistant for cloud operations
 
-From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Skip setup if the repo already exists. Each demo command enters its repo before running. If you used a custom destination, run the commands in that repo’s README from its root.
+Run each line from `docs/runbooks/` in Neovim, Bash, or fish. Run setup once to create the demo at `/tmp/acestus-video-demos/narrow-cloud-operations-assistant-demo`. If it already exists, start with the next command.
 
 ~~~fish
-cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- narrow-cloud-operations-assistant-demo
+fish -c 'cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- narrow-cloud-operations-assistant-demo'
 ~~~
 
 
@@ -16,7 +16,7 @@ Use .NET 11 to model a read-only status tool with fictional services. Run one li
 Read its current status.
 
 ~~~fish
-cd /tmp/acestus-video-demos/narrow-cloud-operations-assistant-demo; and dotnet run --file Demo.cs -- allow-a-known-service
+fish -c 'cd -- /tmp/acestus-video-demos/narrow-cloud-operations-assistant-demo; and dotnet run --file Demo.cs -- allow-a-known-service'
 ~~~
 
 ## 2. Reject an unknown service
@@ -24,7 +24,7 @@ cd /tmp/acestus-video-demos/narrow-cloud-operations-assistant-demo; and dotnet r
 Show the allowlist rejecting an out of scope request.
 
 ~~~fish
-cd /tmp/acestus-video-demos/narrow-cloud-operations-assistant-demo; and dotnet run --file Demo.cs -- reject-an-unknown-service
+fish -c 'cd -- /tmp/acestus-video-demos/narrow-cloud-operations-assistant-demo; and dotnet run --file Demo.cs -- reject-an-unknown-service'
 ~~~
 
 ## 3. Record the outcome
@@ -32,5 +32,5 @@ cd /tmp/acestus-video-demos/narrow-cloud-operations-assistant-demo; and dotnet r
 Print a structured audit record for the lookup.
 
 ~~~fish
-cd /tmp/acestus-video-demos/narrow-cloud-operations-assistant-demo; and dotnet run --file Demo.cs -- record-the-outcome
+fish -c 'cd -- /tmp/acestus-video-demos/narrow-cloud-operations-assistant-demo; and dotnet run --file Demo.cs -- record-the-outcome'
 ~~~

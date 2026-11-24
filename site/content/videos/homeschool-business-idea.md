@@ -3,7 +3,7 @@ title = "A Homeschool Dashboard Business Idea"
 description = "A practical product sketch for tracking homeschool lessons, living books, and reading progress."
 weight = 3
 [params]
-thumbnail = "/images/homeschool-business-idea-thumbnail.png"
+thumbnail = "/images/homeschool-business-idea-thumbnail.svg"
 h264 = "https://stvideosprdscus001.z21.web.core.windows.net/videos/homeschool-business-idea.mp4"
 duration = "11:30"
 +++

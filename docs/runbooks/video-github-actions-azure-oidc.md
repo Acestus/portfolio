@@ -1,9 +1,9 @@
 # GitHub Actions authentication to Azure without stored passwords
 
-From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Skip setup if the repo already exists. Each demo command enters its repo before running. If you used a custom destination, run the commands in that repo’s README from its root.
+Run each line from `docs/runbooks/` in Neovim, Bash, or fish. Run setup once to create the demo at `/tmp/acestus-video-demos/github-actions-azure-oidc-demo`. If it already exists, start with the next command.
 
 ~~~fish
-cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- github-actions-azure-oidc-demo
+fish -c 'cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- github-actions-azure-oidc-demo'
 ~~~
 
 
@@ -16,7 +16,7 @@ Use ripgrep, Azure CLI, and .NET 11. The example workflow is inactive until you 
 Show the workflow permission and token audience.
 
 ~~~fish
-cd /tmp/acestus-video-demos/github-actions-azure-oidc-demo; and rg -n 'id-token: write|azure/login@|AzureADTokenExchange' identity-workflow.example.yml
+rg -n 'id-token: write|azure/login@|AzureADTokenExchange' /tmp/acestus-video-demos/github-actions-azure-oidc-demo/identity-workflow.example.yml
 ~~~
 
 ## 2. Compare federated subjects
@@ -24,7 +24,7 @@ cd /tmp/acestus-video-demos/github-actions-azure-oidc-demo; and rg -n 'id-token:
 Show which sample subject matches the configured environment.
 
 ~~~fish
-cd /tmp/acestus-video-demos/github-actions-azure-oidc-demo; and dotnet run --file Demo.cs -- compare-federated-subjects
+fish -c 'cd -- /tmp/acestus-video-demos/github-actions-azure-oidc-demo; and dotnet run --file Demo.cs -- compare-federated-subjects'
 ~~~
 
 ## 3. Identify the active principal
@@ -32,5 +32,5 @@ cd /tmp/acestus-video-demos/github-actions-azure-oidc-demo; and dotnet run --fil
 Run after approving a login in your demo environment. Show only the principal type.
 
 ~~~fish
-cd /tmp/acestus-video-demos/github-actions-azure-oidc-demo; and az account show --query user.type --output tsv
+az account show --query user.type --output tsv
 ~~~

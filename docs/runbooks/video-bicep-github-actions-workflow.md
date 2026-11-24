@@ -1,9 +1,9 @@
 # Infrastructure as code with Bicep and GitHub Actions
 
-From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Skip setup if the repo already exists. Each demo command enters its repo before running. If you used a custom destination, run the commands in that repo’s README from its root.
+Run each line from `docs/runbooks/` in Neovim, Bash, or fish. Run setup once to create the demo at `/tmp/acestus-video-demos/bicep-github-actions-workflow-demo`. If it already exists, start with the next command.
 
 ~~~fish
-cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- bicep-github-actions-workflow-demo
+fish -c 'cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- bicep-github-actions-workflow-demo'
 ~~~
 
 
@@ -16,7 +16,7 @@ Use Azure CLI with its Bicep CLI installed, .NET 11, and ripgrep. Publish this d
 Show the compiled resource types from the existing portfolio template.
 
 ~~~fish
-cd /tmp/acestus-video-demos/bicep-github-actions-workflow-demo; and az bicep build --file main.bicep --stdout
+az bicep build --file /tmp/acestus-video-demos/bicep-github-actions-workflow-demo/main.bicep --stdout
 ~~~
 
 ## 2. Inspect the federated deploy job
@@ -24,7 +24,7 @@ cd /tmp/acestus-video-demos/bicep-github-actions-workflow-demo; and az bicep bui
 Show the token permission, protected environment, and Azure login in the example workflow.
 
 ~~~fish
-cd /tmp/acestus-video-demos/bicep-github-actions-workflow-demo; and rg -n 'id-token: write|azure/login@|AzureADTokenExchange' identity-workflow.example.yml
+rg -n 'id-token: write|azure/login@|AzureADTokenExchange' /tmp/acestus-video-demos/bicep-github-actions-workflow-demo/identity-workflow.example.yml
 ~~~
 
 ## 3. Inspect push and PR validation
@@ -32,5 +32,5 @@ cd /tmp/acestus-video-demos/bicep-github-actions-workflow-demo; and rg -n 'id-to
 Review the source commit and conclusion of the demo workflow run.
 
 ~~~fish
-cd /tmp/acestus-video-demos/bicep-github-actions-workflow-demo; and gh run list --workflow validate.yml --limit 5 --json headSha,conclusion,url
+fish -c 'cd -- /tmp/acestus-video-demos/bicep-github-actions-workflow-demo; and gh run list --workflow validate.yml --limit 5 --json headSha,conclusion,url'
 ~~~
