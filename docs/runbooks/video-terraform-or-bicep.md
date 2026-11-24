@@ -1,9 +1,9 @@
 # Terraform or Bicep: choosing the right tool for an Azure project
 
-From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Skip setup if the repo already exists. Each demo command enters its repo before running. If you used a custom destination, run the commands in that repo’s README from its root.
+Run each line from `docs/runbooks/` in Neovim, Bash, or fish. Run setup once to create the demo at `/tmp/acestus-video-demos/terraform-or-bicep-demo`. If it already exists, start with the next command.
 
 ~~~fish
-cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- terraform-or-bicep-demo
+fish -c 'cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- terraform-or-bicep-demo'
 ~~~
 
 
@@ -16,7 +16,7 @@ Use Azure CLI with Bicep installed, Terraform, and .NET 11. Both templates descr
 Build the sample storage template to show what gets submitted to Azure.
 
 ~~~fish
-cd /tmp/acestus-video-demos/terraform-or-bicep-demo; and az bicep build --file main.bicep --stdout
+az bicep build --file /tmp/acestus-video-demos/terraform-or-bicep-demo/main.bicep --stdout
 ~~~
 
 ## 2. Validate an equivalent Terraform definition
@@ -24,7 +24,7 @@ cd /tmp/acestus-video-demos/terraform-or-bicep-demo; and az bicep build --file m
 Install the declared provider and validate the storage definition. A live plan requires Azure access and demo resource values.
 
 ~~~fish
-cd /tmp/acestus-video-demos/terraform-or-bicep-demo; and terraform init -backend=false; and terraform validate
+terraform -chdir=/tmp/acestus-video-demos/terraform-or-bicep-demo init -backend=false && terraform -chdir=/tmp/acestus-video-demos/terraform-or-bicep-demo validate
 ~~~
 
 ## 3. Decide which workflow fits
@@ -32,5 +32,5 @@ cd /tmp/acestus-video-demos/terraform-or-bicep-demo; and terraform init -backend
 Use the same sample Azure project to compare scope, state ownership, and review tools.
 
 ~~~fish
-cd /tmp/acestus-video-demos/terraform-or-bicep-demo; and dotnet run --file Demo.cs -- compare-workflows
+fish -c 'cd -- /tmp/acestus-video-demos/terraform-or-bicep-demo; and dotnet run --file Demo.cs -- compare-workflows'
 ~~~

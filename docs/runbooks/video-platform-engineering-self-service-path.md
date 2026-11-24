@@ -1,9 +1,9 @@
 # Platform engineering demo: a self-service deployment path
 
-From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Skip setup if the repo already exists. Each demo command enters its repo before running. If you used a custom destination, run the commands in that repo’s README from its root.
+Run each line from `docs/runbooks/` in Neovim, Bash, or fish. Run setup once to create the demo at `/tmp/acestus-video-demos/platform-engineering-self-service-path-demo`. If it already exists, start with the next command.
 
 ~~~fish
-cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- platform-engineering-self-service-path-demo
+fish -c 'cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- platform-engineering-self-service-path-demo'
 ~~~
 
 
@@ -16,7 +16,7 @@ Use .NET 11 to model a request, validation, and reviewable plan. Run one line at
 Show the only fields the service owner needs to choose.
 
 ~~~fish
-cd /tmp/acestus-video-demos/platform-engineering-self-service-path-demo; and dotnet run --file Demo.cs -- submit-the-request
+fish -c 'cd -- /tmp/acestus-video-demos/platform-engineering-self-service-path-demo; and dotnet run --file Demo.cs -- submit-the-request'
 ~~~
 
 ## 2. Show a useful validation error
@@ -24,7 +24,7 @@ cd /tmp/acestus-video-demos/platform-engineering-self-service-path-demo; and dot
 Reject a size outside the allowlist.
 
 ~~~fish
-cd /tmp/acestus-video-demos/platform-engineering-self-service-path-demo; and dotnet run --file Demo.cs -- show-a-useful-validation-error
+fish -c 'cd -- /tmp/acestus-video-demos/platform-engineering-self-service-path-demo; and dotnet run --file Demo.cs -- show-a-useful-validation-error'
 ~~~
 
 ## 3. Generate the plan
@@ -32,5 +32,5 @@ cd /tmp/acestus-video-demos/platform-engineering-self-service-path-demo; and dot
 Add platform defaults to a valid request and point out the review owner.
 
 ~~~fish
-cd /tmp/acestus-video-demos/platform-engineering-self-service-path-demo; and dotnet run --file Demo.cs -- generate-the-plan
+fish -c 'cd -- /tmp/acestus-video-demos/platform-engineering-self-service-path-demo; and dotnet run --file Demo.cs -- generate-the-plan'
 ~~~

@@ -1,9 +1,9 @@
 # What infrastructure drift detection catches (and misses)
 
-From anywhere in the portfolio checkout, create the demo repo under `/tmp/acestus-video-demos/`. Skip setup if the repo already exists. Each demo command enters its repo before running. If you used a custom destination, run the commands in that repo’s README from its root.
+Run each line from `docs/runbooks/` in Neovim, Bash, or fish. Run setup once to create the demo at `/tmp/acestus-video-demos/infrastructure-drift-detection-demo`. If it already exists, start with the next command.
 
 ~~~fish
-cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- infrastructure-drift-detection-demo
+fish -c 'cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- infrastructure-drift-detection-demo'
 ~~~
 
 
@@ -16,7 +16,7 @@ Compare sample declared and observed properties with .NET 11. Run one line at a 
 Record the desired owner before making a manual change.
 
 ~~~fish
-cd /tmp/acestus-video-demos/infrastructure-drift-detection-demo; and dotnet run --file Demo.cs -- display-desired-state
+fish -c 'cd -- /tmp/acestus-video-demos/infrastructure-drift-detection-demo; and dotnet run --file Demo.cs -- display-desired-state'
 ~~~
 
 ## 2. Detect the drift
@@ -24,7 +24,7 @@ cd /tmp/acestus-video-demos/infrastructure-drift-detection-demo; and dotnet run 
 Show the difference in the observed owner.
 
 ~~~fish
-cd /tmp/acestus-video-demos/infrastructure-drift-detection-demo; and dotnet run --file Demo.cs -- detect-the-drift
+fish -c 'cd -- /tmp/acestus-video-demos/infrastructure-drift-detection-demo; and dotnet run --file Demo.cs -- detect-the-drift'
 ~~~
 
 ## 3. Reconcile tracked properties
@@ -32,5 +32,5 @@ cd /tmp/acestus-video-demos/infrastructure-drift-detection-demo; and dotnet run 
 Show that matching the owner says nothing about runtime data.
 
 ~~~fish
-cd /tmp/acestus-video-demos/infrastructure-drift-detection-demo; and dotnet run --file Demo.cs -- reconcile-tracked-properties
+fish -c 'cd -- /tmp/acestus-video-demos/infrastructure-drift-detection-demo; and dotnet run --file Demo.cs -- reconcile-tracked-properties'
 ~~~

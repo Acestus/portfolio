@@ -1,12 +1,12 @@
 # Video demo repositories
 
-Create all 20 independent local Git repos from anywhere in the portfolio checkout. Skip setup if the repos are already present. Each repo starts on `main` and includes its own README and demo files.
+Create all 20 independent local Git repos from `docs/runbooks/`. Skip setup if all 20 repos are already present. If only some exist, use the setup line in each missing demo’s runbook. Each repo starts on `main` and includes its own README and demo files.
 
 ~~~fish
-cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- all
+fish -c 'cd -- "$(git rev-parse --show-toplevel)"; and dotnet run --file scripts/SeedDemo.cs -- all'
 ~~~
 
-The command prints each path under `/tmp/acestus-video-demos/`. To keep the repos somewhere else, pass the destination directory as the final argument. To create just one, use the command in that video's runbook.
+The command prints each path under `/tmp/acestus-video-demos/`. The individual runbooks use that same destination. To create just one, use the command in that video's runbook.
 
 | Runbook | Website guide |
 | --- | --- |
